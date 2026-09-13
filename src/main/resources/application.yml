@@ -14,3 +14,16 @@ spring:
   flyway:
     enabled: true
     validate-on-migrate: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:8180/realms/social"
+
+          authorities-claim-expressions:
+            - "['realm_access']['roles']"
+
+          authority-prefix: "ROLE_"
+
+          principal-claim-name: "preferred_username"
