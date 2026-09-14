@@ -42,6 +42,27 @@ services:
     depends_on:
       - keycloak-postgres
 
+
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: naro-minio
+
+    command: server /data --console-address ":9001"
+
+    environment:
+      MINIO_ROOT_USER: naro
+      MINIO_ROOT_PASSWORD: naro12345
+
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+    volumes:
+      - minio_data:/data
+
+
 volumes:
   postgres_data:
   keycloak_postgres_data:
+  minio_data:
+

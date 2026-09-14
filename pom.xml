@@ -6,58 +6,95 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.1.1</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.naro</groupId>
     <artifactId>naro</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>naro</name>
-    <description>naro</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+    <description>Naro social network backend</description>
     <properties>
         <java.version>25</java.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <lombok.version>1.18.46</lombok.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <aws.sdk.version>2.54.13</aws.sdk.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${aws.sdk.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-flyway</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
+        <!-- ================================================== -->
+        <!-- WEB -->
+        <!-- ================================================== -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- VALIDATION -->
+        <!-- ================================================== -->
+
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- HATEOAS -->
+        <!-- ================================================== -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- SECURITY -->
+        <!-- ================================================== -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+
+        <!--
+            Keycloak envia JWT.
+
+            Spring atua como OAuth2 Resource Server.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>
+                spring-boot-starter-security-oauth2-resource-server
+            </artifactId>
+        </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- DATABASE / JPA -->
+        <!-- ================================================== -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -65,99 +102,243 @@
             <scope>runtime</scope>
         </dependency>
 
+
+        <!-- ================================================== -->
+        <!-- FLYWAY -->
+        <!-- ================================================== -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>4.1.1</version>
-            <scope>compile</scope>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
+
+
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.46</version>
-            <optional>true</optional>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- MAPSTRUCT -->
+        <!-- ================================================== -->
+
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>1.6.3</version>
+            <version>${mapstruct.version}</version>
         </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- LOMBOK -->
+        <!-- ================================================== -->
+
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-flyway-test</artifactId>
-            <scope>test</scope>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
         </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- AWS SDK -->
+        <!-- ================================================== -->
+
+        <!--
+            Usaremos o SDK oficial da AWS.
+
+            DEV:
+            Spring -> AWS S3 SDK -> MinIO
+
+            PROD:
+            Spring -> AWS S3 SDK -> Amazon S3
+        -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas-test</artifactId>
-            <scope>test</scope>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- TESTS -->
+        <!-- ================================================== -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
+
+    <!-- ====================================================== -->
+    <!-- BUILD -->
+    <!-- ====================================================== -->
+
     <build>
+
         <plugins>
+
+
+            <!-- ================================================== -->
+            <!-- SPRING BOOT -->
+            <!-- ================================================== -->
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
+                <configuration>
+
+                    <!--
+                        Evita colocar Lombok dentro do jar final.
+                    -->
+                    <excludes>
+
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+
+                    </excludes>
+
+                </configuration>
+
             </plugin>
+
+
+            <!-- ================================================== -->
+            <!-- JAVA COMPILER -->
+            <!-- ================================================== -->
+
             <plugin>
+
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <release>25</release>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                    <version>1.18.46</version>
-                                </path>
 
-                                <path>
-                                    <groupId>org.mapstruct</groupId>
-                                    <artifactId>mapstruct-processor</artifactId>
-                                    <version>1.6.3</version>
-                                </path>
-                            </annotationProcessorPaths>
-                            <compilerArgs>
-                                <arg>-Amapstruct.defaultComponentModel=spring</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                </path>
-                            </annotationProcessorPaths>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+
+                    <release>25</release>
+
+
+                    <!-- ========================================== -->
+                    <!-- ANNOTATION PROCESSORS -->
+                    <!-- ========================================== -->
+
+                    <annotationProcessorPaths>
+
+
+                        <!-- Lombok -->
+
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+
+
+                        <!--
+                            Faz Lombok funcionar corretamente
+                            junto com MapStruct.
+                        -->
+
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>
+                                lombok-mapstruct-binding
+                            </artifactId>
+                            <version>
+                                ${lombok-mapstruct-binding.version}
+                            </version>
+                        </path>
+
+
+                        <!-- MapStruct -->
+
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>
+                                mapstruct-processor
+                            </artifactId>
+                            <version>
+                                ${mapstruct.version}
+                            </version>
+                        </path>
+
+
+                    </annotationProcessorPaths>
+
+
+                    <!-- ========================================== -->
+                    <!-- MAPSTRUCT CONFIG -->
+                    <!-- ========================================== -->
+
+                    <compilerArgs>
+
+                        <!--
+                            Todos os @Mapper automaticamente
+                            serão Beans do Spring.
+
+                            Não precisa:
+
+                            @Mapper(componentModel = "spring")
+
+                            Basta:
+
+                            @Mapper
+                        -->
+                        <arg>
+                            -Amapstruct.defaultComponentModel=spring
+                        </arg>
+
+
+                        <!--
+                            Gera código MapStruct mais limpo.
+                        -->
+                        <arg>
+                            -Amapstruct.suppressGeneratorTimestamp=true
+                        </arg>
+
+
+                        <arg>
+                            -Amapstruct.suppressGeneratorVersionInfoComment=true
+                        </arg>
+
+                    </compilerArgs>
+
+                </configuration>
+
             </plugin>
+
+
         </plugins>
+
     </build>
+
 
 </project>
