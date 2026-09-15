@@ -38,3 +38,8 @@ app:
       secret-key: naro12345
       bucket: naro-publications
       presigned-url-duration: 30m
+
+  websocket:
+    allowed-origins:
+      - http://localhost:3000
+      - http://127.0.0.1:3000
