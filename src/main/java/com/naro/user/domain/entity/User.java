@@ -90,6 +90,18 @@ public class User {
     )
     private Instant updatedAt;
 
+    /**
+     * Atualizado somente quando a última conexão
+     * WebSocket do usuário é encerrada.
+     *
+     * Escrito via UserRepository#updateLastSeenAt para
+     * não alterar updatedAt (que representa o perfil).
+     */
+    @Column(
+            name = "last_seen_at"
+    )
+    private Instant lastSeenAt;
+
     public User(
             String keycloakId,
             String username,

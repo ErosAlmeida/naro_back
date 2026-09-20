@@ -13,7 +13,15 @@ public record SendChatMessageRequest(
 
         @NotBlank
         @Size(max = 4000)
-        String content
+        String content,
+
+        /*
+         * Opcional. Gerado pelo cliente e devolvido no evento
+         * em tempo real, para ligar a mensagem otimista
+         * ("enviando...") à mensagem persistida.
+         * Não é persistido.
+         */
+        UUID clientMessageId
 
 ) {
 }

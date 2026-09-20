@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ConversationRepository
@@ -64,5 +66,46 @@ public interface ConversationRepository
     Optional<Conversation> findByIdWithParticipants(
             @Param("conversationId")
             UUID conversationId
+    );
+
+
+    /*
+     * Dentre userIds, quais compartilham ao menos
+     * uma conversa com o usuário informado.
+     */
+    @Query("""
+            SELECT DISTINCT other.id
+            FROM Conversation c
+            JOIN c.participants me
+            JOIN c.participants other
+            
+            WHERE me.id = :userId
+              AND other.id IN :userIds
+            """)
+    Set<UUID> findContactIdsAmong(
+            @Param("userId")
+            UUID userId,
+
+            @Param("userIds")
+            Collection<UUID> userIds
+    );
+
+
+    /*
+     * keycloakId de todos que compartilham ao menos
+     * uma conversa com o usuário (exceto ele mesmo).
+     */
+    @Query("""
+            SELECT DISTINCT other.keycloakId
+            FROM Conversation c
+            JOIN c.participants me
+            JOIN c.participants other
+            
+            WHERE me.id = :userId
+              AND other.id <> :userId
+            """)
+    Set<String> findContactKeycloakIds(
+            @Param("userId")
+            UUID userId
     );
 }

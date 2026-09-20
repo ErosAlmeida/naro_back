@@ -32,17 +32,17 @@ import java.util.List;
 public class WebSocketSecurityConfig
         implements WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketJwtAuthenticationInterceptor
-            jwtAuthenticationInterceptor;
+    private final WebSocketAuthenticationInterceptor
+            authenticationInterceptor;
 
 
     public WebSocketSecurityConfig(
-            WebSocketJwtAuthenticationInterceptor
-                    jwtAuthenticationInterceptor
+            WebSocketAuthenticationInterceptor
+                    authenticationInterceptor
     ) {
 
-        this.jwtAuthenticationInterceptor =
-                jwtAuthenticationInterceptor;
+        this.authenticationInterceptor =
+                authenticationInterceptor;
     }
 
 
@@ -61,9 +61,10 @@ public class WebSocketSecurityConfig
         registration.interceptors(
 
                 /*
-                 * 1 - autentica Keycloak JWT
+                 * 1 - autentica o CONNECT
+                 * (ticket efêmero ou JWT do Keycloak)
                  */
-                jwtAuthenticationInterceptor,
+                authenticationInterceptor,
 
                 /*
                  * 2 - coloca Authentication
@@ -88,7 +89,7 @@ public class WebSocketSecurityConfig
         /*
          * Permite:
          *
-         * @AuthenticationPrincipal Jwt jwt
+         * @AuthenticationPrincipal RealtimePrincipal principal
          *
          * em @MessageMapping.
          */
@@ -134,6 +135,8 @@ public class WebSocketSecurityConfig
                  */
                 .simpSubscribeDestMatchers(
                         "/user/queue/chat",
+                        "/user/queue/typing",
+                        "/user/queue/presence",
                         "/user/queue/errors"
                 )
                 .authenticated()

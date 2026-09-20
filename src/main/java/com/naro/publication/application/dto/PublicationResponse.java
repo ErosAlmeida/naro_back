@@ -15,7 +15,13 @@ public record PublicationResponse(
 
         String imageUrl,
 
-        Instant createdAt
+        Instant createdAt,
+
+        long likeCount,
+
+        long commentCount,
+
+        boolean likedByCurrentUser
 
 ) {
 }

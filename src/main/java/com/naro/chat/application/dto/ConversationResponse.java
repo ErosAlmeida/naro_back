@@ -16,7 +16,12 @@ public record ConversationResponse(
 
         Instant createdAt,
 
-        Instant updatedAt
+        Instant updatedAt,
+
+        /*
+         * null quando a conversa ainda não tem mensagens.
+         */
+        ChatMessageResponse lastMessage
 
 ) {
 }

@@ -15,6 +15,13 @@ spring:
     enabled: true
     validate-on-migrate: true
 
+  # O padrão do Spring (1MB) recusaria a maioria das fotos.
+  # O frontend valida o mesmo limite de imagem antes do upload.
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+
   security:
     oauth2:
       resourceserver:

@@ -1,6 +1,7 @@
 package com.naro.chat.presentation.websocket;
 
 import com.naro.chat.application.event.ChatMessageCreatedEvent;
+import com.naro.chat.application.event.ChatTypingEvent;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -38,6 +39,32 @@ public class ChatRealtimePublisher {
                     keycloakId,
                     "/queue/chat",
                     event.message()
+            );
+        }
+    }
+
+
+    /*
+     * fallbackExecution: o evento também é enviado se, no futuro,
+     * for publicado fora de uma transação.
+     */
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT,
+            fallbackExecution = true
+    )
+    public void publishTyping(
+            ChatTypingEvent event
+    ) {
+
+        for (
+                String keycloakId :
+                event.recipientKeycloakIds()
+        ) {
+
+            messagingTemplate.convertAndSendToUser(
+                    keycloakId,
+                    "/queue/typing",
+                    event.typing()
             );
         }
     }

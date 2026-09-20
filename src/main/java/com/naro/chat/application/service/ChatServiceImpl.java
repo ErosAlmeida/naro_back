@@ -1,10 +1,13 @@
 package com.naro.chat.application.service;
 
 import com.naro.chat.application.dto.ChatMessageResponse;
+import com.naro.chat.application.dto.ChatTypingRequest;
+import com.naro.chat.application.dto.ChatTypingResponse;
 import com.naro.chat.application.dto.ConversationResponse;
 import com.naro.chat.application.dto.SendChatMessageRequest;
 
 import com.naro.chat.application.event.ChatMessageCreatedEvent;
+import com.naro.chat.application.event.ChatTypingEvent;
 import com.naro.chat.application.mapper.ChatMapper;
 
 import com.naro.chat.domain.entity.ChatMessage;
@@ -15,24 +18,26 @@ import com.naro.chat.domain.enums.ConversationType;
 import com.naro.chat.domain.repository.ChatMessageRepository;
 import com.naro.chat.domain.repository.ConversationRepository;
 
+import com.naro.exception.BadRequestException;
+import com.naro.exception.ForbiddenException;
+import com.naro.exception.NotFoundException;
+
 import com.naro.user.domain.entity.User;
 import com.naro.user.domain.repository.UserRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.context.ApplicationEventPublisher;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import org.springframework.security.access.AccessDeniedException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,7 +79,7 @@ public class ChatServiceImpl
 
         if (currentUser.getId().equals(targetUserId)) {
 
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                     "You cannot create a conversation with yourself"
             );
         }
@@ -84,7 +89,7 @@ public class ChatServiceImpl
                 userRepository
                         .findById(targetUserId)
                         .orElseThrow(
-                                () -> new EntityNotFoundException(
+                                () -> new NotFoundException(
                                         "Target user not found"
                                 )
                         );
@@ -97,7 +102,7 @@ public class ChatServiceImpl
                         targetUserId
                 )
                 .map(
-                        chatMapper::toConversationResponse
+                        this::toConversationResponse
                 )
                 .orElseGet(() -> {
 
@@ -124,7 +129,7 @@ public class ChatServiceImpl
 
 
                     return chatMapper
-                            .toConversationResponse(saved);
+                            .toConversationResponse(saved, null);
                 });
     }
 
@@ -135,13 +140,29 @@ public class ChatServiceImpl
             User currentUser
     ) {
 
-        return conversationRepository
-                .findAllByParticipantId(
-                        currentUser.getId()
-                )
+        List<Conversation> conversations =
+                conversationRepository
+                        .findAllByParticipantId(
+                                currentUser.getId()
+                        );
+
+
+        Map<UUID, ChatMessage> lastMessages =
+                findLastMessages(
+                        conversations
+                                .stream()
+                                .map(Conversation::getId)
+                                .toList()
+                );
+
+
+        return conversations
                 .stream()
-                .map(
-                        chatMapper::toConversationResponse
+                .map(conversation ->
+                        chatMapper.toConversationResponse(
+                                conversation,
+                                lastMessages.get(conversation.getId())
+                        )
                 )
                 .toList();
     }
@@ -210,7 +231,11 @@ public class ChatServiceImpl
 
 
         ChatMessageResponse response =
-                chatMapper.toMessageResponse(saved);
+                chatMapper
+                        .toMessageResponse(saved)
+                        .withClientMessageId(
+                                request.clientMessageId()
+                        );
 
 
         Set<String> recipients =
@@ -232,6 +257,98 @@ public class ChatServiceImpl
     }
 
 
+    /*
+     * O remetente vem da conexão autenticada; o request
+     * não carrega identidade. Só participantes podem
+     * sinalizar digitação, e só os outros participantes
+     * recebem o evento.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public void notifyTyping(
+            ChatTypingRequest request,
+            User sender
+    ) {
+
+        Conversation conversation =
+                getConversationForMember(
+                        request.conversationId(),
+                        sender
+                );
+
+
+        Set<String> recipients =
+                conversation
+                        .getParticipants()
+                        .stream()
+                        .filter(participant ->
+                                !participant
+                                        .getId()
+                                        .equals(sender.getId())
+                        )
+                        .map(User::getKeycloakId)
+                        .collect(
+                                Collectors.toUnmodifiableSet()
+                        );
+
+
+        if (recipients.isEmpty()) {
+            return;
+        }
+
+
+        eventPublisher.publishEvent(
+                new ChatTypingEvent(
+                        new ChatTypingResponse(
+                                conversation.getId(),
+                                sender.getId(),
+                                sender.getUsername(),
+                                request.typing()
+                        ),
+                        recipients
+                )
+        );
+    }
+
+
+    private ConversationResponse toConversationResponse(
+            Conversation conversation
+    ) {
+
+        return chatMapper.toConversationResponse(
+                conversation,
+                findLastMessages(
+                        List.of(conversation.getId())
+                ).get(conversation.getId())
+        );
+    }
+
+
+    /*
+     * Uma query para todas as conversas da lista (sem N+1).
+     */
+    private Map<UUID, ChatMessage> findLastMessages(
+            List<UUID> conversationIds
+    ) {
+
+        if (conversationIds.isEmpty()) {
+            return Map.of();
+        }
+
+
+        return chatMessageRepository
+                .findLastMessages(conversationIds)
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                message -> message.getConversation().getId(),
+                                Function.identity(),
+                                (first, second) -> first
+                        )
+                );
+    }
+
+
     private Conversation getConversationForMember(
             UUID conversationId,
             User user
@@ -243,7 +360,7 @@ public class ChatServiceImpl
                                 conversationId
                         )
                         .orElseThrow(
-                                () -> new EntityNotFoundException(
+                                () -> new NotFoundException(
                                         "Conversation not found"
                                 )
                         );
@@ -265,7 +382,7 @@ public class ChatServiceImpl
 
         if (!member) {
 
-            throw new AccessDeniedException(
+            throw new ForbiddenException(
                     "You are not a participant of this conversation"
             );
         }

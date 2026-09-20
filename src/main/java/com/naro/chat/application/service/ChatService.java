@@ -1,6 +1,7 @@
 package com.naro.chat.application.service;
 
 import com.naro.chat.application.dto.ChatMessageResponse;
+import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.ConversationResponse;
 import com.naro.chat.application.dto.SendChatMessageRequest;
 
@@ -34,6 +35,15 @@ public interface ChatService {
 
     void sendMessage(
             SendChatMessageRequest request,
+            User sender
+    );
+
+
+    /**
+     * Evento efêmero de "digitando...". Não persiste nada.
+     */
+    void notifyTyping(
+            ChatTypingRequest request,
             User sender
     );
 }

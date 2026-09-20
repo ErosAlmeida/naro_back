@@ -1,7 +1,9 @@
 package com.naro.user.application.service;
 
+import com.naro.security.RealtimePrincipal;
 import com.naro.user.domain.entity.User;
 import com.naro.user.domain.repository.UserRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,19 @@ public class CurrentUserService {
         return userRepository
                 .findByKeycloakId(keycloakId)
                 .orElseGet(() -> createUser(jwt));
+    }
+
+    /**
+     * Usuário de uma conexão WebSocket já autenticada no CONNECT.
+     */
+    @Transactional(readOnly = true)
+    public User resolveRealtime(RealtimePrincipal principal) {
+
+        return userRepository
+                .findById(principal.userId())
+                .orElseThrow(() -> new BadCredentialsException(
+                        "Authenticated user no longer exists"
+                ));
     }
 
     private User createUser(Jwt jwt) {

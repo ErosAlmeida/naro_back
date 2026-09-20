@@ -27,13 +27,42 @@ public interface ChatMapper {
             target = "senderUsername",
             source = "sender.username"
     )
+    @Mapping(
+            target = "clientMessageId",
+            ignore = true
+    )
     ChatMessageResponse toMessageResponse(
             ChatMessage message
     );
 
 
+    @Mapping(
+            target = "id",
+            source = "conversation.id"
+    )
+    @Mapping(
+            target = "type",
+            source = "conversation.type"
+    )
+    @Mapping(
+            target = "participants",
+            source = "conversation.participants"
+    )
+    @Mapping(
+            target = "createdAt",
+            source = "conversation.createdAt"
+    )
+    @Mapping(
+            target = "updatedAt",
+            source = "conversation.updatedAt"
+    )
+    @Mapping(
+            target = "lastMessage",
+            source = "lastMessage"
+    )
     ConversationResponse toConversationResponse(
-            Conversation conversation
+            Conversation conversation,
+            ChatMessage lastMessage
     );
 
 

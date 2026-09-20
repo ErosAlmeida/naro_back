@@ -1,5 +1,6 @@
 package com.naro.storage.service;
 
+import com.naro.exception.BadRequestException;
 import com.naro.storage.config.S3StorageProperties;
 import com.naro.storage.exception.StorageException;
 
@@ -146,7 +147,7 @@ public class S3ObjectStorageService
 
         if (file == null || file.isEmpty()) {
 
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                     "Image is required"
             );
         }
@@ -158,7 +159,7 @@ public class S3ObjectStorageService
                         || !ALLOWED_IMAGE_TYPES.contains(contentType)
         ) {
 
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                     "Only JPEG, PNG and WEBP images are allowed"
             );
         }

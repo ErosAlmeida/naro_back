@@ -1,0 +1,208 @@
+package com.naro.publication.rest;
+
+import com.naro.exception.ForbiddenException;
+import com.naro.exception.NotFoundException;
+import com.naro.publication.application.dto.CommentResponse;
+import com.naro.publication.application.dto.CreateCommentRequest;
+import com.naro.publication.application.service.CommentService;
+import com.naro.security.SecurityConfig;
+import com.naro.user.application.dto.UserSummaryResponse;
+import com.naro.user.application.service.CurrentUserService;
+import com.naro.user.domain.entity.User;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import static com.naro.support.Fixtures.user;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(CommentController.class)
+@Import(SecurityConfig.class)
+class CommentControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private CommentService commentService;
+
+    @MockitoBean(name = "currentUserService")
+    private CurrentUserService currentUserService;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
+    private final User currentUser = user("leonardo");
+
+    private final UUID publicationId = UUID.randomUUID();
+
+
+    @BeforeEach
+    void setUp() {
+        when(currentUserService.resolve(any())).thenReturn(currentUser);
+    }
+
+
+    @Test
+    void commentOnPublicationReturns201() throws Exception {
+
+        CommentResponse response = response(UUID.randomUUID(), null, "Muito boa!");
+
+        when(commentService.commentOnPublication(eq(publicationId), eq(new CreateCommentRequest("Muito boa!")), eq(currentUser)))
+                .thenReturn(response);
+
+        mockMvc.perform(post("/api/v1/publications/{publicationId}/comments", publicationId)
+                        .with(jwt())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"content": "Muito boa!"}
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/v1/publications/" + publicationId + "/comments/" + response.id()))
+                .andExpect(jsonPath("$.parentCommentId").doesNotExist())
+                .andExpect(jsonPath("$.author.id").value(currentUser.getId().toString()))
+                .andExpect(jsonPath("$.author.username").value("leonardo"))
+                .andExpect(jsonPath("$.likeCount").value(0))
+                .andExpect(jsonPath("$.replyCount").value(0));
+    }
+
+
+    @Test
+    void replyReturns201WithParentAndIgnoresIdentityFromPayload() throws Exception {
+
+        UUID parentId = UUID.randomUUID();
+        CommentResponse response = response(UUID.randomUUID(), parentId, "Discordo");
+
+        when(commentService.reply(any(), any(), any())).thenReturn(response);
+
+        mockMvc.perform(post("/api/v1/comments/{commentId}/comments", parentId)
+                        .with(jwt())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"content": "Discordo", "authorId": "%s"}
+                                """.formatted(UUID.randomUUID())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.parentCommentId").value(parentId.toString()));
+
+        verify(commentService).reply(parentId, new CreateCommentRequest("Discordo"), currentUser);
+    }
+
+
+    @Test
+    void replyToNonexistentCommentReturns404() throws Exception {
+
+        when(commentService.reply(any(), any(), any())).thenThrow(new NotFoundException("Comment not found"));
+
+        mockMvc.perform(post("/api/v1/comments/{commentId}/comments", UUID.randomUUID())
+                        .with(jwt())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"content": "Oi"}
+                                """))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void blankCommentReturns400() throws Exception {
+
+        mockMvc.perform(post("/api/v1/comments/{commentId}/comments", UUID.randomUUID())
+                        .with(jwt())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"content": "   "}
+                                """))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(commentService);
+    }
+
+
+    @Test
+    void withoutTokenReturns401() throws Exception {
+
+        mockMvc.perform(post("/api/v1/publications/{publicationId}/comments", publicationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"content": "Oi"}
+                                """))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(commentService);
+    }
+
+
+    @Test
+    void repliesArePaginated() throws Exception {
+
+        UUID parentId = UUID.randomUUID();
+
+        when(commentService.getReplies(parentId, currentUser, PageRequest.of(0, 100)))
+                .thenReturn(new PageImpl<>(List.of(response(UUID.randomUUID(), parentId, "resposta"))));
+
+        mockMvc.perform(get("/api/v1/comments/{commentId}/comments", parentId)
+                        .param("size", "5000")
+                        .with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].content").value("resposta"));
+    }
+
+
+    @Test
+    void deletingSomeoneElsesCommentReturns403() throws Exception {
+
+        UUID commentId = UUID.randomUUID();
+
+        doThrow(new ForbiddenException("You can only delete your own comments"))
+                .when(commentService).delete(publicationId, commentId, currentUser);
+
+        mockMvc.perform(delete("/api/v1/publications/{publicationId}/comments/{commentId}", publicationId, commentId)
+                        .with(jwt()))
+                .andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    void deletingOwnCommentReturns204() throws Exception {
+
+        UUID commentId = UUID.randomUUID();
+
+        mockMvc.perform(delete("/api/v1/publications/{publicationId}/comments/{commentId}", publicationId, commentId)
+                        .with(jwt()))
+                .andExpect(status().isNoContent());
+
+        verify(commentService).delete(publicationId, commentId, currentUser);
+    }
+
+
+    private CommentResponse response(UUID id, UUID parentId, String content) {
+        UserSummaryResponse author = new UserSummaryResponse(currentUser.getId(), "leonardo", null, null, null);
+
+        return new CommentResponse(id, publicationId, parentId, content, author, 0, false, 0, Instant.now());
+    }
+}
