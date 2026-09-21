@@ -1,21 +1,21 @@
 package com.naro.publication.domain.entity;
 
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.junit.jupiter.api.Test;
 
 import static com.naro.support.Fixtures.comment;
 import static com.naro.support.Fixtures.publication;
 import static com.naro.support.Fixtures.reply;
-import static com.naro.support.Fixtures.user;
+import static com.naro.support.Fixtures.channel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LikeTest {
 
-    private final User leonardo = user("leonardo");
+    private final Channel leonardo = channel("leonardo");
 
-    private final Publication publication = publication(user("maria"));
+    private final Publication publication = publication(channel("maria"));
 
 
     @Test
@@ -23,7 +23,7 @@ class LikeTest {
 
         Like like = Like.publication(leonardo, publication);
 
-        assertThat(like.getUser()).isSameAs(leonardo);
+        assertThat(like.getChannel()).isSameAs(leonardo);
         assertThat(like.getPublication()).isSameAs(publication);
         assertThat(like.getComment()).isNull();
     }
@@ -36,7 +36,7 @@ class LikeTest {
 
         Like like = Like.comment(leonardo, comment);
 
-        assertThat(like.getUser()).isSameAs(leonardo);
+        assertThat(like.getChannel()).isSameAs(leonardo);
         assertThat(like.getComment()).isSameAs(comment);
         assertThat(like.getPublication()).isNull();
     }

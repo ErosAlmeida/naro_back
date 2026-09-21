@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Usado para comentar uma publicação e para responder um comentário.
- * Não há authorId: o autor é sempre o usuário autenticado.
+ * Não há authorId: o autor é sempre o canal selecionado.
  */
 public record CreateCommentRequest(
 

@@ -1,6 +1,7 @@
 package com.naro.publication.rest;
 
 import com.naro.config.CurrentUser;
+import com.naro.channel.application.service.ChannelService;
 import com.naro.publication.application.dto.CommentResponse;
 import com.naro.publication.application.dto.CreateCommentRequest;
 import com.naro.publication.application.service.CommentService;
@@ -31,12 +32,15 @@ import java.util.UUID;
 public class CommentController {
 
     private final CommentService commentService;
+    private final ChannelService channelService;
 
 
     public CommentController(
-            CommentService commentService
+            CommentService commentService,
+            ChannelService channelService
     ) {
         this.commentService = commentService;
+        this.channelService = channelService;
     }
 
 
@@ -51,17 +55,24 @@ public class CommentController {
             CreateCommentRequest request,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader("X-Channel-Id")
+            UUID channelId
 
     ) {
 
-        return created(
-                commentService.commentOnPublication(
-                        publicationId,
-                        request,
-                        currentUser
-                )
+        CommentResponse response = commentService.commentOnPublication(
+                publicationId,
+                request,
+                channelService.getOwnedChannel(channelId, currentUser)
         );
+
+        URI location = URI.create(
+                "/api/v1/publications/" + response.publicationId() + "/comments/" + response.id()
+        );
+
+        return ResponseEntity.created(location).body(response);
     }
 
 
@@ -76,17 +87,24 @@ public class CommentController {
             CreateCommentRequest request,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader("X-Channel-Id")
+            UUID channelId
 
     ) {
 
-        return created(
-                commentService.reply(
-                        commentId,
-                        request,
-                        currentUser
-                )
+        CommentResponse response = commentService.reply(
+                commentId,
+                request,
+                channelService.getOwnedChannel(channelId, currentUser)
         );
+
+        URI location = URI.create(
+                "/api/v1/publications/" + response.publicationId() + "/comments/" + response.id()
+        );
+
+        return ResponseEntity.created(location).body(response);
     }
 
 
@@ -107,14 +125,21 @@ public class CommentController {
             int size,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader(value = "X-Channel-Id", required = false)
+            UUID channelId
 
     ) {
 
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.clamp(size, 1, 100);
+        PageRequest pageable = PageRequest.of(safePage, safeSize);
+
         return commentService.getPublicationComments(
                 publicationId,
-                currentUser,
-                pageRequest(page, size)
+                channelId == null ? null : channelService.getOwnedChannel(channelId, currentUser),
+                pageable
         );
     }
 
@@ -136,14 +161,21 @@ public class CommentController {
             int size,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader(value = "X-Channel-Id", required = false)
+            UUID channelId
 
     ) {
 
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.clamp(size, 1, 100);
+        PageRequest pageable = PageRequest.of(safePage, safeSize);
+
         return commentService.getReplies(
                 commentId,
-                currentUser,
-                pageRequest(page, size)
+                channelId == null ? null : channelService.getOwnedChannel(channelId, currentUser),
+                pageable
         );
     }
 
@@ -158,43 +190,22 @@ public class CommentController {
             UUID commentId,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader("X-Channel-Id")
+            UUID channelId
 
     ) {
 
         commentService.delete(
                 publicationId,
                 commentId,
-                currentUser
+                channelService.getOwnedChannel(channelId, currentUser)
         );
 
 
         return ResponseEntity
                 .noContent()
                 .build();
-    }
-
-
-    private static ResponseEntity<CommentResponse> created(CommentResponse response) {
-
-        URI location = URI.create(
-                "/api/v1/publications/"
-                        + response.publicationId()
-                        + "/comments/"
-                        + response.id()
-        );
-
-        return ResponseEntity
-                .created(location)
-                .body(response);
-    }
-
-
-    private static PageRequest pageRequest(int page, int size) {
-
-        return PageRequest.of(
-                Math.max(page, 0),
-                Math.clamp(size, 1, 100)
-        );
     }
 }

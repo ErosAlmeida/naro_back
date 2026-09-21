@@ -4,6 +4,8 @@ import com.naro.exception.ConflictException;
 import com.naro.exception.NotFoundException;
 import com.naro.publication.application.dto.LikeSummaryResponse;
 import com.naro.publication.application.mapper.PublicationMapperImpl;
+import com.naro.storage.service.ObjectReadUrls;
+import com.naro.storage.service.ObjectStorageService;
 import com.naro.publication.domain.entity.Comment;
 import com.naro.publication.domain.entity.Like;
 import com.naro.publication.domain.entity.Publication;
@@ -11,8 +13,8 @@ import com.naro.publication.domain.repository.CommentRepository;
 import com.naro.publication.domain.repository.IdCount;
 import com.naro.publication.domain.repository.LikeRepository;
 import com.naro.publication.domain.repository.PublicationRepository;
-import com.naro.user.domain.entity.User;
-import com.naro.user.domain.repository.UserRepository;
+import com.naro.channel.domain.entity.Channel;
+import com.naro.channel.domain.repository.ChannelRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,7 @@ import java.util.UUID;
 import static com.naro.support.Fixtures.comment;
 import static com.naro.support.Fixtures.publication;
 import static com.naro.support.Fixtures.reply;
-import static com.naro.support.Fixtures.user;
+import static com.naro.support.Fixtures.channel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,17 +55,21 @@ class LikeServiceImplTest {
     private CommentRepository commentRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private ChannelRepository channelRepository;
 
     private LikeServiceImpl likeService;
 
-    private final User leonardo = user("leonardo");
+    private final Channel leonardo = channel("leonardo");
 
-    private final User maria = user("maria");
+    private final Channel maria = channel("maria");
 
     private final Publication publication = publication(maria);
 
     private final Comment comment = comment(maria, publication, "A");
+
+
+    @Mock
+    private ObjectStorageService storageService;
 
 
     @BeforeEach
@@ -72,8 +78,8 @@ class LikeServiceImplTest {
                 likeRepository,
                 publicationRepository,
                 commentRepository,
-                userRepository,
-                new PublicationMapperImpl()
+                channelRepository,
+                new PublicationMapperImpl(new ObjectReadUrls(storageService))
         );
     }
 
@@ -87,7 +93,7 @@ class LikeServiceImplTest {
 
         publicationExists();
         authenticatedIs(leonardo);
-        when(likeRepository.existsByUserIdAndPublicationId(leonardo.getId(), publication.getId()))
+        when(likeRepository.existsByChannelIdAndPublicationId(leonardo.getId(), publication.getId()))
                 .thenReturn(false, true);
         when(likeRepository.countByPublicationId(publication.getId())).thenReturn(1L);
 
@@ -96,7 +102,7 @@ class LikeServiceImplTest {
         Like saved = savedLike();
         assertThat(saved.getPublication()).isSameAs(publication);
         assertThat(saved.getComment()).isNull();
-        assertThat(saved.getUser()).isSameAs(leonardo);
+        assertThat(saved.getChannel()).isSameAs(leonardo);
 
         assertThat(summary).isEqualTo(new LikeSummaryResponse(1, true));
     }
@@ -106,7 +112,7 @@ class LikeServiceImplTest {
     void likingThePublicationAgainDoesNotSaveASecondLike() {
 
         publicationExists();
-        when(likeRepository.existsByUserIdAndPublicationId(leonardo.getId(), publication.getId())).thenReturn(true);
+        when(likeRepository.existsByChannelIdAndPublicationId(leonardo.getId(), publication.getId())).thenReturn(true);
         when(likeRepository.countByPublicationId(publication.getId())).thenReturn(1L);
 
         LikeSummaryResponse summary = likeService.likePublication(publication.getId(), leonardo);
@@ -121,9 +127,9 @@ class LikeServiceImplTest {
 
         publicationExists();
         authenticatedIs(leonardo);
-        when(likeRepository.existsByUserIdAndPublicationId(leonardo.getId(), publication.getId())).thenReturn(false);
+        when(likeRepository.existsByChannelIdAndPublicationId(leonardo.getId(), publication.getId())).thenReturn(false);
         when(likeRepository.saveAndFlush(any(Like.class)))
-                .thenThrow(new DataIntegrityViolationException("uk_likes_publication_user"));
+                .thenThrow(new DataIntegrityViolationException("uk_likes_publication_channel"));
 
         assertThatThrownBy(() -> likeService.likePublication(publication.getId(), leonardo))
                 .isInstanceOf(ConflictException.class);
@@ -137,7 +143,7 @@ class LikeServiceImplTest {
 
         likeService.unlikePublication(publication.getId(), leonardo);
 
-        verify(likeRepository).deleteByUserIdAndPublicationId(leonardo.getId(), publication.getId());
+        verify(likeRepository).deleteByChannelIdAndPublicationId(leonardo.getId(), publication.getId());
     }
 
 
@@ -180,7 +186,7 @@ class LikeServiceImplTest {
 
         commentExists(comment);
         authenticatedIs(leonardo);
-        when(likeRepository.existsByUserIdAndCommentId(leonardo.getId(), comment.getId())).thenReturn(false, true);
+        when(likeRepository.existsByChannelIdAndCommentId(leonardo.getId(), comment.getId())).thenReturn(false, true);
         when(likeRepository.countByCommentId(comment.getId())).thenReturn(1L);
 
         LikeSummaryResponse summary = likeService.likeComment(comment.getId(), leonardo);
@@ -188,7 +194,7 @@ class LikeServiceImplTest {
         Like saved = savedLike();
         assertThat(saved.getComment()).isSameAs(comment);
         assertThat(saved.getPublication()).isNull();
-        assertThat(saved.getUser()).isSameAs(leonardo);
+        assertThat(saved.getChannel()).isSameAs(leonardo);
 
         assertThat(summary).isEqualTo(new LikeSummaryResponse(1, true));
     }
@@ -201,7 +207,7 @@ class LikeServiceImplTest {
 
         commentExists(nested);
         authenticatedIs(maria);
-        when(likeRepository.existsByUserIdAndCommentId(maria.getId(), nested.getId())).thenReturn(false, true);
+        when(likeRepository.existsByChannelIdAndCommentId(maria.getId(), nested.getId())).thenReturn(false, true);
         when(likeRepository.countByCommentId(nested.getId())).thenReturn(1L);
 
         likeService.likeComment(nested.getId(), maria);
@@ -214,7 +220,7 @@ class LikeServiceImplTest {
     void likingTheCommentAgainDoesNotSaveASecondLike() {
 
         commentExists(comment);
-        when(likeRepository.existsByUserIdAndCommentId(leonardo.getId(), comment.getId())).thenReturn(true);
+        when(likeRepository.existsByChannelIdAndCommentId(leonardo.getId(), comment.getId())).thenReturn(true);
         when(likeRepository.countByCommentId(comment.getId())).thenReturn(3L);
 
         LikeSummaryResponse summary = likeService.likeComment(comment.getId(), leonardo);
@@ -231,7 +237,7 @@ class LikeServiceImplTest {
 
         likeService.unlikeComment(comment.getId(), leonardo);
 
-        verify(likeRepository).deleteByUserIdAndCommentId(leonardo.getId(), comment.getId());
+        verify(likeRepository).deleteByChannelIdAndCommentId(leonardo.getId(), comment.getId());
     }
 
 
@@ -245,16 +251,16 @@ class LikeServiceImplTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("Comment not found");
 
-        verify(likeRepository, never()).deleteByUserIdAndCommentId(any(), any());
+        verify(likeRepository, never()).deleteByChannelIdAndCommentId(any(), any());
     }
 
 
     @Test
-    void commentSummaryTellsWhetherCurrentUserLiked() {
+    void commentSummaryTellsWhetherCurrentChannelLiked() {
 
         commentExists(comment);
         when(likeRepository.countByCommentId(comment.getId())).thenReturn(3L);
-        when(likeRepository.existsByUserIdAndCommentId(leonardo.getId(), comment.getId())).thenReturn(false);
+        when(likeRepository.existsByChannelIdAndCommentId(leonardo.getId(), comment.getId())).thenReturn(false);
 
         assertThat(likeService.getCommentLikeSummary(comment.getId(), leonardo))
                 .isEqualTo(new LikeSummaryResponse(3, false));
@@ -297,8 +303,8 @@ class LikeServiceImplTest {
     }
 
 
-    private void authenticatedIs(User user) {
-        when(userRepository.getReferenceById(user.getId())).thenReturn(user);
+    private void authenticatedIs(Channel user) {
+        when(channelRepository.getReferenceById(user.getId())).thenReturn(user);
     }
 
 

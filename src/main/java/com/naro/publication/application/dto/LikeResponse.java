@@ -5,9 +5,9 @@ import java.util.UUID;
 
 public record LikeResponse(
 
-        UUID userId,
+        UUID channelId,
 
-        String username,
+        String slug,
 
         Instant createdAt
 

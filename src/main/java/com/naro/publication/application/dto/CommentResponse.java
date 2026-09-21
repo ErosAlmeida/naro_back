@@ -1,6 +1,6 @@
 package com.naro.publication.application.dto;
 
-import com.naro.user.application.dto.UserSummaryResponse;
+import com.naro.channel.application.dto.ChannelSummaryResponse;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -21,11 +21,11 @@ public record CommentResponse(
 
         String content,
 
-        UserSummaryResponse author,
+        ChannelSummaryResponse author,
 
         long likeCount,
 
-        boolean likedByCurrentUser,
+        boolean likedByCurrentChannel,
 
         /* respostas diretas */
         long replyCount,

@@ -11,8 +11,8 @@ import com.naro.publication.domain.entity.Publication;
 import com.naro.publication.domain.repository.CommentRepository;
 import com.naro.publication.domain.repository.IdCount;
 import com.naro.publication.domain.repository.PublicationRepository;
-import com.naro.user.domain.entity.User;
-import com.naro.user.domain.repository.UserRepository;
+import com.naro.channel.domain.entity.Channel;
+import com.naro.channel.domain.repository.ChannelRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +31,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final PublicationRepository publicationRepository;
 
-    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
 
     private final LikeService likeService;
 
@@ -41,13 +41,13 @@ public class CommentServiceImpl implements CommentService {
     public CommentServiceImpl(
             CommentRepository commentRepository,
             PublicationRepository publicationRepository,
-            UserRepository userRepository,
+            ChannelRepository channelRepository,
             LikeService likeService,
             PublicationMapper publicationMapper
     ) {
         this.commentRepository = commentRepository;
         this.publicationRepository = publicationRepository;
-        this.userRepository = userRepository;
+        this.channelRepository = channelRepository;
         this.likeService = likeService;
         this.publicationMapper = publicationMapper;
     }
@@ -58,7 +58,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentResponse commentOnPublication(
             UUID publicationId,
             CreateCommentRequest request,
-            User author
+            Channel author
     ) {
 
         Publication publication =
@@ -70,12 +70,19 @@ public class CommentServiceImpl implements CommentService {
                                 )
                         );
 
-        return save(
-                Comment.onPublication(
-                        authorReference(author),
-                        publication,
-                        request.content().trim()
-                )
+        Channel managedAuthor = channelRepository.getReferenceById(author.getId());
+        Comment comment = Comment.onPublication(
+                managedAuthor,
+                publication,
+                request.content().trim()
+        );
+
+        Comment saved = commentRepository.saveAndFlush(comment);
+
+        return publicationMapper.toCommentResponse(
+                saved,
+                LikeSummaryResponse.none(),
+                0
         );
     }
 
@@ -89,18 +96,25 @@ public class CommentServiceImpl implements CommentService {
     public CommentResponse reply(
             UUID parentCommentId,
             CreateCommentRequest request,
-            User author
+            Channel author
     ) {
 
-        Comment parent =
-                findComment(parentCommentId);
+        Comment parent = commentRepository.findById(parentCommentId)
+                .orElseThrow(() -> new NotFoundException("Comment not found"));
 
-        return save(
-                Comment.reply(
-                        authorReference(author),
-                        parent,
-                        request.content().trim()
-                )
+        Channel managedAuthor = channelRepository.getReferenceById(author.getId());
+        Comment comment = Comment.reply(
+                managedAuthor,
+                parent,
+                request.content().trim()
+        );
+
+        Comment saved = commentRepository.saveAndFlush(comment);
+
+        return publicationMapper.toCommentResponse(
+                saved,
+                LikeSummaryResponse.none(),
+                0
         );
     }
 
@@ -109,7 +123,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     public Page<CommentResponse> getPublicationComments(
             UUID publicationId,
-            User viewer,
+            Channel viewer,
             Pageable pageable
     ) {
 
@@ -120,13 +134,13 @@ public class CommentServiceImpl implements CommentService {
             );
         }
 
-        return toResponses(
+        Page<Comment> comments =
                 commentRepository.findByPublication_IdAndParentCommentIsNullOrderByCreatedAtDescIdDesc(
                         publicationId,
                         pageable
-                ),
-                viewer
-        );
+                );
+
+        return toResponses(comments, viewer);
     }
 
 
@@ -134,7 +148,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     public Page<CommentResponse> getReplies(
             UUID commentId,
-            User viewer,
+            Channel viewer,
             Pageable pageable
     ) {
 
@@ -145,13 +159,13 @@ public class CommentServiceImpl implements CommentService {
             );
         }
 
-        return toResponses(
+        Page<Comment> comments =
                 commentRepository.findByParentComment_IdOrderByCreatedAtAscIdAsc(
                         commentId,
                         pageable
-                ),
-                viewer
-        );
+                );
+
+        return toResponses(comments, viewer);
     }
 
 
@@ -165,7 +179,7 @@ public class CommentServiceImpl implements CommentService {
     public void delete(
             UUID publicationId,
             UUID commentId,
-            User currentUser
+            Channel currentChannel
     ) {
 
         Comment comment =
@@ -181,7 +195,7 @@ public class CommentServiceImpl implements CommentService {
                         );
 
 
-        if (!comment.isAuthoredBy(currentUser)) {
+        if (!comment.isAuthoredBy(currentChannel)) {
 
             throw new ForbiddenException(
                     "You can only delete your own comments"
@@ -193,26 +207,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
-    private CommentResponse save(Comment comment) {
-
-        Comment saved =
-                commentRepository.saveAndFlush(comment);
-
-        return publicationMapper.toCommentResponse(
-                saved,
-                LikeSummaryResponse.none(),
-                0
-        );
-    }
-
-
     /*
      * Três queries por página, qualquer que seja o tamanho:
      * likes, "curtido por mim" e quantidade de respostas diretas.
      */
     private Page<CommentResponse> toResponses(
             Page<Comment> comments,
-            User viewer
+            Channel viewer
     ) {
 
         List<UUID> commentIds =
@@ -242,22 +243,5 @@ public class CommentServiceImpl implements CommentService {
                         replyCounts.getOrDefault(comment.getId(), 0L)
                 )
         );
-    }
-
-
-    private Comment findComment(UUID commentId) {
-
-        return commentRepository
-                .findById(commentId)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                "Comment not found"
-                        )
-                );
-    }
-
-
-    private User authorReference(User author) {
-        return userRepository.getReferenceById(author.getId());
     }
 }

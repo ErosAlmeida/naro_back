@@ -1,12 +1,12 @@
 package com.naro.publication.domain.entity;
 
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.junit.jupiter.api.Test;
 
 import static com.naro.support.Fixtures.publication;
 import static com.naro.support.Fixtures.persisted;
-import static com.naro.support.Fixtures.user;
+import static com.naro.support.Fixtures.channel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 class CommentTest {
 
-    private final User leonardo = user("leonardo");
+    private final Channel leonardo = channel("leonardo");
 
-    private final User maria = user("maria");
+    private final Channel maria = channel("maria");
 
     private final Publication publication = publication(maria);
 
@@ -68,7 +68,7 @@ class CommentTest {
 
 
     @Test
-    void isAuthoredByComparesTheUserId() {
+    void isAuthoredByComparesTheChannelId() {
 
         Comment a = Comment.onPublication(leonardo, publication, "A");
 

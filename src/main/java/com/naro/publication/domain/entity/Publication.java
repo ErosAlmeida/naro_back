@@ -1,6 +1,6 @@
 package com.naro.publication.domain.entity;
 
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,10 +25,11 @@ public class Publication {
             optional = false
     )
     @JoinColumn(
-            name = "author_id",
-            nullable = false
+            name = "channel_id",
+            nullable = false,
+            updatable = false
     )
-    private User author;
+    private Channel author;
 
 
     @Column(
@@ -55,7 +56,7 @@ public class Publication {
 
 
     public Publication(
-            User author,
+            Channel author,
             String content,
             String imageKey
     ) {

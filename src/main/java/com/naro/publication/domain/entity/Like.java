@@ -1,6 +1,6 @@
 package com.naro.publication.domain.entity;
 
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import jakarta.persistence.*;
 
@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Like de um usuário em uma publicação OU em um comentário (de qualquer nível).
+ * Like de um canal em uma publicação OU em um comentário (de qualquer nível).
  *
  * Exatamente um dos dois está preenchido:
  *   - aqui, porque um Like só nasce por Like.publication(...) ou Like.comment(...)
@@ -35,11 +35,11 @@ public class Like {
             optional = false
     )
     @JoinColumn(
-            name = "user_id",
+            name = "channel_id",
             nullable = false,
             updatable = false
     )
-    private User user;
+    private Channel channel;
 
 
     /* Preenchido quando o like é em uma publicação. */
@@ -69,12 +69,12 @@ public class Like {
 
 
     public static Like publication(
-            User user,
+            Channel channel,
             Publication publication
     ) {
         Like like = new Like();
 
-        like.user = Objects.requireNonNull(user, "user");
+        like.channel = Objects.requireNonNull(channel, "channel");
         like.publication = Objects.requireNonNull(publication, "publication");
 
         return like;
@@ -82,12 +82,12 @@ public class Like {
 
 
     public static Like comment(
-            User user,
+            Channel channel,
             Comment comment
     ) {
         Like like = new Like();
 
-        like.user = Objects.requireNonNull(user, "user");
+        like.channel = Objects.requireNonNull(channel, "channel");
         like.comment = Objects.requireNonNull(comment, "comment");
 
         return like;

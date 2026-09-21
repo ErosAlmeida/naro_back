@@ -4,7 +4,7 @@ import com.naro.PostgresTestcontainersConfiguration;
 import com.naro.publication.domain.entity.Comment;
 import com.naro.publication.domain.entity.Like;
 import com.naro.publication.domain.entity.Publication;
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import jakarta.persistence.PersistenceException;
 
@@ -46,9 +46,9 @@ class LikeRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    private User leonardo;
+    private Channel leonardo;
 
-    private User maria;
+    private Channel maria;
 
     private Publication publication;
 
@@ -73,8 +73,8 @@ class LikeRepositoryTest {
 
         likeRepository.saveAndFlush(Like.publication(maria, publication));
 
-        assertThat(likeRepository.existsByUserIdAndPublicationId(maria.getId(), publication.getId())).isTrue();
-        assertThat(likeRepository.existsByUserIdAndPublicationId(leonardo.getId(), publication.getId())).isFalse();
+        assertThat(likeRepository.existsByChannelIdAndPublicationId(maria.getId(), publication.getId())).isTrue();
+        assertThat(likeRepository.existsByChannelIdAndPublicationId(leonardo.getId(), publication.getId())).isFalse();
         assertThat(likeRepository.countByPublicationId(publication.getId())).isEqualTo(1);
 
         // Um like na publicação não é um like em comentário.
@@ -87,7 +87,7 @@ class LikeRepositoryTest {
 
         likeRepository.saveAndFlush(Like.comment(leonardo, comment));
 
-        assertThat(likeRepository.existsByUserIdAndCommentId(leonardo.getId(), comment.getId())).isTrue();
+        assertThat(likeRepository.existsByChannelIdAndCommentId(leonardo.getId(), comment.getId())).isTrue();
         assertThat(likeRepository.countByCommentId(comment.getId())).isEqualTo(1);
         assertThat(likeRepository.countByPublicationId(publication.getId())).isZero();
     }
@@ -125,7 +125,7 @@ class LikeRepositoryTest {
 
         assertThatThrownBy(() -> likeRepository.saveAndFlush(Like.publication(leonardo, publication)))
                 .isInstanceOf(DataIntegrityViolationException.class)
-                .hasMessageContaining("uk_likes_publication_user");
+                .hasMessageContaining("uk_likes_publication_channel");
     }
 
 
@@ -136,7 +136,7 @@ class LikeRepositoryTest {
 
         assertThatThrownBy(() -> likeRepository.saveAndFlush(Like.comment(leonardo, nestedReply)))
                 .isInstanceOf(DataIntegrityViolationException.class)
-                .hasMessageContaining("uk_likes_comment_user");
+                .hasMessageContaining("uk_likes_comment_channel");
     }
 
 
@@ -170,14 +170,14 @@ class LikeRepositoryTest {
         likeRepository.save(Like.comment(leonardo, comment));
         likeRepository.flush();
 
-        likeRepository.deleteByUserIdAndPublicationId(leonardo.getId(), publication.getId());
+        likeRepository.deleteByChannelIdAndPublicationId(leonardo.getId(), publication.getId());
         likeRepository.flush();
 
-        assertThat(likeRepository.existsByUserIdAndPublicationId(leonardo.getId(), publication.getId())).isFalse();
-        assertThat(likeRepository.existsByUserIdAndPublicationId(maria.getId(), publication.getId())).isTrue();
-        assertThat(likeRepository.existsByUserIdAndCommentId(leonardo.getId(), comment.getId())).isTrue();
+        assertThat(likeRepository.existsByChannelIdAndPublicationId(leonardo.getId(), publication.getId())).isFalse();
+        assertThat(likeRepository.existsByChannelIdAndPublicationId(maria.getId(), publication.getId())).isTrue();
+        assertThat(likeRepository.existsByChannelIdAndCommentId(leonardo.getId(), comment.getId())).isTrue();
 
-        likeRepository.deleteByUserIdAndCommentId(leonardo.getId(), comment.getId());
+        likeRepository.deleteByChannelIdAndCommentId(leonardo.getId(), comment.getId());
         likeRepository.flush();
 
         assertThat(likeRepository.countByCommentId(comment.getId())).isZero();
@@ -227,7 +227,7 @@ class LikeRepositoryTest {
         entityManager.clear();
 
         assertThat(likeRepository.findByCommentIdOrderByCreatedAtDesc(nestedReply.getId(), PageRequest.of(0, 10)).getContent())
-                .extracting(like -> like.getUser().getUsername())
+                .extracting(like -> like.getChannel().getSlug())
                 .containsExactly("leonardo", "maria");
     }
 
@@ -253,7 +253,7 @@ class LikeRepositoryTest {
 
         entityManager.getEntityManager()
                 .createNativeQuery("""
-                        INSERT INTO likes (id, user_id, publication_id, comment_id, created_at)
+                        INSERT INTO likes (id, channel_id, publication_id, comment_id, created_at)
                         VALUES (gen_random_uuid(), :userId, CAST(:publicationId AS uuid), CAST(:commentId AS uuid), now())
                         """)
                 .setParameter("userId", userId)
@@ -272,7 +272,8 @@ class LikeRepositoryTest {
     }
 
 
-    private User persistUser(String username) {
-        return entityManager.persist(new User(UUID.randomUUID().toString(), username, username + "@naro.dev", null, null));
+    private Channel persistUser(String username) {
+        com.naro.user.domain.entity.User owner = entityManager.persist(new com.naro.user.domain.entity.User(UUID.randomUUID().toString(), username, null, null, null));
+        return entityManager.persist(com.naro.support.Fixtures.channel(owner, username));
     }
 }

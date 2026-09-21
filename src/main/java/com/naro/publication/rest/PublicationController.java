@@ -1,6 +1,7 @@
 package com.naro.publication.rest;
 
 import com.naro.config.CurrentUser;
+import com.naro.channel.application.service.ChannelService;
 import com.naro.publication.application.dto.CreatePublicationRequest;
 import com.naro.publication.application.dto.PublicationResponse;
 import com.naro.publication.application.service.PublicationService;
@@ -22,11 +23,14 @@ import java.util.UUID;
 public class PublicationController {
 
     private final PublicationService publicationService;
+    private final ChannelService channelService;
 
     public PublicationController(
-            PublicationService publicationService
+            PublicationService publicationService,
+            ChannelService channelService
     ) {
         this.publicationService = publicationService;
+        this.channelService = channelService;
     }
 
     @PostMapping(
@@ -39,14 +43,17 @@ public class PublicationController {
             CreatePublicationRequest request,
 
             @CurrentUser
-            User user
+            User user,
+
+            @RequestHeader("X-Channel-Id")
+            UUID channelId
 
     ) {
 
         PublicationResponse response =
                 publicationService.create(
                         request,
-                        user
+                        channelService.getOwnedChannel(channelId, user)
                 );
 
         URI location = URI.create(
@@ -67,13 +74,16 @@ public class PublicationController {
             UUID publicationId,
 
             @CurrentUser
-            User user
+            User user,
+
+            @RequestHeader(value = "X-Channel-Id", required = false)
+            UUID channelId
 
     ) {
 
         return publicationService.getById(
                 publicationId,
-                user
+                channelId == null ? null : channelService.getOwnedChannel(channelId, user)
         );
     }
 
@@ -97,7 +107,10 @@ public class PublicationController {
             int size,
 
             @CurrentUser
-            User user
+            User user,
+
+            @RequestHeader(value = "X-Channel-Id", required = false)
+            UUID channelId
 
     ) {
 
@@ -118,7 +131,7 @@ public class PublicationController {
 
         return publicationService.getPublications(
                 authorId,
-                user,
+                channelId == null ? null : channelService.getOwnedChannel(channelId, user),
                 PageRequest.of(
                         safePage,
                         safeSize

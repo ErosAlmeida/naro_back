@@ -9,8 +9,9 @@ import com.naro.publication.application.dto.LikeSummaryResponse;
 import com.naro.publication.domain.repository.CommentRepository;
 import com.naro.publication.domain.repository.IdCount;
 import com.naro.publication.domain.repository.PublicationRepository;
+import com.naro.storage.service.ObjectReadUrls;
 import com.naro.storage.service.ObjectStorageService;
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ class PublicationServiceImplTest {
 
     private PublicationServiceImpl publicationService;
 
-    private final User author = user("leonardo");
+    private final Channel author = channel("leonardo");
 
 
     @BeforeEach
@@ -66,7 +67,7 @@ class PublicationServiceImplTest {
                 publicationRepository,
                 likeService,
                 commentRepository,
-                new PublicationMapperImpl(),
+                new PublicationMapperImpl(new ObjectReadUrls(storageService)),
                 storageService
         );
     }
@@ -75,6 +76,28 @@ class PublicationServiceImplTest {
     // ---------------------------------------------------------------
     // Criação (regressão do comportamento que já existia)
     // ---------------------------------------------------------------
+
+    @Test
+    void authorCarriesTheChannelPhotoAsAReadableUrl() {
+
+        author.setProfileImageKey("channels/avatar.png");
+
+        CreatePublicationRequest request = request();
+
+        when(storageService.upload("publications", request.getImage()))
+                .thenReturn("publications/key.png");
+        when(publicationRepository.saveAndFlush(any(Publication.class)))
+                .thenAnswer(invocation -> withId(invocation.getArgument(0)));
+        when(storageService.createReadUrl("publications/key.png"))
+                .thenReturn("http://minio/publications/key.png");
+        when(storageService.createReadUrl("channels/avatar.png"))
+                .thenReturn("http://minio/channels/avatar.png?sig=1");
+
+        PublicationResponse response = publicationService.create(request, author);
+
+        assertThat(response.author().profileImageUrl()).isEqualTo("http://minio/channels/avatar.png?sig=1");
+    }
+
 
     @Test
     void createUploadsImageAndSavesPublicationWithEmptyEngagement() {
@@ -91,13 +114,16 @@ class PublicationServiceImplTest {
         PublicationResponse response = publicationService.create(request, author);
 
         assertThat(response.id()).isNotNull();
-        assertThat(response.authorId()).isEqualTo(author.getId());
-        assertThat(response.authorUsername()).isEqualTo("leonardo");
+        assertThat(response.author().id()).isEqualTo(author.getId());
+        assertThat(response.author().name()).isEqualTo(author.getName());
+        assertThat(response.author().slug()).isEqualTo("leonardo");
+        // Canal sem foto: a autoria continua válida, só sem URL.
+        assertThat(response.author().profileImageUrl()).isNull();
         assertThat(response.content()).isEqualTo("Minha publicação");
         assertThat(response.imageUrl()).isEqualTo("http://minio/publications/key.png");
         assertThat(response.likeCount()).isZero();
         assertThat(response.commentCount()).isZero();
-        assertThat(response.likedByCurrentUser()).isFalse();
+        assertThat(response.likedByCurrentChannel()).isFalse();
 
         verifyNoInteractions(likeService, commentRepository);
     }
@@ -127,7 +153,7 @@ class PublicationServiceImplTest {
     @Test
     void getByIdReturnsPublicationWithEngagement() {
 
-        User viewer = user("maria");
+        Channel viewer = channel("maria");
         Publication publication = publication(author);
         UUID id = publication.getId();
 
@@ -141,11 +167,11 @@ class PublicationServiceImplTest {
         PublicationResponse response = publicationService.getById(id, viewer);
 
         assertThat(response.id()).isEqualTo(id);
-        assertThat(response.authorUsername()).isEqualTo("leonardo");
+        assertThat(response.author().slug()).isEqualTo("leonardo");
         assertThat(response.imageUrl()).isEqualTo("http://minio/image");
         assertThat(response.likeCount()).isEqualTo(124);
         assertThat(response.commentCount()).isEqualTo(17);
-        assertThat(response.likedByCurrentUser()).isTrue();
+        assertThat(response.likedByCurrentChannel()).isTrue();
     }
 
 
@@ -167,7 +193,7 @@ class PublicationServiceImplTest {
     @Test
     void getPublicationsLoadsEngagementForWholePageInBatch() {
 
-        User viewer = user("maria");
+        Channel viewer = channel("maria");
         Pageable pageable = PageRequest.of(0, 20);
         Publication popular = publication(author);
         Publication quiet = publication(author);
@@ -190,7 +216,7 @@ class PublicationServiceImplTest {
                         PublicationResponse::id,
                         PublicationResponse::likeCount,
                         PublicationResponse::commentCount,
-                        PublicationResponse::likedByCurrentUser
+                        PublicationResponse::likedByCurrentChannel
                 )
                 .containsExactly(
                         tuple(popular.getId(), 3L, 2L, true),
@@ -246,7 +272,7 @@ class PublicationServiceImplTest {
     }
 
 
-    private static Publication publication(User author) {
+    private static Publication publication(Channel author) {
         return withId(new Publication(author, "content", "publications/" + UUID.randomUUID() + ".png"));
     }
 
@@ -260,12 +286,7 @@ class PublicationServiceImplTest {
     }
 
 
-    private static User user(String username) {
-
-        User user = new User(UUID.randomUUID().toString(), username, null, null, null);
-
-        ReflectionTestUtils.setField(user, "id", UUID.randomUUID());
-
-        return user;
+    private static Channel channel(String username) {
+        return com.naro.support.Fixtures.channel(username);
     }
 }

@@ -12,8 +12,8 @@ import com.naro.publication.domain.repository.CommentRepository;
 import com.naro.publication.domain.repository.IdCount;
 import com.naro.publication.domain.repository.LikeRepository;
 import com.naro.publication.domain.repository.PublicationRepository;
-import com.naro.user.domain.entity.User;
-import com.naro.user.domain.repository.UserRepository;
+import com.naro.channel.domain.entity.Channel;
+import com.naro.channel.domain.repository.ChannelRepository;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -38,7 +38,7 @@ public class LikeServiceImpl implements LikeService {
 
     private final CommentRepository commentRepository;
 
-    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
 
     private final PublicationMapper publicationMapper;
 
@@ -47,13 +47,13 @@ public class LikeServiceImpl implements LikeService {
             LikeRepository likeRepository,
             PublicationRepository publicationRepository,
             CommentRepository commentRepository,
-            UserRepository userRepository,
+            ChannelRepository channelRepository,
             PublicationMapper publicationMapper
     ) {
         this.likeRepository = likeRepository;
         this.publicationRepository = publicationRepository;
         this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
+        this.channelRepository = channelRepository;
         this.publicationMapper = publicationMapper;
     }
 
@@ -66,25 +66,27 @@ public class LikeServiceImpl implements LikeService {
     @Transactional
     public LikeSummaryResponse likePublication(
             UUID publicationId,
-            User currentUser
+            Channel currentChannel
     ) {
 
-        Publication publication =
-                findPublication(publicationId);
+        Publication publication = publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new NotFoundException("Publication not found"));
 
-        if (!likeRepository.existsByUserIdAndPublicationId(currentUser.getId(), publicationId)) {
+        if (!likeRepository.existsByChannelIdAndPublicationId(currentChannel.getId(), publicationId)) {
 
-            save(
-                    Like.publication(
-                            userReference(currentUser),
-                            publication
-                    )
-            );
+            Channel channel = channelRepository.getReferenceById(currentChannel.getId());
+            Like like = Like.publication(channel, publication);
+
+            try {
+                likeRepository.saveAndFlush(like);
+            } catch (DataIntegrityViolationException duplicate) {
+                throw new ConflictException("Already liked");
+            }
         }
 
         return getPublicationLikeSummary(
                 publicationId,
-                currentUser
+                currentChannel
         );
     }
 
@@ -93,13 +95,14 @@ public class LikeServiceImpl implements LikeService {
     @Transactional
     public void unlikePublication(
             UUID publicationId,
-            User currentUser
+            Channel currentChannel
     ) {
 
-        findPublication(publicationId);
+        publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new NotFoundException("Publication not found"));
 
-        likeRepository.deleteByUserIdAndPublicationId(
-                currentUser.getId(),
+        likeRepository.deleteByChannelIdAndPublicationId(
+                currentChannel.getId(),
                 publicationId
         );
     }
@@ -109,14 +112,15 @@ public class LikeServiceImpl implements LikeService {
     @Transactional(readOnly = true)
     public LikeSummaryResponse getPublicationLikeSummary(
             UUID publicationId,
-            User currentUser
+            Channel currentChannel
     ) {
 
-        findPublication(publicationId);
+        publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new NotFoundException("Publication not found"));
 
         return new LikeSummaryResponse(
                 likeRepository.countByPublicationId(publicationId),
-                likeRepository.existsByUserIdAndPublicationId(currentUser.getId(), publicationId)
+                currentChannel != null && likeRepository.existsByChannelIdAndPublicationId(currentChannel.getId(), publicationId)
         );
     }
 
@@ -128,7 +132,8 @@ public class LikeServiceImpl implements LikeService {
             Pageable pageable
     ) {
 
-        findPublication(publicationId);
+        publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new NotFoundException("Publication not found"));
 
         return likeRepository
                 .findByPublicationIdOrderByCreatedAtDesc(publicationId, pageable)
@@ -140,18 +145,17 @@ public class LikeServiceImpl implements LikeService {
     @Transactional(readOnly = true)
     public Map<UUID, LikeSummaryResponse> getPublicationLikeSummaries(
             Collection<UUID> publicationIds,
-            User viewer
+            Channel viewer
     ) {
 
         if (publicationIds.isEmpty()) {
             return Map.of();
         }
 
-        return summaries(
-                publicationIds,
-                likeRepository.countPerPublication(publicationIds),
-                likeRepository.findPublicationIdsLikedBy(viewer.getId(), publicationIds)
-        );
+        List<IdCount> likeCounts = likeRepository.countPerPublication(publicationIds);
+        Set<UUID> likedByViewer = viewer == null ? Set.of() : likeRepository.findPublicationIdsLikedBy(viewer.getId(), publicationIds);
+
+        return summaries(publicationIds, likeCounts, likedByViewer);
     }
 
 
@@ -163,25 +167,27 @@ public class LikeServiceImpl implements LikeService {
     @Transactional
     public LikeSummaryResponse likeComment(
             UUID commentId,
-            User currentUser
+            Channel currentChannel
     ) {
 
-        Comment comment =
-                findComment(commentId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("Comment not found"));
 
-        if (!likeRepository.existsByUserIdAndCommentId(currentUser.getId(), commentId)) {
+        if (!likeRepository.existsByChannelIdAndCommentId(currentChannel.getId(), commentId)) {
 
-            save(
-                    Like.comment(
-                            userReference(currentUser),
-                            comment
-                    )
-            );
+            Channel channel = channelRepository.getReferenceById(currentChannel.getId());
+            Like like = Like.comment(channel, comment);
+
+            try {
+                likeRepository.saveAndFlush(like);
+            } catch (DataIntegrityViolationException duplicate) {
+                throw new ConflictException("Already liked");
+            }
         }
 
         return getCommentLikeSummary(
                 commentId,
-                currentUser
+                currentChannel
         );
     }
 
@@ -190,13 +196,14 @@ public class LikeServiceImpl implements LikeService {
     @Transactional
     public void unlikeComment(
             UUID commentId,
-            User currentUser
+            Channel currentChannel
     ) {
 
-        findComment(commentId);
+        commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("Comment not found"));
 
-        likeRepository.deleteByUserIdAndCommentId(
-                currentUser.getId(),
+        likeRepository.deleteByChannelIdAndCommentId(
+                currentChannel.getId(),
                 commentId
         );
     }
@@ -206,14 +213,15 @@ public class LikeServiceImpl implements LikeService {
     @Transactional(readOnly = true)
     public LikeSummaryResponse getCommentLikeSummary(
             UUID commentId,
-            User currentUser
+            Channel currentChannel
     ) {
 
-        findComment(commentId);
+        commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("Comment not found"));
 
         return new LikeSummaryResponse(
                 likeRepository.countByCommentId(commentId),
-                likeRepository.existsByUserIdAndCommentId(currentUser.getId(), commentId)
+                currentChannel != null && likeRepository.existsByChannelIdAndCommentId(currentChannel.getId(), commentId)
         );
     }
 
@@ -225,7 +233,8 @@ public class LikeServiceImpl implements LikeService {
             Pageable pageable
     ) {
 
-        findComment(commentId);
+        commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("Comment not found"));
 
         return likeRepository
                 .findByCommentIdOrderByCreatedAtDesc(commentId, pageable)
@@ -237,44 +246,23 @@ public class LikeServiceImpl implements LikeService {
     @Transactional(readOnly = true)
     public Map<UUID, LikeSummaryResponse> getCommentLikeSummaries(
             Collection<UUID> commentIds,
-            User viewer
+            Channel viewer
     ) {
 
         if (commentIds.isEmpty()) {
             return Map.of();
         }
 
-        return summaries(
-                commentIds,
-                likeRepository.countPerComment(commentIds),
-                likeRepository.findCommentIdsLikedBy(viewer.getId(), commentIds)
-        );
+        List<IdCount> likeCounts = likeRepository.countPerComment(commentIds);
+        Set<UUID> likedByViewer = viewer == null ? Set.of() : likeRepository.findCommentIdsLikedBy(viewer.getId(), commentIds);
+
+        return summaries(commentIds, likeCounts, likedByViewer);
     }
 
 
     /* ---------------------------------------------------------------
      * Compartilhado
      * --------------------------------------------------------------- */
-
-    /*
-     * O exists antes do save evita o like duplicado no caso normal.
-     * Se dois pedidos do mesmo usuário chegarem ao mesmo tempo, o
-     * índice único do banco barra o segundo, que vira 409.
-     */
-    private void save(Like like) {
-
-        try {
-
-            likeRepository.saveAndFlush(like);
-
-        } catch (DataIntegrityViolationException duplicate) {
-
-            throw new ConflictException(
-                    "Already liked"
-            );
-        }
-    }
-
 
     /* Todo id recebido aparece no resultado, com zero likes se não tiver nenhum. */
     private static Map<UUID, LikeSummaryResponse> summaries(
@@ -298,34 +286,5 @@ public class LikeServiceImpl implements LikeService {
                                 likedByViewer.contains(id)
                         )
                 ));
-    }
-
-
-    private Publication findPublication(UUID publicationId) {
-
-        return publicationRepository
-                .findById(publicationId)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                "Publication not found"
-                        )
-                );
-    }
-
-
-    private Comment findComment(UUID commentId) {
-
-        return commentRepository
-                .findById(commentId)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                "Comment not found"
-                        )
-                );
-    }
-
-
-    private User userReference(User user) {
-        return userRepository.getReferenceById(user.getId());
     }
 }

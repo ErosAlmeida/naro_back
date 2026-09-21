@@ -1,6 +1,7 @@
 package com.naro.publication.rest;
 
 import com.naro.config.CurrentUser;
+import com.naro.channel.application.service.ChannelService;
 import com.naro.publication.application.dto.LikeResponse;
 import com.naro.publication.application.dto.LikeSummaryResponse;
 import com.naro.publication.application.service.LikeService;
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 /**
  * Likes em publicações e em comentários (de qualquer nível).
- * O like é sempre do usuário autenticado: nenhum endpoint recebe userId.
+ * O like pertence ao canal de X-Channel-Id, validado contra o usuário autenticado.
  *
  *   POST   /publications/{publicationId}/likes            curtir (idempotente)
  *   DELETE /publications/{publicationId}/likes/me         descurtir (idempotente)
@@ -32,12 +33,15 @@ import java.util.UUID;
 public class LikeController {
 
     private final LikeService likeService;
+    private final ChannelService channelService;
 
 
     public LikeController(
-            LikeService likeService
+            LikeService likeService,
+            ChannelService channelService
     ) {
         this.likeService = likeService;
+        this.channelService = channelService;
     }
 
 
@@ -52,13 +56,16 @@ public class LikeController {
             UUID publicationId,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader("X-Channel-Id")
+            UUID channelId
 
     ) {
 
         return likeService.likePublication(
                 publicationId,
-                currentUser
+                channelService.getOwnedChannel(channelId, currentUser)
         );
     }
 
@@ -70,13 +77,16 @@ public class LikeController {
             UUID publicationId,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader("X-Channel-Id")
+            UUID channelId
 
     ) {
 
         likeService.unlikePublication(
                 publicationId,
-                currentUser
+                channelService.getOwnedChannel(channelId, currentUser)
         );
 
 
@@ -93,13 +103,16 @@ public class LikeController {
             UUID publicationId,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader(value = "X-Channel-Id", required = false)
+            UUID channelId
 
     ) {
 
         return likeService.getPublicationLikeSummary(
                 publicationId,
-                currentUser
+                channelId == null ? null : channelService.getOwnedChannel(channelId, currentUser)
         );
     }
 
@@ -122,9 +135,13 @@ public class LikeController {
 
     ) {
 
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.clamp(size, 1, 100);
+        PageRequest pageable = PageRequest.of(safePage, safeSize);
+
         return likeService.getPublicationLikes(
                 publicationId,
-                pageRequest(page, size)
+                pageable
         );
     }
 
@@ -140,13 +157,16 @@ public class LikeController {
             UUID commentId,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader("X-Channel-Id")
+            UUID channelId
 
     ) {
 
         return likeService.likeComment(
                 commentId,
-                currentUser
+                channelService.getOwnedChannel(channelId, currentUser)
         );
     }
 
@@ -158,13 +178,16 @@ public class LikeController {
             UUID commentId,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader("X-Channel-Id")
+            UUID channelId
 
     ) {
 
         likeService.unlikeComment(
                 commentId,
-                currentUser
+                channelService.getOwnedChannel(channelId, currentUser)
         );
 
 
@@ -181,13 +204,16 @@ public class LikeController {
             UUID commentId,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            @RequestHeader(value = "X-Channel-Id", required = false)
+            UUID channelId
 
     ) {
 
         return likeService.getCommentLikeSummary(
                 commentId,
-                currentUser
+                channelId == null ? null : channelService.getOwnedChannel(channelId, currentUser)
         );
     }
 
@@ -210,18 +236,13 @@ public class LikeController {
 
     ) {
 
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.clamp(size, 1, 100);
+        PageRequest pageable = PageRequest.of(safePage, safeSize);
+
         return likeService.getCommentLikes(
                 commentId,
-                pageRequest(page, size)
-        );
-    }
-
-
-    private static PageRequest pageRequest(int page, int size) {
-
-        return PageRequest.of(
-                Math.max(page, 0),
-                Math.clamp(size, 1, 100)
+                pageable
         );
     }
 }

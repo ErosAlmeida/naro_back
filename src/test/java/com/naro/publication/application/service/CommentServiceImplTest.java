@@ -6,13 +6,15 @@ import com.naro.publication.application.dto.CommentResponse;
 import com.naro.publication.application.dto.CreateCommentRequest;
 import com.naro.publication.application.dto.LikeSummaryResponse;
 import com.naro.publication.application.mapper.PublicationMapperImpl;
+import com.naro.storage.service.ObjectReadUrls;
+import com.naro.storage.service.ObjectStorageService;
 import com.naro.publication.domain.entity.Comment;
 import com.naro.publication.domain.entity.Publication;
 import com.naro.publication.domain.repository.CommentRepository;
 import com.naro.publication.domain.repository.IdCount;
 import com.naro.publication.domain.repository.PublicationRepository;
-import com.naro.user.domain.entity.User;
-import com.naro.user.domain.repository.UserRepository;
+import com.naro.channel.domain.entity.Channel;
+import com.naro.channel.domain.repository.ChannelRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,7 @@ import static com.naro.support.Fixtures.comment;
 import static com.naro.support.Fixtures.persisted;
 import static com.naro.support.Fixtures.publication;
 import static com.naro.support.Fixtures.reply;
-import static com.naro.support.Fixtures.user;
+import static com.naro.support.Fixtures.channel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -53,18 +55,22 @@ class CommentServiceImplTest {
     private PublicationRepository publicationRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private ChannelRepository channelRepository;
 
     @Mock
     private LikeService likeService;
 
     private CommentServiceImpl commentService;
 
-    private final User leonardo = user("leonardo");
+    private final Channel leonardo = channel("leonardo");
 
-    private final User maria = user("maria");
+    private final Channel maria = channel("maria");
 
     private final Publication publication = publication(maria);
+
+
+    @Mock
+    private ObjectStorageService storageService;
 
 
     @BeforeEach
@@ -72,9 +78,9 @@ class CommentServiceImplTest {
         commentService = new CommentServiceImpl(
                 commentRepository,
                 publicationRepository,
-                userRepository,
+                channelRepository,
                 likeService,
-                new PublicationMapperImpl()
+                new PublicationMapperImpl(new ObjectReadUrls(storageService))
         );
     }
 
@@ -101,7 +107,7 @@ class CommentServiceImplTest {
         assertThat(response.parentCommentId()).isNull();
         assertThat(response.publicationId()).isEqualTo(publication.getId());
         assertThat(response.author().id()).isEqualTo(leonardo.getId());
-        assertThat(response.author().username()).isEqualTo("leonardo");
+        assertThat(response.author().slug()).isEqualTo("leonardo");
         assertThat(response.likeCount()).isZero();
         assertThat(response.replyCount()).isZero();
     }
@@ -194,7 +200,7 @@ class CommentServiceImplTest {
         Page<CommentResponse> page = commentService.getReplies(parent.getId(), leonardo, pageable);
 
         assertThat(page.getContent())
-                .extracting(CommentResponse::content, CommentResponse::likeCount, CommentResponse::likedByCurrentUser, CommentResponse::replyCount)
+                .extracting(CommentResponse::content, CommentResponse::likeCount, CommentResponse::likedByCurrentChannel, CommentResponse::replyCount)
                 .containsExactly(
                         tuple("B", 8L, true, 3L),
                         tuple("C", 0L, false, 0L)
@@ -253,8 +259,8 @@ class CommentServiceImplTest {
     }
 
 
-    private void authenticatedIs(User user) {
-        when(userRepository.getReferenceById(user.getId())).thenReturn(user);
+    private void authenticatedIs(Channel user) {
+        when(channelRepository.getReferenceById(user.getId())).thenReturn(user);
     }
 
 

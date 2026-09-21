@@ -1,6 +1,6 @@
 package com.naro.publication.domain.entity;
 
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import jakarta.persistence.*;
 
@@ -65,11 +65,11 @@ public class Comment {
             optional = false
     )
     @JoinColumn(
-            name = "author_id",
+            name = "channel_id",
             nullable = false,
             updatable = false
     )
-    private User author;
+    private Channel author;
 
 
     @Column(
@@ -88,7 +88,7 @@ public class Comment {
 
 
     public static Comment onPublication(
-            User author,
+            Channel author,
             Publication publication,
             String content
     ) {
@@ -104,7 +104,7 @@ public class Comment {
 
     /** Resposta a um comentário de qualquer nível. A publicação é a do pai. */
     public static Comment reply(
-            User author,
+            Channel author,
             Comment parent,
             String content
     ) {
@@ -133,8 +133,8 @@ public class Comment {
      * getId() em um proxy LAZY não inicializa o autor,
      * então essa checagem não gera query extra.
      */
-    public boolean isAuthoredBy(User user) {
-        return author.getId().equals(user.getId());
+    public boolean isAuthoredBy(Channel channel) {
+        return author.getId().equals(channel.getId());
     }
 
 

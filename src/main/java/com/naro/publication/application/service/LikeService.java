@@ -2,7 +2,7 @@ package com.naro.publication.application.service;
 
 import com.naro.publication.application.dto.LikeResponse;
 import com.naro.publication.application.dto.LikeSummaryResponse;
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +15,9 @@ import java.util.UUID;
  * Likes em publicações e em comentários (de qualquer nível).
  *
  * As regras são as mesmas para os dois:
- *   - o like é sempre do usuário autenticado
+ *   - o like é sempre do canal selecionado
  *   - curtir de novo não cria um segundo like
- *   - descurtir remove apenas o like do próprio usuário
+ *   - descurtir remove apenas o like do canal selecionado
  */
 public interface LikeService {
 
@@ -25,19 +25,19 @@ public interface LikeService {
 
     LikeSummaryResponse likePublication(
             UUID publicationId,
-            User currentUser
+            Channel currentChannel
     );
 
 
     void unlikePublication(
             UUID publicationId,
-            User currentUser
+            Channel currentChannel
     );
 
 
     LikeSummaryResponse getPublicationLikeSummary(
             UUID publicationId,
-            User currentUser
+            Channel currentChannel
     );
 
 
@@ -50,7 +50,7 @@ public interface LikeService {
     /** Resumo de cada publicação de uma página, em duas queries. */
     Map<UUID, LikeSummaryResponse> getPublicationLikeSummaries(
             Collection<UUID> publicationIds,
-            User viewer
+            Channel viewer
     );
 
 
@@ -58,19 +58,19 @@ public interface LikeService {
 
     LikeSummaryResponse likeComment(
             UUID commentId,
-            User currentUser
+            Channel currentChannel
     );
 
 
     void unlikeComment(
             UUID commentId,
-            User currentUser
+            Channel currentChannel
     );
 
 
     LikeSummaryResponse getCommentLikeSummary(
             UUID commentId,
-            User currentUser
+            Channel currentChannel
     );
 
 
@@ -83,6 +83,6 @@ public interface LikeService {
     /** Resumo de cada comentário de uma página, em duas queries. */
     Map<UUID, LikeSummaryResponse> getCommentLikeSummaries(
             Collection<UUID> commentIds,
-            User viewer
+            Channel viewer
     );
 }

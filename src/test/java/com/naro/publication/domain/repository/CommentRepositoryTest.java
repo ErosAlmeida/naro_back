@@ -3,7 +3,7 @@ package com.naro.publication.domain.repository;
 import com.naro.PostgresTestcontainersConfiguration;
 import com.naro.publication.domain.entity.Comment;
 import com.naro.publication.domain.entity.Publication;
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import jakarta.persistence.PersistenceException;
 
@@ -37,7 +37,7 @@ class CommentRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    private User author;
+    private Channel author;
 
     private Publication publication;
 
@@ -179,7 +179,7 @@ class CommentRepositoryTest {
 
         assertThatThrownBy(() -> entityManager.getEntityManager()
                 .createNativeQuery("""
-                        INSERT INTO comments (id, publication_id, parent_comment_id, author_id, content, created_at)
+                        INSERT INTO comments (id, publication_id, parent_comment_id, channel_id, content, created_at)
                         VALUES (gen_random_uuid(), :otherPublication, :parent, :author, 'oi', now())
                         """)
                 .setParameter("otherPublication", other.getId())
@@ -214,8 +214,9 @@ class CommentRepositoryTest {
     }
 
 
-    private User persistUser(String username) {
-        return entityManager.persist(new User(UUID.randomUUID().toString(), username, username + "@naro.dev", null, null));
+    private Channel persistUser(String username) {
+        com.naro.user.domain.entity.User owner = entityManager.persist(new com.naro.user.domain.entity.User(UUID.randomUUID().toString(), username, null, null, null));
+        return entityManager.persist(com.naro.support.Fixtures.channel(owner, username));
     }
 
 

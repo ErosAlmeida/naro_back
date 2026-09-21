@@ -6,9 +6,11 @@ import com.naro.publication.application.dto.CommentResponse;
 import com.naro.publication.application.dto.CreateCommentRequest;
 import com.naro.publication.application.service.CommentService;
 import com.naro.security.SecurityConfig;
-import com.naro.user.application.dto.UserSummaryResponse;
+import com.naro.channel.application.dto.ChannelSummaryResponse;
 import com.naro.user.application.service.CurrentUserService;
 import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
+import com.naro.channel.application.service.ChannelService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,12 +61,18 @@ class CommentControllerTest {
 
     private final User currentUser = user("leonardo");
 
+    private final Channel currentChannel = com.naro.support.Fixtures.persisted(com.naro.support.Fixtures.channel(currentUser, "leonardo"));
+
+    @MockitoBean
+    private ChannelService channelService;
+
     private final UUID publicationId = UUID.randomUUID();
 
 
     @BeforeEach
     void setUp() {
         when(currentUserService.resolve(any())).thenReturn(currentUser);
+        when(channelService.getOwnedChannel(currentChannel.getId(), currentUser)).thenReturn(currentChannel);
     }
 
 
@@ -73,11 +81,11 @@ class CommentControllerTest {
 
         CommentResponse response = response(UUID.randomUUID(), null, "Muito boa!");
 
-        when(commentService.commentOnPublication(eq(publicationId), eq(new CreateCommentRequest("Muito boa!")), eq(currentUser)))
+        when(commentService.commentOnPublication(eq(publicationId), eq(new CreateCommentRequest("Muito boa!")), eq(currentChannel)))
                 .thenReturn(response);
 
         mockMvc.perform(post("/api/v1/publications/{publicationId}/comments", publicationId)
-                        .with(jwt())
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"content": "Muito boa!"}
@@ -85,8 +93,8 @@ class CommentControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/v1/publications/" + publicationId + "/comments/" + response.id()))
                 .andExpect(jsonPath("$.parentCommentId").doesNotExist())
-                .andExpect(jsonPath("$.author.id").value(currentUser.getId().toString()))
-                .andExpect(jsonPath("$.author.username").value("leonardo"))
+                .andExpect(jsonPath("$.author.id").value(currentChannel.getId().toString()))
+                .andExpect(jsonPath("$.author.slug").value("leonardo"))
                 .andExpect(jsonPath("$.likeCount").value(0))
                 .andExpect(jsonPath("$.replyCount").value(0));
     }
@@ -101,7 +109,7 @@ class CommentControllerTest {
         when(commentService.reply(any(), any(), any())).thenReturn(response);
 
         mockMvc.perform(post("/api/v1/comments/{commentId}/comments", parentId)
-                        .with(jwt())
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"content": "Discordo", "authorId": "%s"}
@@ -109,7 +117,7 @@ class CommentControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.parentCommentId").value(parentId.toString()));
 
-        verify(commentService).reply(parentId, new CreateCommentRequest("Discordo"), currentUser);
+        verify(commentService).reply(parentId, new CreateCommentRequest("Discordo"), currentChannel);
     }
 
 
@@ -119,7 +127,7 @@ class CommentControllerTest {
         when(commentService.reply(any(), any(), any())).thenThrow(new NotFoundException("Comment not found"));
 
         mockMvc.perform(post("/api/v1/comments/{commentId}/comments", UUID.randomUUID())
-                        .with(jwt())
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"content": "Oi"}
@@ -132,7 +140,7 @@ class CommentControllerTest {
     void blankCommentReturns400() throws Exception {
 
         mockMvc.perform(post("/api/v1/comments/{commentId}/comments", UUID.randomUUID())
-                        .with(jwt())
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"content": "   "}
@@ -162,12 +170,12 @@ class CommentControllerTest {
 
         UUID parentId = UUID.randomUUID();
 
-        when(commentService.getReplies(parentId, currentUser, PageRequest.of(0, 100)))
+        when(commentService.getReplies(parentId, currentChannel, PageRequest.of(0, 100)))
                 .thenReturn(new PageImpl<>(List.of(response(UUID.randomUUID(), parentId, "resposta"))));
 
         mockMvc.perform(get("/api/v1/comments/{commentId}/comments", parentId)
                         .param("size", "5000")
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].content").value("resposta"));
     }
@@ -179,10 +187,10 @@ class CommentControllerTest {
         UUID commentId = UUID.randomUUID();
 
         doThrow(new ForbiddenException("You can only delete your own comments"))
-                .when(commentService).delete(publicationId, commentId, currentUser);
+                .when(commentService).delete(publicationId, commentId, currentChannel);
 
         mockMvc.perform(delete("/api/v1/publications/{publicationId}/comments/{commentId}", publicationId, commentId)
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isForbidden());
     }
 
@@ -193,15 +201,15 @@ class CommentControllerTest {
         UUID commentId = UUID.randomUUID();
 
         mockMvc.perform(delete("/api/v1/publications/{publicationId}/comments/{commentId}", publicationId, commentId)
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isNoContent());
 
-        verify(commentService).delete(publicationId, commentId, currentUser);
+        verify(commentService).delete(publicationId, commentId, currentChannel);
     }
 
 
     private CommentResponse response(UUID id, UUID parentId, String content) {
-        UserSummaryResponse author = new UserSummaryResponse(currentUser.getId(), "leonardo", null, null, null);
+        ChannelSummaryResponse author = new ChannelSummaryResponse(currentChannel.getId(), "leonardo", "leonardo", "http://minio/avatar.png");
 
         return new CommentResponse(id, publicationId, parentId, content, author, 0, false, 0, Instant.now());
     }

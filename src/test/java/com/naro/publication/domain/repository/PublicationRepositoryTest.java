@@ -2,7 +2,7 @@ package com.naro.publication.domain.repository;
 
 import com.naro.PostgresTestcontainersConfiguration;
 import com.naro.publication.domain.entity.Publication;
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,9 +32,9 @@ class PublicationRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    private User leonardo;
+    private Channel leonardo;
 
-    private User maria;
+    private Channel maria;
 
 
     @BeforeEach
@@ -53,7 +53,7 @@ class PublicationRepositoryTest {
         Publication found = publicationRepository.findWithAuthorById(publication.getId()).orElseThrow();
 
         assertThat(Hibernate.isInitialized(found.getAuthor())).isTrue();
-        assertThat(found.getAuthor().getUsername()).isEqualTo("leonardo");
+        assertThat(found.getAuthor().getSlug()).isEqualTo("leonardo");
     }
 
 
@@ -112,7 +112,7 @@ class PublicationRepositoryTest {
     }
 
 
-    private Publication persistPublication(User author, String content) {
+    private Publication persistPublication(Channel author, String content) {
 
         return entityManager.persistAndFlush(
                 new Publication(author, content, "publications/" + UUID.randomUUID() + ".png")
@@ -120,14 +120,8 @@ class PublicationRepositoryTest {
     }
 
 
-    private User persistUser(String username) {
-
-        return entityManager.persist(new User(
-                UUID.randomUUID().toString(),
-                username,
-                username + "@naro.dev",
-                null,
-                null
-        ));
+    private Channel persistUser(String username) {
+        com.naro.user.domain.entity.User owner = entityManager.persist(new com.naro.user.domain.entity.User(UUID.randomUUID().toString(), username, null, null, null));
+        return entityManager.persist(com.naro.support.Fixtures.channel(owner, username));
     }
 }

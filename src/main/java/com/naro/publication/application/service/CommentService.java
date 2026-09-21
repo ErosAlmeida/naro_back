@@ -2,7 +2,7 @@ package com.naro.publication.application.service;
 
 import com.naro.publication.application.dto.CommentResponse;
 import com.naro.publication.application.dto.CreateCommentRequest;
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,21 +18,21 @@ public interface CommentService {
     CommentResponse commentOnPublication(
             UUID publicationId,
             CreateCommentRequest request,
-            User author
+            Channel author
     );
 
 
     CommentResponse reply(
             UUID parentCommentId,
             CreateCommentRequest request,
-            User author
+            Channel author
     );
 
 
     /** Comentários diretos da publicação (sem as respostas). */
     Page<CommentResponse> getPublicationComments(
             UUID publicationId,
-            User viewer,
+            Channel viewer,
             Pageable pageable
     );
 
@@ -40,7 +40,7 @@ public interface CommentService {
     /** Respostas diretas de um comentário (um nível por vez). */
     Page<CommentResponse> getReplies(
             UUID commentId,
-            User viewer,
+            Channel viewer,
             Pageable pageable
     );
 
@@ -49,6 +49,6 @@ public interface CommentService {
     void delete(
             UUID publicationId,
             UUID commentId,
-            User currentUser
+            Channel currentChannel
     );
 }

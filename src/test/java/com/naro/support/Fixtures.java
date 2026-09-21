@@ -3,6 +3,7 @@ package com.naro.support;
 import com.naro.publication.domain.entity.Comment;
 import com.naro.publication.domain.entity.Publication;
 import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -29,7 +30,20 @@ public final class Fixtures {
     }
 
 
-    public static Publication publication(User author) {
+    public static Channel channel(String slug) {
+        Channel channel = channel(user(slug), slug);
+        return persisted(channel);
+    }
+
+    public static Channel channel(User owner, String slug) {
+        Channel channel = new Channel();
+        channel.setOwner(owner);
+        channel.setName(slug);
+        channel.setSlug(slug);
+        return channel;
+    }
+
+    public static Publication publication(Channel author) {
         return persisted(new Publication(author, "content", "publications/" + UUID.randomUUID() + ".png"));
     }
 
@@ -43,12 +57,12 @@ public final class Fixtures {
     }
 
 
-    public static Comment comment(User author, Publication publication, String content) {
+    public static Comment comment(Channel author, Publication publication, String content) {
         return persisted(Comment.onPublication(author, publication, content));
     }
 
 
-    public static Comment reply(User author, Comment parent, String content) {
+    public static Comment reply(Channel author, Comment parent, String content) {
         return persisted(Comment.reply(author, parent, content));
     }
 }

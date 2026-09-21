@@ -7,6 +7,9 @@ import com.naro.publication.application.service.PublicationService;
 import com.naro.security.SecurityConfig;
 import com.naro.user.application.service.CurrentUserService;
 import com.naro.user.domain.entity.User;
+import com.naro.channel.application.dto.ChannelSummaryResponse;
+import com.naro.channel.domain.entity.Channel;
+import com.naro.channel.application.service.ChannelService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +58,11 @@ class PublicationControllerTest {
 
     private final User currentUser = user();
 
+    private final Channel currentChannel = com.naro.support.Fixtures.persisted(com.naro.support.Fixtures.channel(currentUser, "leonardo"));
+
+    @MockitoBean
+    private ChannelService channelService;
+
     private final MockMultipartFile image =
             new MockMultipartFile("image", "photo.png", "image/png", new byte[]{1, 2, 3});
 
@@ -62,6 +70,7 @@ class PublicationControllerTest {
     @BeforeEach
     void setUp() {
         when(currentUserService.resolve(any())).thenReturn(currentUser);
+        when(channelService.getOwnedChannel(currentChannel.getId(), currentUser)).thenReturn(currentChannel);
     }
 
 
@@ -74,18 +83,18 @@ class PublicationControllerTest {
 
         PublicationResponse response = response(UUID.randomUUID(), 0, 0, false);
 
-        when(publicationService.create(any(), eq(currentUser))).thenReturn(response);
+        when(publicationService.create(any(), eq(currentChannel))).thenReturn(response);
 
         mockMvc.perform(multipart("/api/v1/publications")
                         .file(image)
                         .param("content", "Minha publicação")
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/v1/publications/" + response.id()))
                 .andExpect(jsonPath("$.id").value(response.id().toString()))
                 .andExpect(jsonPath("$.likeCount").value(0))
                 .andExpect(jsonPath("$.commentCount").value(0))
-                .andExpect(jsonPath("$.likedByCurrentUser").value(false));
+                .andExpect(jsonPath("$.likedByCurrentChannel").value(false));
     }
 
 
@@ -94,7 +103,7 @@ class PublicationControllerTest {
 
         mockMvc.perform(multipart("/api/v1/publications")
                         .param("content", "Minha publicação")
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(publicationService);
@@ -107,7 +116,7 @@ class PublicationControllerTest {
         mockMvc.perform(multipart("/api/v1/publications")
                         .file(image)
                         .param("content", "   ")
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(publicationService);
@@ -117,13 +126,13 @@ class PublicationControllerTest {
     @Test
     void createWithUnsupportedImageReturns400() throws Exception {
 
-        when(publicationService.create(any(), eq(currentUser)))
+        when(publicationService.create(any(), eq(currentChannel)))
                 .thenThrow(new BadRequestException("Only JPEG, PNG and WEBP images are allowed"));
 
         mockMvc.perform(multipart("/api/v1/publications")
                         .file(new MockMultipartFile("image", "anim.gif", "image/gif", new byte[]{1}))
                         .param("content", "Minha publicação")
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isBadRequest());
     }
 
@@ -149,16 +158,16 @@ class PublicationControllerTest {
 
         UUID publicationId = UUID.randomUUID();
 
-        when(publicationService.getById(publicationId, currentUser))
+        when(publicationService.getById(publicationId, currentChannel))
                 .thenReturn(response(publicationId, 124, 17, true));
 
         mockMvc.perform(get("/api/v1/publications/{publicationId}", publicationId)
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(publicationId.toString()))
                 .andExpect(jsonPath("$.likeCount").value(124))
                 .andExpect(jsonPath("$.commentCount").value(17))
-                .andExpect(jsonPath("$.likedByCurrentUser").value(true));
+                .andExpect(jsonPath("$.likedByCurrentChannel").value(true));
     }
 
 
@@ -167,11 +176,11 @@ class PublicationControllerTest {
 
         UUID publicationId = UUID.randomUUID();
 
-        when(publicationService.getById(publicationId, currentUser))
+        when(publicationService.getById(publicationId, currentChannel))
                 .thenThrow(new NotFoundException("Publication not found"));
 
         mockMvc.perform(get("/api/v1/publications/{publicationId}", publicationId)
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isNotFound());
     }
 
@@ -200,7 +209,7 @@ class PublicationControllerTest {
                         .param("authorId", authorId.toString())
                         .param("page", "1")
                         .param("size", "500")
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].likeCount").value(1))
                 .andExpect(jsonPath("$.page.number").value(1))
@@ -211,7 +220,7 @@ class PublicationControllerTest {
                 .andExpect(jsonPath("$.totalElements").doesNotExist());
 
         verify(publicationService)
-                .getPublications(authorId, currentUser, PageRequest.of(1, 100));
+                .getPublications(authorId, currentChannel, PageRequest.of(1, 100));
     }
 
 
@@ -222,7 +231,7 @@ class PublicationControllerTest {
                 .thenReturn(new PageImpl<>(List.of(), PageRequest.of(0, 20), 0));
 
         mockMvc.perform(get("/api/v1/publications")
-                        .with(jwt()))
+                        .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isEmpty())
                 .andExpect(jsonPath("$.page.number").value(0))
@@ -231,7 +240,7 @@ class PublicationControllerTest {
                 .andExpect(jsonPath("$.page.totalPages").value(0));
 
         verify(publicationService)
-                .getPublications(null, currentUser, PageRequest.of(0, 20));
+                .getPublications(null, currentChannel, PageRequest.of(0, 20));
     }
 
 
@@ -239,19 +248,18 @@ class PublicationControllerTest {
             UUID id,
             long likeCount,
             long commentCount,
-            boolean likedByCurrentUser
+            boolean likedByCurrentChannel
     ) {
 
         return new PublicationResponse(
                 id,
-                currentUser.getId(),
-                currentUser.getUsername(),
+                new ChannelSummaryResponse(currentChannel.getId(), currentChannel.getName(), currentChannel.getSlug(), "http://minio/avatar.png"),
                 "Minha publicação",
                 "http://minio/image.png",
                 Instant.now(),
                 likeCount,
                 commentCount,
-                likedByCurrentUser
+                likedByCurrentChannel
         );
     }
 

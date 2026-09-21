@@ -6,7 +6,7 @@ public record PublicationEngagement(
 
         long commentCount,
 
-        boolean likedByCurrentUser
+        boolean likedByCurrentChannel
 
 ) {
 

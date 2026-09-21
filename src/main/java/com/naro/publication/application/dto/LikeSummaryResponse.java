@@ -2,14 +2,14 @@ package com.naro.publication.application.dto;
 
 /**
  * Likes de uma publicação ou de um comentário, do ponto de vista
- * do usuário autenticado. Também usado para enriquecer páginas
+ * do canal selecionado. Também usado para enriquecer páginas
  * (publicações, comentários) sem N+1.
  */
 public record LikeSummaryResponse(
 
         long likeCount,
 
-        boolean likedByCurrentUser
+        boolean likedByCurrentChannel
 
 ) {
 

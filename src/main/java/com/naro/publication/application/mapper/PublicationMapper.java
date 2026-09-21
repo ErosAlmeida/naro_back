@@ -5,10 +5,14 @@ import com.naro.publication.application.dto.LikeResponse;
 import com.naro.publication.application.dto.LikeSummaryResponse;
 import com.naro.publication.application.dto.PublicationEngagement;
 import com.naro.publication.application.dto.PublicationResponse;
+import com.naro.channel.application.dto.ChannelSummaryResponse;
+import com.naro.channel.domain.entity.Channel;
 import com.naro.publication.domain.entity.Comment;
 import com.naro.publication.domain.entity.Like;
 import com.naro.publication.domain.entity.Publication;
+import com.naro.storage.service.ObjectReadUrls;
 
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -16,17 +20,27 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
+        uses = ObjectReadUrls.class,
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR,
         unmappedTargetPolicy = ReportingPolicy.ERROR
 )
 public interface PublicationMapper {
 
+    /*
+     * Autoria pública: usado automaticamente para o `author` da publicação e
+     * do comentário, com a foto do canal já pronta para exibição.
+     */
     @Mapping(
-            target = "authorId",
-            source = "publication.author.id"
+            target = "profileImageUrl",
+            source = "profileImageKey",
+            qualifiedByName = "readUrl"
     )
+    ChannelSummaryResponse toAuthor(Channel channel);
+
+
     @Mapping(
-            target = "authorUsername",
-            source = "publication.author.username"
+            target = "author",
+            source = "publication.author"
     )
     @Mapping(
             target = "imageUrl",
@@ -41,8 +55,8 @@ public interface PublicationMapper {
             source = "engagement.commentCount"
     )
     @Mapping(
-            target = "likedByCurrentUser",
-            source = "engagement.likedByCurrentUser"
+            target = "likedByCurrentChannel",
+            source = "engagement.likedByCurrentChannel"
     )
     PublicationResponse toResponse(
             Publication publication,
@@ -76,8 +90,8 @@ public interface PublicationMapper {
             source = "likes.likeCount"
     )
     @Mapping(
-            target = "likedByCurrentUser",
-            source = "likes.likedByCurrentUser"
+            target = "likedByCurrentChannel",
+            source = "likes.likedByCurrentChannel"
     )
     @Mapping(
             target = "replyCount",
@@ -95,12 +109,12 @@ public interface PublicationMapper {
 
 
     @Mapping(
-            target = "userId",
-            source = "user.id"
+            target = "channelId",
+            source = "channel.id"
     )
     @Mapping(
-            target = "username",
-            source = "user.username"
+            target = "slug",
+            source = "channel.slug"
     )
     LikeResponse toLikeResponse(
             Like like

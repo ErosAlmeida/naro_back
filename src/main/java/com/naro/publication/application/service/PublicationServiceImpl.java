@@ -11,7 +11,7 @@ import com.naro.publication.domain.repository.CommentRepository;
 import com.naro.publication.domain.repository.IdCount;
 import com.naro.publication.domain.repository.PublicationRepository;
 import com.naro.storage.service.ObjectStorageService;
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,7 +50,7 @@ public class PublicationServiceImpl implements PublicationService {
     @Transactional
     public PublicationResponse create(
             CreatePublicationRequest request,
-            User author
+            Channel author
     ) {
 
         String imageKey = storageService.upload(
@@ -92,7 +92,7 @@ public class PublicationServiceImpl implements PublicationService {
     @Transactional(readOnly = true)
     public PublicationResponse getById(
             UUID publicationId,
-            User currentUser
+            Channel currentChannel
     ) {
 
         Publication publication =
@@ -107,7 +107,7 @@ public class PublicationServiceImpl implements PublicationService {
         Map<UUID, PublicationEngagement> engagements =
                 loadEngagements(
                         List.of(publication),
-                        currentUser
+                        currentChannel
                 );
 
         return toResponse(
@@ -120,7 +120,7 @@ public class PublicationServiceImpl implements PublicationService {
     @Transactional(readOnly = true)
     public Page<PublicationResponse> getPublications(
             UUID authorId,
-            User currentUser,
+            Channel currentChannel,
             Pageable pageable
     ) {
 
@@ -134,7 +134,7 @@ public class PublicationServiceImpl implements PublicationService {
         Map<UUID, PublicationEngagement> engagements =
                 loadEngagements(
                         publications.getContent(),
-                        currentUser
+                        currentChannel
                 );
 
         return publications.map(
@@ -151,7 +151,7 @@ public class PublicationServiceImpl implements PublicationService {
      */
     private Map<UUID, PublicationEngagement> loadEngagements(
             List<Publication> publications,
-            User currentUser
+            Channel currentChannel
     ) {
 
         if (publications.isEmpty()) {
@@ -162,7 +162,7 @@ public class PublicationServiceImpl implements PublicationService {
                 publications.stream().map(Publication::getId).toList();
 
         Map<UUID, LikeSummaryResponse> likes =
-                likeService.getPublicationLikeSummaries(publicationIds, currentUser);
+                likeService.getPublicationLikeSummaries(publicationIds, currentChannel);
 
         Map<UUID, Long> commentCounts =
                 commentRepository
@@ -180,7 +180,7 @@ public class PublicationServiceImpl implements PublicationService {
                             return new PublicationEngagement(
                                     publicationLikes.likeCount(),
                                     commentCounts.getOrDefault(publication.getId(), 0L),
-                                    publicationLikes.likedByCurrentUser()
+                                    publicationLikes.likedByCurrentChannel()
                             );
                         },
                         (first, second) -> first

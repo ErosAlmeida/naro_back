@@ -22,14 +22,14 @@ public interface LikeRepository
      * Likes em publicações
      * --------------------------------------------------------------- */
 
-    boolean existsByUserIdAndPublicationId(
-            UUID userId,
+    boolean existsByChannelIdAndPublicationId(
+            UUID channelId,
             UUID publicationId
     );
 
 
-    void deleteByUserIdAndPublicationId(
-            UUID userId,
+    void deleteByChannelIdAndPublicationId(
+            UUID channelId,
             UUID publicationId
     );
 
@@ -39,7 +39,7 @@ public interface LikeRepository
     );
 
 
-    @EntityGraph(attributePaths = "user")
+    @EntityGraph(attributePaths = "channel")
     Page<Like> findByPublicationIdOrderByCreatedAtDesc(
             UUID publicationId,
             Pageable pageable
@@ -62,16 +62,16 @@ public interface LikeRepository
     );
 
 
-    /** Quais publicações da página o usuário curtiu. */
+    /** Quais publicações da página o canal curtiu. */
     @Query("""
             SELECT l.publication.id
             FROM Like l
-            WHERE l.user.id = :userId
+            WHERE l.channel.id = :channelId
               AND l.publication.id IN :publicationIds
             """)
     Set<UUID> findPublicationIdsLikedBy(
-            @Param("userId")
-            UUID userId,
+            @Param("channelId")
+            UUID channelId,
             @Param("publicationIds")
             Collection<UUID> publicationIds
     );
@@ -81,14 +81,14 @@ public interface LikeRepository
      * Likes em comentários (de qualquer nível)
      * --------------------------------------------------------------- */
 
-    boolean existsByUserIdAndCommentId(
-            UUID userId,
+    boolean existsByChannelIdAndCommentId(
+            UUID channelId,
             UUID commentId
     );
 
 
-    void deleteByUserIdAndCommentId(
-            UUID userId,
+    void deleteByChannelIdAndCommentId(
+            UUID channelId,
             UUID commentId
     );
 
@@ -98,7 +98,7 @@ public interface LikeRepository
     );
 
 
-    @EntityGraph(attributePaths = "user")
+    @EntityGraph(attributePaths = "channel")
     Page<Like> findByCommentIdOrderByCreatedAtDesc(
             UUID commentId,
             Pageable pageable
@@ -121,16 +121,16 @@ public interface LikeRepository
     );
 
 
-    /** Quais comentários da página o usuário curtiu. */
+    /** Quais comentários da página o canal curtiu. */
     @Query("""
             SELECT l.comment.id
             FROM Like l
-            WHERE l.user.id = :userId
+            WHERE l.channel.id = :channelId
               AND l.comment.id IN :commentIds
             """)
     Set<UUID> findCommentIdsLikedBy(
-            @Param("userId")
-            UUID userId,
+            @Param("channelId")
+            UUID channelId,
             @Param("commentIds")
             Collection<UUID> commentIds
     );

@@ -2,7 +2,7 @@ package com.naro.publication.application.service;
 
 import com.naro.publication.application.dto.CreatePublicationRequest;
 import com.naro.publication.application.dto.PublicationResponse;
-import com.naro.user.domain.entity.User;
+import com.naro.channel.domain.entity.Channel;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,23 +13,23 @@ public interface PublicationService {
 
     PublicationResponse create(
             CreatePublicationRequest request,
-            User author
+            Channel author
     );
 
 
     PublicationResponse getById(
             UUID publicationId,
-            User currentUser
+            Channel currentChannel
     );
 
 
     /*
-     * authorId opcional: sem ele, retorna as publicações
-     * mais recentes de todos os autores.
+     * authorId é o UUID do canal autor. Sem ele, retorna as publicações
+     * mais recentes de todos os canais.
      */
     Page<PublicationResponse> getPublications(
             UUID authorId,
-            User currentUser,
+            Channel currentChannel,
             Pageable pageable
     );
 }
