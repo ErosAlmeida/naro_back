@@ -7,36 +7,48 @@ import com.naro.publication.application.dto.PublicationResponse;
 import com.naro.publication.application.service.PublicationService;
 import com.naro.user.domain.entity.User;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.UUID;
 
+@Tag(name = "Publications", description = "Publicações com imagem, assinadas por um canal")
 @RestController
 @RequestMapping("/api/v1/publications")
 public class PublicationController {
 
     private final PublicationService publicationService;
     private final ChannelService channelService;
+    private final PublicationModelAssembler publicationAssembler;
 
     public PublicationController(
             PublicationService publicationService,
-            ChannelService channelService
+            ChannelService channelService,
+            PublicationModelAssembler publicationAssembler
     ) {
         this.publicationService = publicationService;
         this.channelService = channelService;
+        this.publicationAssembler = publicationAssembler;
     }
 
     @PostMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public ResponseEntity<PublicationResponse> create(
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Publica uma imagem com texto em nome do canal selecionado")
+    public ResponseEntity<EntityModel<PublicationResponse>> create(
 
             @Valid
             @ModelAttribute
@@ -50,25 +62,23 @@ public class PublicationController {
 
     ) {
 
-        PublicationResponse response =
-                publicationService.create(
-                        request,
-                        channelService.getOwnedChannel(channelId, user)
+        EntityModel<PublicationResponse> publication =
+                publicationAssembler.toModel(
+                        publicationService.create(
+                                request,
+                                channelService.getOwnedChannel(channelId, user)
+                        )
                 );
 
-        URI location = URI.create(
-                "/api/v1/publications/"
-                        + response.id()
-        );
-
         return ResponseEntity
-                .created(location)
-                .body(response);
+                .created(publication.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(publication);
     }
 
 
     @GetMapping("/{publicationId}")
-    public PublicationResponse getById(
+    @Operation(summary = "Busca uma publicação")
+    public EntityModel<PublicationResponse> getById(
 
             @PathVariable
             UUID publicationId,
@@ -81,15 +91,18 @@ public class PublicationController {
 
     ) {
 
-        return publicationService.getById(
-                publicationId,
-                channelId == null ? null : channelService.getOwnedChannel(channelId, user)
+        return publicationAssembler.toModel(
+                publicationService.getById(
+                        publicationId,
+                        channelId == null ? null : channelService.getOwnedChannel(channelId, user)
+                )
         );
     }
 
 
     @GetMapping
-    public Page<PublicationResponse> getPublications(
+    @Operation(summary = "Lista publicações, mais recentes primeiro; authorId filtra por canal")
+    public PagedModel<EntityModel<PublicationResponse>> getPublications(
 
             @RequestParam(
                     required = false
@@ -110,7 +123,9 @@ public class PublicationController {
             User user,
 
             @RequestHeader(value = "X-Channel-Id", required = false)
-            UUID channelId
+            UUID channelId,
+
+            PagedResourcesAssembler<PublicationResponse> pagedAssembler
 
     ) {
 
@@ -129,13 +144,16 @@ public class PublicationController {
                 );
 
 
-        return publicationService.getPublications(
-                authorId,
-                channelId == null ? null : channelService.getOwnedChannel(channelId, user),
-                PageRequest.of(
-                        safePage,
-                        safeSize
-                )
+        return pagedAssembler.toModel(
+                publicationService.getPublications(
+                        authorId,
+                        channelId == null ? null : channelService.getOwnedChannel(channelId, user),
+                        PageRequest.of(
+                                safePage,
+                                safeSize
+                        )
+                ),
+                publicationAssembler
         );
     }
 }

@@ -7,10 +7,16 @@ import com.naro.publication.application.dto.CreateCommentRequest;
 import com.naro.publication.application.service.CommentService;
 import com.naro.user.domain.entity.User;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,25 +33,31 @@ import java.util.UUID;
  *   POST   /comments/{commentId}/comments                   responder um comentário
  *   GET    /comments/{commentId}/comments                   respostas diretas (paginado)
  */
+@Tag(name = "Comments", description = "Comentários e respostas, em qualquer nível")
 @RestController
 @RequestMapping("/api/v1")
 public class CommentController {
 
     private final CommentService commentService;
     private final ChannelService channelService;
+    private final CommentModelAssembler commentAssembler;
 
 
     public CommentController(
             CommentService commentService,
-            ChannelService channelService
+            ChannelService channelService,
+            CommentModelAssembler commentAssembler
     ) {
         this.commentService = commentService;
         this.channelService = channelService;
+        this.commentAssembler = commentAssembler;
     }
 
 
     @PostMapping("/publications/{publicationId}/comments")
-    public ResponseEntity<CommentResponse> commentOnPublication(
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Comenta uma publicação")
+    public ResponseEntity<EntityModel<CommentResponse>> commentOnPublication(
 
             @PathVariable
             UUID publicationId,
@@ -72,12 +84,14 @@ public class CommentController {
                 "/api/v1/publications/" + response.publicationId() + "/comments/" + response.id()
         );
 
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(location).body(commentAssembler.toModel(response));
     }
 
 
     @PostMapping("/comments/{commentId}/comments")
-    public ResponseEntity<CommentResponse> reply(
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Responde um comentário")
+    public ResponseEntity<EntityModel<CommentResponse>> reply(
 
             @PathVariable
             UUID commentId,
@@ -104,12 +118,13 @@ public class CommentController {
                 "/api/v1/publications/" + response.publicationId() + "/comments/" + response.id()
         );
 
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(location).body(commentAssembler.toModel(response));
     }
 
 
     @GetMapping("/publications/{publicationId}/comments")
-    public Page<CommentResponse> getPublicationComments(
+    @Operation(summary = "Lista os comentários diretos de uma publicação, mais recentes primeiro")
+    public PagedModel<EntityModel<CommentResponse>> getPublicationComments(
 
             @PathVariable
             UUID publicationId,
@@ -128,7 +143,9 @@ public class CommentController {
             User currentUser,
 
             @RequestHeader(value = "X-Channel-Id", required = false)
-            UUID channelId
+            UUID channelId,
+
+            PagedResourcesAssembler<CommentResponse> pagedAssembler
 
     ) {
 
@@ -136,16 +153,20 @@ public class CommentController {
         int safeSize = Math.clamp(size, 1, 100);
         PageRequest pageable = PageRequest.of(safePage, safeSize);
 
-        return commentService.getPublicationComments(
-                publicationId,
-                channelId == null ? null : channelService.getOwnedChannel(channelId, currentUser),
-                pageable
+        return pagedAssembler.toModel(
+                commentService.getPublicationComments(
+                        publicationId,
+                        channelId == null ? null : channelService.getOwnedChannel(channelId, currentUser),
+                        pageable
+                ),
+                commentAssembler
         );
     }
 
 
     @GetMapping("/comments/{commentId}/comments")
-    public Page<CommentResponse> getReplies(
+    @Operation(summary = "Lista as respostas diretas de um comentário, mais antigas primeiro")
+    public PagedModel<EntityModel<CommentResponse>> getReplies(
 
             @PathVariable
             UUID commentId,
@@ -164,7 +185,9 @@ public class CommentController {
             User currentUser,
 
             @RequestHeader(value = "X-Channel-Id", required = false)
-            UUID channelId
+            UUID channelId,
+
+            PagedResourcesAssembler<CommentResponse> pagedAssembler
 
     ) {
 
@@ -172,16 +195,21 @@ public class CommentController {
         int safeSize = Math.clamp(size, 1, 100);
         PageRequest pageable = PageRequest.of(safePage, safeSize);
 
-        return commentService.getReplies(
-                commentId,
-                channelId == null ? null : channelService.getOwnedChannel(channelId, currentUser),
-                pageable
+        return pagedAssembler.toModel(
+                commentService.getReplies(
+                        commentId,
+                        channelId == null ? null : channelService.getOwnedChannel(channelId, currentUser),
+                        pageable
+                ),
+                commentAssembler
         );
     }
 
 
     @DeleteMapping("/publications/{publicationId}/comments/{commentId}")
-    public ResponseEntity<Void> delete(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Apaga um comentário do canal selecionado, em qualquer nível")
+    public void delete(
 
             @PathVariable
             UUID publicationId,
@@ -203,9 +231,5 @@ public class CommentController {
                 channelService.getOwnedChannel(channelId, currentUser)
         );
 
-
-        return ResponseEntity
-                .noContent()
-                .build();
     }
 }

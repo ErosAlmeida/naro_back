@@ -19,6 +19,7 @@
         <lombok.version>1.18.46</lombok.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <aws.sdk.version>2.54.13</aws.sdk.version>
+        <springdoc.version>3.1.1</springdoc.version>
     </properties>
 
     <dependencyManagement>
@@ -72,6 +73,25 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- OPENAPI / SWAGGER -->
+        <!-- ================================================== -->
+
+        <!--
+            springdoc 3.x é a linha compatível com Spring Boot 4
+            (3.1.x suporta o Boot 4.1). Já reconhece o HATEOAS:
+            _links e _embedded aparecem nos schemas.
+
+            Documentação:  /swagger-ui.html
+            Contrato JSON: /v3/api-docs
+        -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
 

@@ -9,7 +9,7 @@ possui exatamente um canal como autor.
 | Método | Endpoint | Comportamento |
 | --- | --- | --- |
 | POST | `/api/v1/channels` | Cria um canal para o usuário autenticado. |
-| GET | `/api/v1/channels/me` | Lista os canais do usuário autenticado; `[]` se ele ainda não tem nenhum. |
+| GET | `/api/v1/channels/me` | Lista os canais do usuário autenticado em `_embedded.channels`; sem `_embedded` se ele ainda não tem nenhum. |
 | GET | `/api/v1/channels/{id}` | Busca por UUID; retorna 404 se não existir. |
 | GET | `/api/v1/channels/slug/{slug}` | Busca por slug; retorna 404 se não existir. |
 | PUT | `/api/v1/channels/{id}` | Atualiza um canal do usuário autenticado. |
@@ -20,8 +20,9 @@ obrigatórios, `description` opcional e arquivos opcionais `profile_image` e
 ausente é removida. Slugs duplicados retornam 409 e operações em canais de outro
 usuário retornam 403. O dono não pode ser alterado pela requisição.
 
-O front descobre se a pessoa já tem canal por `GET /api/v1/channels/me`: lista
-vazia significa que ela ainda precisa criar o primeiro. Não há checagem prévia de
+O front descobre se a pessoa já tem canal por `GET /api/v1/channels/me`: coleção
+vazia (resposta sem `_embedded`, veja [api.md](api.md)) significa que ela ainda
+precisa criar o primeiro. Não há checagem prévia de
 disponibilidade de slug; a criação e a atualização respondem 409 quando ele já
 existe.
 

@@ -89,9 +89,9 @@ class CommentsAndLikesIntegrationTest {
         // Resposta de resposta continua ligada à publicação original.
         mockMvc.perform(get("/api/v1/comments/{id}/comments", b).with(as(maria)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(c.toString()))
-                .andExpect(jsonPath("$.content[0].parentCommentId").value(b.toString()))
-                .andExpect(jsonPath("$.content[0].publicationId").value(publication.getId().toString()));
+                .andExpect(jsonPath("$._embedded.comments[0].id").value(c.toString()))
+                .andExpect(jsonPath("$._embedded.comments[0].parentCommentId").value(b.toString()))
+                .andExpect(jsonPath("$._embedded.comments[0].publicationId").value(publication.getId().toString()));
 
         likePublication(publication.getId(), maria).andExpect(jsonPath("$.likeCount").value(1));
         likeComment(a, maria).andExpect(jsonPath("$.likeCount").value(1));
@@ -105,19 +105,19 @@ class CommentsAndLikesIntegrationTest {
         mockMvc.perform(get("/api/v1/publications/{id}/comments", publication.getId()).with(as(maria)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].id").value(a.toString()))
-                .andExpect(jsonPath("$.content[0].author.id").value(leonardo.getId().toString()))
-                .andExpect(jsonPath("$.content[0].likeCount").value(1))
-                .andExpect(jsonPath("$.content[0].likedByCurrentChannel").value(true))
-                .andExpect(jsonPath("$.content[0].replyCount").value(1))
-                .andExpect(jsonPath("$.content[0].replies").doesNotExist());
+                .andExpect(jsonPath("$._embedded.comments[0].id").value(a.toString()))
+                .andExpect(jsonPath("$._embedded.comments[0].author.id").value(leonardo.getId().toString()))
+                .andExpect(jsonPath("$._embedded.comments[0].likeCount").value(1))
+                .andExpect(jsonPath("$._embedded.comments[0].likedByCurrentChannel").value(true))
+                .andExpect(jsonPath("$._embedded.comments[0].replyCount").value(1))
+                .andExpect(jsonPath("$._embedded.comments[0].replies").doesNotExist());
 
         // Like no comentário aninhado, visto por quem curtiu e por quem não curtiu.
         mockMvc.perform(get("/api/v1/comments/{id}/comments", b).with(as(maria)))
-                .andExpect(jsonPath("$.content[0].likeCount").value(1))
-                .andExpect(jsonPath("$.content[0].likedByCurrentChannel").value(true));
+                .andExpect(jsonPath("$._embedded.comments[0].likeCount").value(1))
+                .andExpect(jsonPath("$._embedded.comments[0].likedByCurrentChannel").value(true));
         mockMvc.perform(get("/api/v1/comments/{id}/comments", b).with(as(leonardo)))
-                .andExpect(jsonPath("$.content[0].likedByCurrentChannel").value(false));
+                .andExpect(jsonPath("$._embedded.comments[0].likedByCurrentChannel").value(false));
 
         // A publicação conta comentários de todos os níveis e só os próprios likes.
         mockMvc.perform(get("/api/v1/publications/{id}", publication.getId()).with(as(leonardo)))
@@ -255,8 +255,8 @@ class CommentsAndLikesIntegrationTest {
         mockMvc.perform(get("/api/v1/publications").param("authorId", leonardo.getId().toString()).with(as(leonardo)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements").value(2))
-                .andExpect(jsonPath("$.content[0].author.id").value(leonardo.getId().toString()))
-                .andExpect(jsonPath("$.content[1].author.id").value(leonardo.getId().toString()));
+                .andExpect(jsonPath("$._embedded.publications[0].author.id").value(leonardo.getId().toString()))
+                .andExpect(jsonPath("$._embedded.publications[1].author.id").value(leonardo.getId().toString()));
     }
 
     @Test
@@ -269,7 +269,10 @@ class CommentsAndLikesIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         String id = JsonPath.read(body, "$.id");
         mockMvc.perform(get("/api/v1/channels/{id}", id).with(as(leonardo)))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.slug").value(slug));
+                .andExpect(status().isOk()).andExpect(jsonPath("$.slug").value(slug))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/api/v1/channels/" + id))
+                .andExpect(jsonPath("$._links.publications.href")
+                        .value("http://localhost/api/v1/publications?authorId=" + id + "&page=0&size=20"));
         mockMvc.perform(get("/api/v1/channels/slug/{slug}", slug).with(as(leonardo)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(id));
         mockMvc.perform(multipart(HttpMethod.PUT, "/api/v1/channels/{id}", id)
@@ -302,12 +305,12 @@ class CommentsAndLikesIntegrationTest {
 
         mockMvc.perform(get("/api/v1/publications").param("authorId", leonardo.getId().toString()).with(as(leonardo)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].author.profileImageUrl").isNotEmpty());
+                .andExpect(jsonPath("$._embedded.publications[0].author.profileImageUrl").isNotEmpty());
 
         commentOnPublication(publication.getId(), "oi", leonardo);
         mockMvc.perform(get("/api/v1/publications/{id}/comments", publication.getId()).with(as(leonardo)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].author.profileImageUrl").isNotEmpty());
+                .andExpect(jsonPath("$._embedded.comments[0].author.profileImageUrl").isNotEmpty());
 
         // Canal sem foto continua respondendo autoria, só sem URL.
         mockMvc.perform(get("/api/v1/publications/{id}", publication.getId()).with(as(maria)))
@@ -318,21 +321,21 @@ class CommentsAndLikesIntegrationTest {
 
     @Test
     void myChannelsAnswersWhetherTheUserAlreadyHasAChannel() throws Exception {
-        // Quem ainda não criou nada recebe uma lista vazia, não 404.
+        // Quem ainda não criou nada recebe uma coleção vazia, não 404.
+        // Em HAL, coleção vazia é a ausência de _embedded.
         User newcomer = userRepository.save(new User("kc-newcomer-" + UUID.randomUUID(), "newcomer", null, null, null));
         mockMvc.perform(get("/api/v1/channels/me").with(asUser(newcomer)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
+                .andExpect(jsonPath("$._embedded").doesNotExist());
 
         mockMvc.perform(get("/api/v1/channels/me").with(as(leonardo)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(leonardo.getId().toString()))
-                .andExpect(jsonPath("$[0].ownerId").value(leonardo.getOwner().getId().toString()))
-                .andExpect(jsonPath("$[0].slug").value(leonardo.getSlug()))
+                .andExpect(jsonPath("$._embedded.channels.length()").value(1))
+                .andExpect(jsonPath("$._embedded.channels[0].id").value(leonardo.getId().toString()))
+                .andExpect(jsonPath("$._embedded.channels[0].ownerId").value(leonardo.getOwner().getId().toString()))
+                .andExpect(jsonPath("$._embedded.channels[0].slug").value(leonardo.getSlug()))
                 // Canais de outro dono nunca aparecem aqui.
-                .andExpect(jsonPath("$[?(@.id == '" + maria.getId() + "')]").isEmpty());
+                .andExpect(jsonPath("$._embedded.channels[?(@.id == '" + maria.getId() + "')]").isEmpty());
 
         // Um segundo canal entra na lista, do mais antigo para o mais novo.
         String slug = "segundo-" + UUID.randomUUID();
@@ -340,9 +343,9 @@ class CommentsAndLikesIntegrationTest {
                 .andExpect(status().isCreated());
         mockMvc.perform(get("/api/v1/channels/me").with(as(leonardo)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(leonardo.getId().toString()))
-                .andExpect(jsonPath("$[1].slug").value(slug));
+                .andExpect(jsonPath("$._embedded.channels.length()").value(2))
+                .andExpect(jsonPath("$._embedded.channels[0].id").value(leonardo.getId().toString()))
+                .andExpect(jsonPath("$._embedded.channels[1].slug").value(slug));
     }
 
     private MockMultipartFile image() {

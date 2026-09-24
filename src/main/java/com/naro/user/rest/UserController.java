@@ -8,8 +8,13 @@ import com.naro.user.application.mapper.UserMapper;
 import com.naro.user.application.service.UserService;
 import com.naro.user.domain.entity.User;
 
-import org.springframework.data.domain.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+@Tag(name = "Users", description = "Usuário autenticado, perfis públicos e busca")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -26,20 +32,33 @@ public class UserController {
 
     private final UserMapper userMapper;
 
+    private final CurrentUserModelAssembler currentUserAssembler;
+
+    private final UserProfileModelAssembler profileAssembler;
+
+    private final UserSummaryModelAssembler summaryAssembler;
+
 
     public UserController(
             UserService userService,
-            UserMapper userMapper
+            UserMapper userMapper,
+            CurrentUserModelAssembler currentUserAssembler,
+            UserProfileModelAssembler profileAssembler,
+            UserSummaryModelAssembler summaryAssembler
     ) {
         this.userService = userService;
         this.userMapper = userMapper;
+        this.currentUserAssembler = currentUserAssembler;
+        this.profileAssembler = profileAssembler;
+        this.summaryAssembler = summaryAssembler;
     }
 
 
     @GetMapping("/me")
-    public CurrentUserResponse me(@CurrentUser User user) {
+    @Operation(summary = "Usuário autenticado, com links para os canais e as conversas dele")
+    public EntityModel<CurrentUserResponse> me(@CurrentUser User user) {
 
-        return userMapper.toCurrentUserResponse(user);
+        return currentUserAssembler.toModel(userMapper.toCurrentUserResponse(user));
     }
 
     @GetMapping("/me2")
@@ -50,7 +69,8 @@ public class UserController {
 
 
     @GetMapping("/search")
-    public Page<UserSummaryResponse> search(
+    @Operation(summary = "Busca usuários por username ou nome, em ordem alfabética")
+    public PagedModel<EntityModel<UserSummaryResponse>> search(
 
             @RequestParam("q")
             String query,
@@ -66,29 +86,35 @@ public class UserController {
             int size,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            PagedResourcesAssembler<UserSummaryResponse> pagedAssembler
 
     ) {
 
-        return userService.search(
-                query,
-                currentUser,
-                PageRequest.of(
-                        Math.max(page, 0),
-                        Math.clamp(size, 1, 50)
-                )
+        return pagedAssembler.toModel(
+                userService.search(
+                        query,
+                        currentUser,
+                        PageRequest.of(
+                                Math.max(page, 0),
+                                Math.clamp(size, 1, 50)
+                        )
+                ),
+                summaryAssembler
         );
     }
 
 
     @GetMapping("/{userId}")
-    public UserProfileResponse getProfile(
+    @Operation(summary = "Perfil público de um usuário")
+    public EntityModel<UserProfileResponse> getProfile(
 
             @PathVariable
             UUID userId
 
     ) {
 
-        return userService.getProfile(userId);
+        return profileAssembler.toModel(userService.getProfile(userId));
     }
 }

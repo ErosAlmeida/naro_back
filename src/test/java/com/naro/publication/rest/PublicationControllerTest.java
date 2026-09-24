@@ -18,6 +18,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -36,12 +37,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PublicationController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, PublicationModelAssembler.class})
 class PublicationControllerTest {
 
     @Autowired
@@ -90,7 +92,7 @@ class PublicationControllerTest {
                         .param("content", "Minha publicação")
                         .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/publications/" + response.id()))
+                .andExpect(header().string("Location", "http://localhost/api/v1/publications/" + response.id()))
                 .andExpect(jsonPath("$.id").value(response.id().toString()))
                 .andExpect(jsonPath("$.likeCount").value(0))
                 .andExpect(jsonPath("$.commentCount").value(0))
@@ -211,7 +213,7 @@ class PublicationControllerTest {
                         .param("size", "500")
                         .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].likeCount").value(1))
+                .andExpect(jsonPath("$._embedded.publications[0].likeCount").value(1))
                 .andExpect(jsonPath("$.page.number").value(1))
                 .andExpect(jsonPath("$.page.size").value(100))
                 .andExpect(jsonPath("$.page.totalElements").value(201))
@@ -233,7 +235,7 @@ class PublicationControllerTest {
         mockMvc.perform(get("/api/v1/publications")
                         .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$._embedded").doesNotExist())
                 .andExpect(jsonPath("$.page.number").value(0))
                 .andExpect(jsonPath("$.page.size").value(20))
                 .andExpect(jsonPath("$.page.totalElements").value(0))
@@ -241,6 +243,66 @@ class PublicationControllerTest {
 
         verify(publicationService)
                 .getPublications(null, currentChannel, PageRequest.of(0, 20));
+    }
+
+
+    // ---------------------------------------------------------------
+    // HATEOAS
+    // ---------------------------------------------------------------
+
+    @Test
+    void publicationLinksToItselfItsAuthorCommentsAndLikes() throws Exception {
+
+        UUID publicationId = UUID.randomUUID();
+
+        when(publicationService.getById(publicationId, null))
+                .thenReturn(response(publicationId, 0, 0, false));
+
+        String publication = "http://localhost/api/v1/publications/" + publicationId;
+
+        // O mesmo Accept que o front manda: o HAL vem mesmo assim.
+        mockMvc.perform(get("/api/v1/publications/{publicationId}", publicationId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$._links.self.href").value(publication))
+                .andExpect(jsonPath("$._links.author.href")
+                        .value("http://localhost/api/v1/channels/" + currentChannel.getId()))
+                .andExpect(jsonPath("$._links.comments.href").value(publication + "/comments?page=0&size=20"))
+                .andExpect(jsonPath("$._links.likes.href").value(publication + "/likes?page=0&size=20"));
+    }
+
+
+    /*
+     * Página 1 de 3: os links de navegação mantêm o filtro
+     * e já trazem o tamanho limitado (500 -> 100).
+     */
+    @Test
+    void pageLinksNavigateKeepingTheFilter() throws Exception {
+
+        UUID authorId = UUID.randomUUID();
+
+        when(publicationService.getPublications(any(), any(), any()))
+                .thenReturn(new PageImpl<>(
+                        List.of(response(UUID.randomUUID(), 1, 0, false)),
+                        PageRequest.of(1, 100), 201));
+
+        String publications = "http://localhost/api/v1/publications?authorId=" + authorId;
+
+        // queryParam, e não param: os links partem da query string da requisição.
+        mockMvc.perform(get("/api/v1/publications")
+                        .queryParam("authorId", authorId.toString())
+                        .queryParam("page", "1")
+                        .queryParam("size", "500")
+                        .with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.first.href").value(publications + "&page=0&size=100"))
+                .andExpect(jsonPath("$._links.prev.href").value(publications + "&page=0&size=100"))
+                .andExpect(jsonPath("$._links.self.href").value(publications + "&page=1&size=100"))
+                .andExpect(jsonPath("$._links.next.href").value(publications + "&page=2&size=100"))
+                .andExpect(jsonPath("$._links.last.href").value(publications + "&page=2&size=100"))
+                .andExpect(jsonPath("$._embedded.publications[0]._links.self").exists());
     }
 
 

@@ -2,6 +2,8 @@ package com.naro.publication.application.dto;
 
 import com.naro.channel.application.dto.ChannelSummaryResponse;
 
+import org.springframework.hateoas.server.core.Relation;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -10,6 +12,7 @@ import java.util.UUID;
  * replyCount indica quantas existem e elas são buscadas paginadas em
  * GET /api/v1/comments/{id}/comments.
  */
+@Relation(collectionRelation = "comments")
 public record CommentResponse(
 
         UUID id,

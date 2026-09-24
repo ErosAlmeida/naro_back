@@ -7,9 +7,14 @@ import com.naro.publication.application.dto.LikeSummaryResponse;
 import com.naro.publication.application.service.LikeService;
 import com.naro.user.domain.entity.User;
 
-import org.springframework.data.domain.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -28,20 +33,24 @@ import java.util.UUID;
  *   GET    /comments/{commentId}/likes/summary
  *   GET    /comments/{commentId}/likes
  */
+@Tag(name = "Likes", description = "Likes em publicações e comentários")
 @RestController
 @RequestMapping("/api/v1")
 public class LikeController {
 
     private final LikeService likeService;
     private final ChannelService channelService;
+    private final LikeModelAssembler likeAssembler;
 
 
     public LikeController(
             LikeService likeService,
-            ChannelService channelService
+            ChannelService channelService,
+            LikeModelAssembler likeAssembler
     ) {
         this.likeService = likeService;
         this.channelService = channelService;
+        this.likeAssembler = likeAssembler;
     }
 
 
@@ -50,6 +59,7 @@ public class LikeController {
      * --------------------------------------------------------------- */
 
     @PostMapping("/publications/{publicationId}/likes")
+    @Operation(summary = "Curte uma publicação (idempotente)")
     public LikeSummaryResponse likePublication(
 
             @PathVariable
@@ -71,7 +81,9 @@ public class LikeController {
 
 
     @DeleteMapping("/publications/{publicationId}/likes/me")
-    public ResponseEntity<Void> unlikePublication(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Descurte uma publicação (idempotente)")
+    public void unlikePublication(
 
             @PathVariable
             UUID publicationId,
@@ -89,14 +101,11 @@ public class LikeController {
                 channelService.getOwnedChannel(channelId, currentUser)
         );
 
-
-        return ResponseEntity
-                .noContent()
-                .build();
     }
 
 
     @GetMapping("/publications/{publicationId}/likes/summary")
+    @Operation(summary = "Contagem de likes de uma publicação e se o canal selecionado curtiu")
     public LikeSummaryResponse getPublicationLikeSummary(
 
             @PathVariable
@@ -118,7 +127,8 @@ public class LikeController {
 
 
     @GetMapping("/publications/{publicationId}/likes")
-    public Page<LikeResponse> getPublicationLikes(
+    @Operation(summary = "Lista quem curtiu uma publicação, mais recentes primeiro")
+    public PagedModel<EntityModel<LikeResponse>> getPublicationLikes(
 
             @PathVariable
             UUID publicationId,
@@ -131,7 +141,9 @@ public class LikeController {
             @RequestParam(
                     defaultValue = "20"
             )
-            int size
+            int size,
+
+            PagedResourcesAssembler<LikeResponse> pagedAssembler
 
     ) {
 
@@ -139,9 +151,12 @@ public class LikeController {
         int safeSize = Math.clamp(size, 1, 100);
         PageRequest pageable = PageRequest.of(safePage, safeSize);
 
-        return likeService.getPublicationLikes(
-                publicationId,
-                pageable
+        return pagedAssembler.toModel(
+                likeService.getPublicationLikes(
+                        publicationId,
+                        pageable
+                ),
+                likeAssembler
         );
     }
 
@@ -151,6 +166,7 @@ public class LikeController {
      * --------------------------------------------------------------- */
 
     @PostMapping("/comments/{commentId}/likes")
+    @Operation(summary = "Curte um comentário (idempotente)")
     public LikeSummaryResponse likeComment(
 
             @PathVariable
@@ -172,7 +188,9 @@ public class LikeController {
 
 
     @DeleteMapping("/comments/{commentId}/likes/me")
-    public ResponseEntity<Void> unlikeComment(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Descurte um comentário (idempotente)")
+    public void unlikeComment(
 
             @PathVariable
             UUID commentId,
@@ -190,14 +208,11 @@ public class LikeController {
                 channelService.getOwnedChannel(channelId, currentUser)
         );
 
-
-        return ResponseEntity
-                .noContent()
-                .build();
     }
 
 
     @GetMapping("/comments/{commentId}/likes/summary")
+    @Operation(summary = "Contagem de likes de um comentário e se o canal selecionado curtiu")
     public LikeSummaryResponse getCommentLikeSummary(
 
             @PathVariable
@@ -219,7 +234,8 @@ public class LikeController {
 
 
     @GetMapping("/comments/{commentId}/likes")
-    public Page<LikeResponse> getCommentLikes(
+    @Operation(summary = "Lista quem curtiu um comentário, mais recentes primeiro")
+    public PagedModel<EntityModel<LikeResponse>> getCommentLikes(
 
             @PathVariable
             UUID commentId,
@@ -232,7 +248,9 @@ public class LikeController {
             @RequestParam(
                     defaultValue = "20"
             )
-            int size
+            int size,
+
+            PagedResourcesAssembler<LikeResponse> pagedAssembler
 
     ) {
 
@@ -240,9 +258,12 @@ public class LikeController {
         int safeSize = Math.clamp(size, 1, 100);
         PageRequest pageable = PageRequest.of(safePage, safeSize);
 
-        return likeService.getCommentLikes(
-                commentId,
-                pageable
+        return pagedAssembler.toModel(
+                likeService.getCommentLikes(
+                        commentId,
+                        pageable
+                ),
+                likeAssembler
         );
     }
 }

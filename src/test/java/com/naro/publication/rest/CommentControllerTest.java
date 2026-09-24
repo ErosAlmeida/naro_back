@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.naro.support.Fixtures.user;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -44,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CommentController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, CommentModelAssembler.class})
 class CommentControllerTest {
 
     @Autowired
@@ -92,11 +93,22 @@ class CommentControllerTest {
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/v1/publications/" + publicationId + "/comments/" + response.id()))
-                .andExpect(jsonPath("$.parentCommentId").doesNotExist())
+                // O HAL mantém os campos null no JSON: o front lê com .nullable().
+                .andExpect(jsonPath("$.parentCommentId").value(nullValue()))
                 .andExpect(jsonPath("$.author.id").value(currentChannel.getId().toString()))
                 .andExpect(jsonPath("$.author.slug").value("leonardo"))
                 .andExpect(jsonPath("$.likeCount").value(0))
-                .andExpect(jsonPath("$.replyCount").value(0));
+                .andExpect(jsonPath("$.replyCount").value(0))
+                // Um comentário não tem GET próprio, então não há self.
+                .andExpect(jsonPath("$._links.self").doesNotExist())
+                .andExpect(jsonPath("$._links.publication.href")
+                        .value("http://localhost/api/v1/publications/" + publicationId))
+                .andExpect(jsonPath("$._links.author.href")
+                        .value("http://localhost/api/v1/channels/" + currentChannel.getId()))
+                .andExpect(jsonPath("$._links.replies.href")
+                        .value("http://localhost/api/v1/comments/" + response.id() + "/comments?page=0&size=20"))
+                .andExpect(jsonPath("$._links.likes.href")
+                        .value("http://localhost/api/v1/comments/" + response.id() + "/likes?page=0&size=20"));
     }
 
 
@@ -177,7 +189,7 @@ class CommentControllerTest {
                         .param("size", "5000")
                         .header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].content").value("resposta"));
+                .andExpect(jsonPath("$._embedded.comments[0].content").value("resposta"));
     }
 
 

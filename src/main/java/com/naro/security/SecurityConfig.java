@@ -1,5 +1,7 @@
 package com.naro.security;
 
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,8 +42,31 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
+                        /*
+                         * O container reenvia os erros para /error.
+                         * Sem isso, um 400/404 numa rota pública
+                         * (como o Swagger) chegaria ao cliente como 401.
+                         */
+                        .dispatcherTypeMatchers(
+                                DispatcherType.ERROR
+                        )
+                        .permitAll()
+
                         .requestMatchers(
                                 "/api/public/**"
+                        )
+                        .permitAll()
+
+                        /*
+                         * Swagger UI e contrato OpenAPI.
+                         *
+                         * Só a documentação é pública: o "Try it out"
+                         * continua exigindo o token do Keycloak.
+                         */
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
                         )
                         .permitAll()
 

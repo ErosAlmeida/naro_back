@@ -9,33 +9,47 @@ import com.naro.config.CurrentUser;
 
 import com.naro.user.domain.entity.User;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
+
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Chats", description = "Conversas privadas; as mensagens novas chegam pelo WebSocket")
 @RestController
 @RequestMapping("/api/v1/chats")
 public class ChatRestController {
 
     private final ChatService chatService;
 
+    private final ConversationModelAssembler conversationAssembler;
+
 
     public ChatRestController(
-            ChatService chatService
+            ChatService chatService,
+            ConversationModelAssembler conversationAssembler
     ) {
         this.chatService = chatService;
+        this.conversationAssembler = conversationAssembler;
     }
 
 
     @PostMapping("/direct/{userId}")
-    public ResponseEntity<ConversationResponse>
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Abre (ou reaproveita) a conversa direta com outro usuário")
+    public ResponseEntity<EntityModel<ConversationResponse>>
     createDirectConversation(
 
             @PathVariable
@@ -63,12 +77,13 @@ public class ChatRestController {
 
         return ResponseEntity
                 .created(location)
-                .body(response);
+                .body(conversationAssembler.toModel(response));
     }
 
 
     @GetMapping
-    public List<ConversationResponse>
+    @Operation(summary = "Lista as conversas do usuário autenticado, as mais ativas primeiro")
+    public CollectionModel<EntityModel<ConversationResponse>>
     getConversations(
 
             @CurrentUser
@@ -76,15 +91,18 @@ public class ChatRestController {
 
     ) {
 
-        return chatService
-                .getConversations(
-                        currentUser
+        return conversationAssembler
+                .toCollectionModel(
+                        chatService.getConversations(
+                                currentUser
+                        )
                 );
     }
 
 
     @GetMapping("/{conversationId}/messages")
-    public Page<ChatMessageResponse>
+    @Operation(summary = "Histórico de mensagens de uma conversa, mais recentes primeiro")
+    public PagedModel<EntityModel<ChatMessageResponse>>
     getMessages(
 
             @PathVariable
@@ -101,7 +119,9 @@ public class ChatRestController {
             int size,
 
             @CurrentUser
-            User currentUser
+            User currentUser,
+
+            PagedResourcesAssembler<ChatMessageResponse> pagedAssembler
 
     ) {
 
@@ -120,12 +140,18 @@ public class ChatRestController {
                 );
 
 
-        return chatService.getMessages(
-                conversationId,
-                currentUser,
-                PageRequest.of(
-                        safePage,
-                        safeSize
+        /*
+         * Sem assembler de mensagem: cada mensagem vai sem links,
+         * a página traz só a navegação (first, next...).
+         */
+        return pagedAssembler.toModel(
+                chatService.getMessages(
+                        conversationId,
+                        currentUser,
+                        PageRequest.of(
+                                safePage,
+                                safeSize
+                        )
                 )
         );
     }

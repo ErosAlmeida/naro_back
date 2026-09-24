@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ChatRestController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, ConversationModelAssembler.class})
 class ChatRestControllerTest {
 
     @Autowired
@@ -83,7 +83,9 @@ class ChatRestControllerTest {
                         .with(jwt()))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/v1/chats/" + conversationId))
-                .andExpect(jsonPath("$.id").value(conversationId.toString()));
+                .andExpect(jsonPath("$.id").value(conversationId.toString()))
+                .andExpect(jsonPath("$._links.messages.href")
+                        .value("http://localhost/api/v1/chats/" + conversationId + "/messages?page=0&size=50"));
     }
 
 

@@ -2,10 +2,13 @@ package com.naro.chat.application.dto;
 
 import com.naro.chat.domain.enums.ConversationType;
 
+import org.springframework.hateoas.server.core.Relation;
+
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+@Relation(collectionRelation = "conversations")
 public record ConversationResponse(
 
         UUID id,

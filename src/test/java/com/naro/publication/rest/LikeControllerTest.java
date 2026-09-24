@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LikeController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, LikeModelAssembler.class})
 class LikeControllerTest {
 
     @Autowired
@@ -112,12 +112,16 @@ class LikeControllerTest {
     @Test
     void listsWhoLikedThePublication() throws Exception {
 
+        UUID maria = UUID.randomUUID();
+
         when(likeService.getPublicationLikes(id, PageRequest.of(0, 20)))
-                .thenReturn(new PageImpl<>(List.of(new LikeResponse(UUID.randomUUID(), "maria", Instant.now()))));
+                .thenReturn(new PageImpl<>(List.of(new LikeResponse(maria, "maria", Instant.now()))));
 
         mockMvc.perform(get("/api/v1/publications/{publicationId}/likes", id).header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].slug").value("maria"));
+                .andExpect(jsonPath("$._embedded.likes[0].slug").value("maria"))
+                .andExpect(jsonPath("$._embedded.likes[0]._links.channel.href")
+                        .value("http://localhost/api/v1/channels/" + maria));
     }
 
 
@@ -178,7 +182,7 @@ class LikeControllerTest {
 
         mockMvc.perform(get("/api/v1/comments/{commentId}/likes", id).param("size", "5000").header("X-Channel-Id", currentChannel.getId()).with(jwt()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].slug").value("maria"));
+                .andExpect(jsonPath("$._embedded.likes[0].slug").value("maria"));
     }
 
 

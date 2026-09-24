@@ -29,7 +29,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-@Import({SecurityConfig.class, UserMapperImpl.class})
+@Import({
+        SecurityConfig.class,
+        UserMapperImpl.class,
+        CurrentUserModelAssembler.class,
+        UserProfileModelAssembler.class,
+        UserSummaryModelAssembler.class
+})
 class UserControllerTest {
 
     @Autowired
@@ -65,6 +71,21 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(currentUser.getId().toString()))
                 .andExpect(jsonPath("$.username").value("leonardo"))
                 .andExpect(jsonPath("$.keycloakId").doesNotExist());
+    }
+
+
+    /*
+     * /me é a porta de entrada: dele se chega aos canais
+     * e às conversas do usuário.
+     */
+    @Test
+    void meLinksToTheUsersChannelsAndConversations() throws Exception {
+
+        mockMvc.perform(get("/api/users/me").with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/api/users/me"))
+                .andExpect(jsonPath("$._links.channels.href").value("http://localhost/api/v1/channels/me"))
+                .andExpect(jsonPath("$._links.conversations.href").value("http://localhost/api/v1/chats"));
     }
 
 

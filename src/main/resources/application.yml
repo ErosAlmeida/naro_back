@@ -36,6 +36,24 @@ spring:
           principal-claim-name: "preferred_username"
 
 
+# UI em /swagger-ui.html, contrato em /v3/api-docs.
+springdoc:
+  # É o Accept que o front manda; o HAL continua vindo nele,
+  # porque o Spring usa HAL como o JSON padrão.
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    # O token sobrevive ao F5 da página.
+    persist-authorization: true
+    # Botão Authorize -> login no Keycloak (Authorization Code + PKCE).
+    # O client precisa existir no realm; veja docs/api.md.
+    oauth:
+      client-id: naro-swagger
+      use-pkce-with-authorization-code-grant: true
+
+
 app:
   storage:
     s3:

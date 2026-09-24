@@ -1,8 +1,11 @@
 package com.naro.chat.application.dto;
 
+import org.springframework.hateoas.server.core.Relation;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Relation(collectionRelation = "messages")
 public record ChatMessageResponse(
 
         UUID id,
