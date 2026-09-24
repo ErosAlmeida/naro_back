@@ -1,4 +1,9 @@
 spring:
+  # Sem SPRING_PROFILES_ACTIVE o app sobe como "local" (IDE, mvn spring-boot:run).
+  # Em produção, informe o perfil: com qualquer perfil ativo o "local" não entra.
+  profiles:
+    default: local
+
   datasource:
     url: jdbc:postgresql://localhost:5432/naro
     username: postgres

@@ -13,6 +13,15 @@ possui exatamente um canal como autor.
 | GET | `/api/v1/channels/{id}` | Busca por UUID; retorna 404 se não existir. |
 | GET | `/api/v1/channels/slug/{slug}` | Busca por slug; retorna 404 se não existir. |
 | PUT | `/api/v1/channels/{id}` | Atualiza um canal do usuário autenticado. |
+| GET | `/api/v1/channels/discover` | Descobre canais de outros usuários, com busca por nome ou slug e paginação. |
+| POST | `/api/v1/channels/{id}/following/{targetId}` | O canal `id` passa a seguir `targetId` (201). |
+| DELETE | `/api/v1/channels/{id}/following/{targetId}` | Deixa de seguir (204). |
+| GET | `/api/v1/channels/{id}/following` | Lista canais seguidos, com paginação. |
+| GET | `/api/v1/channels/{id}/followers` | Lista seguidores, com paginação. |
+| GET | `/api/v1/channels/{id}/following/count` | Conta quantos canais `id` segue. |
+| GET | `/api/v1/channels/{id}/followers/count` | Conta seguidores de `id`. |
+| GET | `/api/v1/channels/{id}/following/{targetId}/status` | Informa se `id` segue `targetId` (`following`) e se o marcou como favorito (`favorite`). |
+| PATCH | `/api/v1/channels/{id}/following/{targetId}/favorite` | Define `favorite` com JSON `{ "favorite": true/false }`. |
 
 Criação e atualização usam `multipart/form-data`, com `name` e `slug`
 obrigatórios, `description` opcional e arquivos opcionais `profile_image` e
@@ -36,6 +45,25 @@ Nas leituras de publicações, comentários e resumos de likes, o header é opci
 Sem ele, `likedByCurrentChannel` é `false`; as contagens continuam completas.
 Com ele, o campo informa exclusivamente o like do canal selecionado. A
 autenticação por token continua obrigatória, conforme a configuração existente.
+
+Na descoberta, `X-Channel-Id` é obrigatório: ele define qual canal está
+explorando e para qual canal o campo `following` será calculado. O backend
+confere que o canal pertence ao usuário autenticado e exclui da listagem todos
+os canais do mesmo dono. `GET /api/v1/channels/discover` aceita `search`,
+`page` e `size`; a ordem padrão é pelos canais mais recentes. Cada item traz
+`followersCount` e `following`. A troca de canal ativo no frontend não troca a
+conta autenticada.
+
+Follow é sempre `Channel -> Channel`. Os endpoints de alteração e status usam
+`{id}` como canal seguidor; o backend valida a posse antes de alterar a relação.
+Seguir a si mesmo retorna 400, repetir um follow retorna 409, e canal ou
+relação inexistente retorna 404. As contagens e listagens de seguidores e
+seguidos são separadas para cada canal.
+
+A tabela `channel_follows` mantém `favorite`, `interaction_count`,
+`last_interaction_at` e `relevance_score` para uso futuro. No follow, esses
+campos começam em `false`, `0`, `null` e `null`. Nenhum score ou recomendação
+é calculado nesta etapa.
 
 `GET /api/v1/publications?authorId=<UUID>` agora filtra pelo UUID do **canal**.
 O payload de criação de publicações e comentários mantém os campos existentes;
@@ -67,6 +95,9 @@ alvo. Descurtir e excluir comentários atuam apenas pelo canal selecionado.
 publicação, comentário ou like, com nome baseado no username e slug
 `legacy-<UUID do usuário>`. O canal legado reutiliza esse UUID para preservar as
 referências existentes, mas continua sendo uma entidade independente de `User`.
+
+`V9` cria `channel_follows`, com unicidade do par seguidor/seguido,
+verificação contra auto-follow e índices para consultar seguidores e seguidos.
 
 As colunas antigas `author_id` e `user_id` tornam-se `channel_id`, com foreign
 keys para `channels`. Os índices únicos de likes passam a garantir unicidade por

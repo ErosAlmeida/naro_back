@@ -316,6 +316,27 @@
 
 
             <!-- ================================================== -->
+            <!-- JAR -->
+            <!-- ================================================== -->
+
+            <!--
+                seed/** (textos e imagens do seed local) só é lido a partir
+                de target/classes, no perfil local. O jar não leva esse
+                conteúdo: em produção não existe o que semear.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+
+                <configuration>
+                    <excludes>
+                        <exclude>seed/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+
+            <!-- ================================================== -->
             <!-- JAVA COMPILER -->
             <!-- ================================================== -->
 

@@ -1,0 +1,5 @@
+# Os testes nunca sobem com o perfil padrão "local": o seed de desenvolvimento
+# não pode entrar nos bancos dos testes. Quem precisa dele usa @ActiveProfiles.
+spring:
+  profiles:
+    active: test

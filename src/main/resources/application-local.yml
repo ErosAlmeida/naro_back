@@ -1,0 +1,7 @@
+app:
+  seed:
+    # Canais, publicações com imagem, comentários, likes e follows de exemplo
+    # (seed/content.json + seed/images). Roda uma vez, no primeiro startup com o
+    # banco sem o seed, e só com banco e MinIO em localhost.
+    # Veja com.naro.seed.LocalContentSeeder.
+    enabled: true

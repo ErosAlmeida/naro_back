@@ -1,0 +1,1186 @@
+{
+  "channels": [
+    {
+      "key": "cozinha",
+      "user": {
+        "username": "bia.moraes",
+        "firstName": "Beatriz",
+        "lastName": "Moraes",
+        "bio": "Cozinheira de fim de semana e padeira por teimosia."
+      },
+      "name": "Cozinha da Bia",
+      "slug": "cozinha-da-bia",
+      "description": "Receitas caseiras, pão de fermentação natural e aquele doce de domingo. Tudo testado numa cozinha pequena em BH.",
+      "profileImage": "cozinha/avatar.jpg",
+      "bannerImage": "cozinha/banner.jpg",
+      "publications": [
+        {
+          "image": "cozinha/post-1.jpg",
+          "content": "Massa descansando depois da sova. Se ela passar no teste da janela, está pronta pra modelar. Quem aí também tem fermento natural com nome? O meu se chama Jorge 🍞",
+          "comments": [
+            {
+              "author": "cafe",
+              "content": "O Jorge merece um cafezinho coado pra acompanhar o primeiro pão!",
+              "replies": [
+                {
+                  "author": "cozinha",
+                  "content": "Combinado! Pão quentinho e café coado é o café da manhã perfeito."
+                }
+              ]
+            },
+            {
+              "author": "pets",
+              "content": "Aqui o fermento se chama Biscoito, mas quem mais gosta dele é o cachorro 😂"
+            }
+          ]
+        },
+        {
+          "image": "cozinha/post-2.jpg",
+          "content": "Pão rústico de alecrim e alho saindo do forno depois de 18 horas de fermentação lenta. Casca crocante, miolo aerado e a casa inteira cheirando a padaria.",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Essa luz lateral deixou a casca linda. Dá até pra sentir a crocância."
+            },
+            {
+              "author": "viagem",
+              "content": "Comi um parecido numa padaria em Portugal e nunca esqueci. Receita, por favor!",
+              "replies": [
+                {
+                  "author": "cozinha",
+                  "content": "Vou gravar o passo a passo neste fim de semana!"
+                }
+              ]
+            },
+            {
+              "author": "plantas",
+              "content": "Alecrim fresco da horta faz toda a diferença, né?"
+            }
+          ]
+        },
+        {
+          "image": "cozinha/post-3.jpg",
+          "content": "Lasanha aberta de ragu com tomatinhos assados. Parece prato de restaurante, mas fica pronta em 40 minutos. Receita nos comentários!",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Salvei pra fazer na sexta. Quarenta minutos cabe até em dia de deploy."
+            },
+            {
+              "author": "musica",
+              "content": "Isso aqui com um disco de jazz tocando é programa de domingo resolvido."
+            }
+          ]
+        },
+        {
+          "image": "cozinha/post-4.jpg",
+          "content": "Almôndegas ao sugo com penne, do jeitinho da minha nonna: carne moída duas vezes e pão amanhecido no leite. Não tem erro.",
+          "comments": [
+            {
+              "author": "fitness",
+              "content": "Prato perfeito depois de um longão de domingo. Proteína e carboidrato na medida!"
+            },
+            {
+              "author": "games",
+              "content": "Comida de vó é imbatível. Nenhum restaurante chega perto.",
+              "replies": [
+                {
+                  "author": "cozinha",
+                  "content": "Né? O segredo é o carinho e o molho apurado por duas horas."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "cozinha/post-5.jpg",
+          "content": "Bolo de chocolate molhadinho com calda quente e sorvete de creme. Sobremesa oficial de aniversário aqui em casa 🎂",
+          "comments": [
+            {
+              "author": "arte",
+              "content": "Até a calda parece pintada à mão. Que capricho!"
+            },
+            {
+              "author": "cafe",
+              "content": "Pede um espresso curto do lado pra equilibrar o doce."
+            },
+            {
+              "author": "mar",
+              "content": "Depois de um dia inteiro no mar, eu comeria esse bolo inteiro sozinho."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "viagem",
+      "user": {
+        "username": "caio.andrade",
+        "firstName": "Caio",
+        "lastName": "Andrade",
+        "bio": "Mochileiro, fotógrafo amador e colecionador de passagens de ônibus."
+      },
+      "name": "Rota Nômade",
+      "slug": "rota-nomade",
+      "description": "Mochilão, trilhas e cidades pequenas. Roteiros com orçamento curto e muita estrada.",
+      "profileImage": "viagem/avatar.jpg",
+      "bannerImage": "viagem/banner.jpg",
+      "publications": [
+        {
+          "image": "viagem/post-1.jpg",
+          "content": "Amanheceu assim no lago. Acampamos a 3 km da trilha principal e valeu cada passo com a mochila de 14 kg nas costas.",
+          "comments": [
+            {
+              "author": "fitness",
+              "content": "Três quilômetros com 14 kg nas costas é treino de verdade! Que recompensa.",
+              "replies": [
+                {
+                  "author": "viagem",
+                  "content": "As pernas reclamaram, mas os olhos agradeceram."
+                }
+              ]
+            },
+            {
+              "author": "fotografia",
+              "content": "Esse reflexo perfeito na água pede um filtro polarizador. Que luz!"
+            }
+          ]
+        },
+        {
+          "image": "viagem/post-2.jpg",
+          "content": "Refúgio de montanha que custa menos que um hostel na cidade. Dois dias sem sinal de celular e ninguém sentiu falta.",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Dois dias sem notificação? Isso parece um sonho distante 😅"
+            },
+            {
+              "author": "plantas",
+              "content": "Esse verde todo me deu vontade de largar tudo e ir morar no mato."
+            }
+          ]
+        },
+        {
+          "image": "viagem/post-3.jpg",
+          "content": "Pôr do sol depois de 9 horas de ônibus. Às vezes o destino compensa a viagem; às vezes a viagem é o destino.",
+          "comments": [
+            {
+              "author": "mar",
+              "content": "Qual praia é essa? As ondas parecem boas pra iniciante.",
+              "replies": [
+                {
+                  "author": "viagem",
+                  "content": "Mandei no direct! A esquerda da ponta é bem tranquila de manhã."
+                }
+              ]
+            },
+            {
+              "author": "musica",
+              "content": "Esse céu merece uma trilha sonora de fim de tarde."
+            }
+          ]
+        },
+        {
+          "image": "viagem/post-4.jpg",
+          "content": "Centro histórico ainda vazio às 7h. Dica de ouro: chegue cedo em cidade turística e as ruas são só suas.",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Melhor dica de todas! Luz suave e nenhum turista no enquadramento."
+            },
+            {
+              "author": "cafe",
+              "content": "E já emenda com o café da manhã na padaria da esquina, que abre antes de todo mundo."
+            }
+          ]
+        },
+        {
+          "image": "viagem/post-5.jpg",
+          "content": "Achei esse muro grafitado numa ladeira escondida. As melhores coisas de uma viagem nunca estão no roteiro.",
+          "comments": [
+            {
+              "author": "arte",
+              "content": "Que traço incrível! Sabe quem é o artista?",
+              "replies": [
+                {
+                  "author": "viagem",
+                  "content": "Não achei assinatura, mas vou procurar na próxima vez que passar por lá."
+                }
+              ]
+            },
+            {
+              "author": "games",
+              "content": "Parece personagem de jogo de plataforma dos anos 90."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fitness",
+      "user": {
+        "username": "renata.lima",
+        "firstName": "Renata",
+        "lastName": "Lima",
+        "bio": "Corredora de trilha e ciclista nas horas vagas."
+      },
+      "name": "Movimento Diário",
+      "slug": "movimento-diario",
+      "description": "Corrida de trilha, pedal e treino pra quem tem rotina corrida. Constância vale mais que intensidade.",
+      "profileImage": "fitness/avatar.jpg",
+      "bannerImage": "fitness/banner.jpg",
+      "publications": [
+        {
+          "image": "fitness/post-1.jpg",
+          "content": "Longão de domingo na trilha: 18 km, 600 m de subida e muita lama. Corpo cansado, cabeça leve.",
+          "comments": [
+            {
+              "author": "viagem",
+              "content": "Dezoito quilômetros na trilha é coisa séria. Parabéns!"
+            },
+            {
+              "author": "pets",
+              "content": "Leva o Thor na próxima? Ele precisa gastar energia 😂",
+              "replies": [
+                {
+                  "author": "fitness",
+                  "content": "Traz ele! Trilha com cachorro é outra alegria."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "fitness/post-2.jpg",
+          "content": "Pausa no pedal pra olhar a paisagem. Hidratação é tudo nesse terreno: levei 2 litros e voltei com a garrafa seca.",
+          "comments": [
+            {
+              "author": "mar",
+              "content": "Paisagem de deserto tem uma beleza diferente. Qual foi a distância?",
+              "replies": [
+                {
+                  "author": "fitness",
+                  "content": "Foram 42 km, com muito sol e muita areia."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "fitness/post-3.jpg",
+          "content": "Treino regenerativo: 40 minutos leves, sem relógio, só curtindo o caminho. Descansar também é treinar.",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Preciso aprender isso: descansar sem culpa."
+            },
+            {
+              "author": "plantas",
+              "content": "Que caminho bonito. Dá vontade de caminhar devagar só pra olhar tudo."
+            }
+          ]
+        },
+        {
+          "image": "fitness/post-4.jpg",
+          "content": "Subida é onde a gente descobre do que é feito. Passos curtos, cadência alta e o olhar sempre alguns metros à frente.",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Essas montanhas com a névoa baixa ficam incríveis em preto e branco."
+            },
+            {
+              "author": "cozinha",
+              "content": "Depois dessa subida, só uma macarronada pra recuperar!"
+            }
+          ]
+        },
+        {
+          "image": "fitness/post-5.jpg",
+          "content": "Primeiro pedal com pneu tubeless e que diferença! Menos furo, mais aderência nas pedras soltas.",
+          "comments": [
+            {
+              "author": "games",
+              "content": "Vale a pena a troca? Estou pensando em montar uma bike de trilha.",
+              "replies": [
+                {
+                  "author": "fitness",
+                  "content": "Vale muito! Só não esquece de levar selante extra."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "codigo",
+      "user": {
+        "username": "thiago.nunes",
+        "firstName": "Thiago",
+        "lastName": "Nunes",
+        "bio": "Dev backend, Java desde a versão 6."
+      },
+      "name": "Código no Café",
+      "slug": "codigo-no-cafe",
+      "description": "Java, Spring, bancos de dados e setup de trabalho. Um café e um commit por vez.",
+      "profileImage": "codigo/avatar.jpg",
+      "bannerImage": "codigo/banner.jpg",
+      "publications": [
+        {
+          "image": "codigo/post-1.jpg",
+          "content": "Sexta, 18h, deploy em produção? Aqui não: deploy só de terça a quinta, antes do almoço. E o seu time, tem regra?",
+          "comments": [
+            {
+              "author": "games",
+              "content": "Aqui a regra é: deu problema, quem fez o deploy paga a pizza 🍕",
+              "replies": [
+                {
+                  "author": "codigo",
+                  "content": "Regra justa. Incentiva teste automatizado como nenhuma outra."
+                }
+              ]
+            },
+            {
+              "author": "cafe",
+              "content": "Deploy bom é deploy com café fresco do lado."
+            }
+          ]
+        },
+        {
+          "image": "codigo/post-2.jpg",
+          "content": "Setup minimalista pra focar: notebook, caderno e zero notificação. Bloqueio duas horas de manhã só pra código, sem reunião.",
+          "comments": [
+            {
+              "author": "arte",
+              "content": "Faço o mesmo com a aquarela: celular em outro cômodo e só pincel na mão."
+            },
+            {
+              "author": "fotografia",
+              "content": "Mesa limpa, mente limpa. Que luz boa nesse canto!"
+            }
+          ]
+        },
+        {
+          "image": "codigo/post-3.jpg",
+          "content": "Teclado 75% com switches marrons chegou! Mais silencioso do que eu imaginava. Agora escrevo teste só pelo prazer de digitar ⌨️",
+          "comments": [
+            {
+              "author": "games",
+              "content": "Switch marrom é o equilíbrio perfeito entre jogar e trabalhar.",
+              "replies": [
+                {
+                  "author": "codigo",
+                  "content": "Exatamente! E os colegas de call agradecem o silêncio."
+                }
+              ]
+            },
+            {
+              "author": "musica",
+              "content": "O som das teclas já é quase percussão."
+            }
+          ]
+        },
+        {
+          "image": "codigo/post-4.jpg",
+          "content": "Troquei os keycaps de Esc e Enter por laranja. Não melhora o código, mas melhora o humor.",
+          "comments": [
+            {
+              "author": "arte",
+              "content": "Esse laranja com o cinza ficou uma combinação de cor muito boa!"
+            }
+          ]
+        },
+        {
+          "image": "codigo/post-5.jpg",
+          "content": "Dica de Spring do dia: prefira injeção por construtor. Deixa as dependências explícitas, facilita os testes e dispensa o @Autowired.",
+          "comments": [
+            {
+              "author": "games",
+              "content": "E com record no DTO fica tudo mais limpo ainda."
+            },
+            {
+              "author": "cafe",
+              "content": "Não entendi nada, mas esse café na foto está impecável ☕",
+              "replies": [
+                {
+                  "author": "codigo",
+                  "content": "É o seu blend, Rafael! Acabou ontem, preciso de mais."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fotografia",
+      "user": {
+        "username": "marina.costa",
+        "firstName": "Marina",
+        "lastName": "Costa",
+        "bio": "Fotógrafa de paisagem e colecionadora de câmeras antigas."
+      },
+      "name": "Luz Natural",
+      "slug": "luz-natural",
+      "description": "Fotografia de paisagem, rua e analógica. Neblina, luz baixa e muita espera pelo momento certo.",
+      "profileImage": "fotografia/avatar.jpg",
+      "bannerImage": "fotografia/banner.jpg",
+      "publications": [
+        {
+          "image": "fotografia/post-1.jpg",
+          "content": "A luz atravessando a floresta durou menos de cinco minutos. Tripé, ISO 100 e muita paciência.",
+          "comments": [
+            {
+              "author": "viagem",
+              "content": "Esses raios de luz parecem de filme. Onde foi?",
+              "replies": [
+                {
+                  "author": "fotografia",
+                  "content": "Numa reserva perto de casa. Às vezes o incrível está a 20 minutos."
+                }
+              ]
+            },
+            {
+              "author": "plantas",
+              "content": "Floresta em preto e branco ganha um clima misterioso."
+            }
+          ]
+        },
+        {
+          "image": "fotografia/post-2.jpg",
+          "content": "Neblina de manhã cedo transforma qualquer estrada comum em cenário de filme.",
+          "comments": [
+            {
+              "author": "fitness",
+              "content": "Já corri numa estrada assim. A sensação é de estar dentro de uma nuvem."
+            },
+            {
+              "author": "musica",
+              "content": "Isso daria uma capa de disco perfeita."
+            }
+          ]
+        },
+        {
+          "image": "fotografia/post-3.jpg",
+          "content": "Exposição de 2 segundos no centro da cidade: os bondes viram rastros de luz.",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Qual câmera você usa? Quero começar na fotografia noturna.",
+              "replies": [
+                {
+                  "author": "fotografia",
+                  "content": "Uma mirrorless de entrada já resolve! O segredo mesmo é o tripé."
+                }
+              ]
+            },
+            {
+              "author": "games",
+              "content": "Parece cena de jogo cyberpunk."
+            }
+          ]
+        },
+        {
+          "image": "fotografia/post-4.jpg",
+          "content": "Achei essa câmera de telêmetro dos anos 60 numa feira. Funciona perfeitamente, só precisou de pilha nova no fotômetro.",
+          "comments": [
+            {
+              "author": "musica",
+              "content": "Feira de antiguidade é perigosa: sempre saio com alguma coisa que eu não precisava."
+            },
+            {
+              "author": "arte",
+              "content": "Que objeto lindo. Dá vontade de desenhar."
+            }
+          ]
+        },
+        {
+          "image": "fotografia/post-5.jpg",
+          "content": "Minha primeira bi-objetiva. Filme 120, 12 poses por rolo: cada clique vale ouro.",
+          "comments": [
+            {
+              "author": "viagem",
+              "content": "Leva numa viagem! Doze fotos por rolo obrigam a escolher bem cada momento."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "musica",
+      "user": {
+        "username": "lucas.ferraz",
+        "firstName": "Lucas",
+        "lastName": "Ferraz",
+        "bio": "Guitarrista de banda de garagem desde 2009."
+      },
+      "name": "Som de Garagem",
+      "slug": "som-de-garagem",
+      "description": "Guitarras, discos de vinil e shows pequenos. Música independente e equipamento usado com história.",
+      "profileImage": "musica/avatar.jpg",
+      "bannerImage": "musica/banner.jpg",
+      "publications": [
+        {
+          "image": "musica/post-1.jpg",
+          "content": "Semiacústica nova (pra mim, porque ela tem 30 anos). O timbre limpo dela é outra coisa.",
+          "comments": [
+            {
+              "author": "games",
+              "content": "Instrumento com história tem outro som. Toca alguma coisa e posta!",
+              "replies": [
+                {
+                  "author": "musica",
+                  "content": "Vou gravar um vídeo neste fim de semana."
+                }
+              ]
+            },
+            {
+              "author": "fotografia",
+              "content": "A madeira com essa luz quente ficou linda."
+            }
+          ]
+        },
+        {
+          "image": "musica/post-2.jpg",
+          "content": "Sunburst, captadores P90 e um braço que parece manteiga. Apaixonado 🎸",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Não entendo nada de guitarra, mas que instrumento bonito."
+            }
+          ]
+        },
+        {
+          "image": "musica/post-3.jpg",
+          "content": "Loja de discos com caixa de promoção a R$ 10. Saí com seis LPs e zero arrependimento.",
+          "comments": [
+            {
+              "author": "cafe",
+              "content": "Me passa o endereço! Loja de disco e café especial é meu programa favorito.",
+              "replies": [
+                {
+                  "author": "musica",
+                  "content": "É no centro, do lado daquela cafeteria de esquina. Te mando!"
+                }
+              ]
+            },
+            {
+              "author": "viagem",
+              "content": "Toda cidade que visito eu procuro uma loja de discos."
+            }
+          ]
+        },
+        {
+          "image": "musica/post-4.jpg",
+          "content": "Show pequeno, luz roxa e som alto. É nesses lugares que a gente descobre as melhores bandas.",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Fotografar show com essa luz é um desafio e tanto."
+            },
+            {
+              "author": "mar",
+              "content": "Qual era a banda? Quero ouvir."
+            }
+          ]
+        },
+        {
+          "image": "musica/post-5.jpg",
+          "content": "Domingo de chuva pede disco inteiro, lado A e lado B, sem pular faixa. O que está tocando aí?",
+          "comments": [
+            {
+              "author": "cozinha",
+              "content": "Aqui é Tim Maia enquanto o pão assa 🎶",
+              "replies": [
+                {
+                  "author": "musica",
+                  "content": "Escolha perfeita!"
+                }
+              ]
+            },
+            {
+              "author": "plantas",
+              "content": "Clube da Esquina regando as plantas."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pets",
+      "user": {
+        "username": "julia.prado",
+        "firstName": "Júlia",
+        "lastName": "Prado",
+        "bio": "Veterinária e mãe de pet em tempo integral."
+      },
+      "name": "Patas & Focinhos",
+      "slug": "patas-e-focinhos",
+      "description": "O dia a dia do Thor, da Mel e dos gatos da casa. Adoção responsável, dicas de cuidado e muito pelo no sofá.",
+      "profileImage": "pets/avatar.jpg",
+      "bannerImage": "pets/banner.jpg",
+      "publications": [
+        {
+          "image": "pets/post-1.jpg",
+          "content": "Descobrimos quem anda desligando o robô aspirador. Flagrante registrado 😹",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Bug reportado. Status: não vamos corrigir, é uma feature.",
+              "replies": [
+                {
+                  "author": "pets",
+                  "content": "Feature aprovada pelo gato, então não tem o que discutir."
+                }
+              ]
+            },
+            {
+              "author": "games",
+              "content": "Modo carona desbloqueado 😂"
+            },
+            {
+              "author": "cozinha",
+              "content": "Melhor post da semana!"
+            }
+          ]
+        },
+        {
+          "image": "pets/post-2.jpg",
+          "content": "Chegou o novo integrante da família! Esse é o Thor, 3 meses, adotado numa feira de adoção no sábado 🐶",
+          "comments": [
+            {
+              "author": "fitness",
+              "content": "Bem-vindo, Thor! Daqui a pouco ele vai querer correr trilha também."
+            },
+            {
+              "author": "arte",
+              "content": "Que carinha! Vou fazer uma aquarela dele.",
+              "replies": [
+                {
+                  "author": "pets",
+                  "content": "Por favor! Vai direto pra parede da sala."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "pets/post-3.jpg",
+          "content": "A Mel escolheu o muro das hortênsias como escritório oficial. Expediente: das 13h às 17h, só soneca.",
+          "comments": [
+            {
+              "author": "plantas",
+              "content": "Hortênsia e gato juntos: combinação perfeita."
+            }
+          ]
+        },
+        {
+          "image": "pets/post-4.jpg",
+          "content": "Colo é o lugar preferido. Dica pra quem adota filhote: rotina de sono ajuda muito na adaptação.",
+          "comments": [
+            {
+              "author": "mar",
+              "content": "Estamos pensando em adotar. Tem mais dicas pro primeiro mês?",
+              "replies": [
+                {
+                  "author": "pets",
+                  "content": "Tenho sim! Vou fazer um post só sobre isso nesta semana."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "pets/post-5.jpg",
+          "content": "Home office com supervisão felina. A reunião pode esperar, o gato não.",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "O meu senta no teclado bem na hora do merge."
+            },
+            {
+              "author": "cafe",
+              "content": "Gato no notebook é sinal de que está na hora da pausa pro café."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "plantas",
+      "user": {
+        "username": "pedro.alves",
+        "firstName": "Pedro",
+        "lastName": "Alves",
+        "bio": "Transformei 40 m² em floresta."
+      },
+      "name": "Selva de Apartamento",
+      "slug": "selva-de-apartamento",
+      "description": "Plantas de interior, rega sem mistério e mudas que viraram selva num apartamento de 40 m².",
+      "profileImage": "plantas/avatar.jpg",
+      "bannerImage": "plantas/banner.jpg",
+      "publications": [
+        {
+          "image": "plantas/post-1.jpg",
+          "content": "Essa echeveria veio de uma folhinha caída há um ano. Suculenta é paciência e pouquíssima água.",
+          "comments": [
+            {
+              "author": "arte",
+              "content": "Essas cores lilás parecem aquarela!",
+              "replies": [
+                {
+                  "author": "plantas",
+                  "content": "A luz do sol da manhã deixa ela ainda mais roxinha."
+                }
+              ]
+            },
+            {
+              "author": "cozinha",
+              "content": "Preciso dessa paciência com as minhas, que sempre afogam."
+            }
+          ]
+        },
+        {
+          "image": "plantas/post-2.jpg",
+          "content": "Vasos de barro são meus favoritos pra suculenta: respiram e ajudam o substrato a secar mais rápido.",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "E ainda ficam lindos na foto. A textura do barro é muito fotogênica."
+            }
+          ]
+        },
+        {
+          "image": "plantas/post-3.jpg",
+          "content": "Clorofito na mesa de trabalho: aguenta pouca luz, esquecimento e ainda solta mudinhas. Planta perfeita pra começar.",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Acho que essa até eu consigo manter viva.",
+              "replies": [
+                {
+                  "author": "plantas",
+                  "content": "Consegue sim! Rega uma vez por semana e pronto."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "plantas/post-4.jpg",
+          "content": "Reaproveitei bloco de concreto como vaso na varanda. Drenagem ótima e custo zero.",
+          "comments": [
+            {
+              "author": "viagem",
+              "content": "Ideia genial pra quem mora de aluguel e quer um jardim."
+            },
+            {
+              "author": "pets",
+              "content": "É seguro pra gato? A Mel adora morder folhas.",
+              "replies": [
+                {
+                  "author": "plantas",
+                  "content": "Suculentas em geral são tranquilas, mas evite a coroa-de-cristo, que é tóxica."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "plantas/post-5.jpg",
+          "content": "Olha o tamanho desse brotinho no musgo! Às vezes vale parar e reparar nas coisas pequenas 🌱",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Macro lindo! Que foco preciso."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "games",
+      "user": {
+        "username": "gabriel.souza",
+        "firstName": "Gabriel",
+        "lastName": "Souza",
+        "bio": "Restauro consoles antigos e perco no Street Fighter."
+      },
+      "name": "Pixel Retrô",
+      "slug": "pixel-retro",
+      "description": "Consoles antigos, fliperama e jogos que marcaram época. Restauração, coleção e nostalgia.",
+      "profileImage": "games/avatar.jpg",
+      "bannerImage": "games/banner.jpg",
+      "publications": [
+        {
+          "image": "games/post-1.jpg",
+          "content": "Console dos anos 70 funcionando depois de uma limpeza nos contatos. Os controles giratórios são uma experiência à parte.",
+          "comments": [
+            {
+              "author": "musica",
+              "content": "Esse tapete laranja completa a viagem no tempo.",
+              "replies": [
+                {
+                  "author": "games",
+                  "content": "O tapete é da casa da minha avó. Cenário original!"
+                }
+              ]
+            },
+            {
+              "author": "codigo",
+              "content": "Queria entender como era programar com tão pouca memória."
+            }
+          ]
+        },
+        {
+          "image": "games/post-2.jpg",
+          "content": "Cartucho encaixado, TV de tubo ligada e aquele chiado antes da tela aparecer. Nostalgia pura.",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Essas cores têm cara de foto de revista dos anos 80."
+            }
+          ]
+        },
+        {
+          "image": "games/post-3.jpg",
+          "content": "Cantinho do fliperama montado! Quatro gabinetes, uma cadeira e nenhuma ficha necessária 🕹️",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Quando é o campeonato? Quero uma revanche no Pac-Man.",
+              "replies": [
+                {
+                  "author": "games",
+                  "content": "Sábado que vem! Traz o café que eu providencio a pipoca."
+                }
+              ]
+            },
+            {
+              "author": "mar",
+              "content": "Isso é o sonho de qualquer criança dos anos 90."
+            },
+            {
+              "author": "pets",
+              "content": "O Thor ia querer apertar todos os botões."
+            }
+          ]
+        },
+        {
+          "image": "games/post-4.jpg",
+          "content": "Controle minúsculo, diversão enorme. Qual foi o primeiro controle que vocês seguraram?",
+          "comments": [
+            {
+              "author": "arte",
+              "content": "O do Super Nintendo, com aquele botão roxo!"
+            },
+            {
+              "author": "fitness",
+              "content": "Um de Atari com o manche meio quebrado."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "arte",
+      "user": {
+        "username": "ana.ribeiro",
+        "firstName": "Ana",
+        "lastName": "Ribeiro",
+        "bio": "Ilustradora e professora de aquarela."
+      },
+      "name": "Traço Livre",
+      "slug": "traco-livre",
+      "description": "Aquarela, sketchbook e arte urbana. Processo criativo sem filtro.",
+      "profileImage": "arte/avatar.jpg",
+      "bannerImage": "arte/banner.jpg",
+      "publications": [
+        {
+          "image": "arte/post-1.jpg",
+          "content": "Paleta nova de aquarela chegou! Pigmentos bem saturados até em camadas finas. Hora de testar.",
+          "comments": [
+            {
+              "author": "plantas",
+              "content": "Essas cores lembram um canteiro de flores.",
+              "replies": [
+                {
+                  "author": "arte",
+                  "content": "Vou pintar suas suculentas com ela!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "arte/post-2.jpg",
+          "content": "Estudo de aquarela: montanhas em azul frio e a cidade surgindo da névoa. Molhado no molhado do começo ao fim.",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Parece uma das minhas fotos de neblina, só que pintada. Amei!"
+            },
+            {
+              "author": "viagem",
+              "content": "Isso lembra muito a vista de uma cidade que visitei no Canadá."
+            }
+          ]
+        },
+        {
+          "image": "arte/post-3.jpg",
+          "content": "Mesma paisagem, outra abordagem: mais detalhe nos prédios e céu com degradê. Qual versão vocês preferem?",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Essa tem mais detalhe, mas a primeira tem mais clima.",
+              "replies": [
+                {
+                  "author": "arte",
+                  "content": "É isso que eu também sinto! Talvez o meio-termo seja o próximo estudo."
+                }
+              ]
+            },
+            {
+              "author": "musica",
+              "content": "A segunda! Parece capa de disco de rock progressivo."
+            }
+          ]
+        },
+        {
+          "image": "arte/post-4.jpg",
+          "content": "Mural enorme que encontrei no centro. Arte urbana transforma a cidade num museu aberto.",
+          "comments": [
+            {
+              "author": "viagem",
+              "content": "Tem que entrar no roteiro de arte urbana da cidade!"
+            }
+          ]
+        },
+        {
+          "image": "arte/post-5.jpg",
+          "content": "Personagem com gorro e caveira num portão de garagem. Adoro quando o grafite conta uma história.",
+          "comments": [
+            {
+              "author": "games",
+              "content": "Esse personagem daria um chefão de fase incrível."
+            }
+          ]
+        },
+        {
+          "image": "arte/post-6.jpg",
+          "content": "Estudo antigo de personagem, feito em papel kraft. Às vezes revisito os cadernos velhos pra lembrar de onde vim.",
+          "comments": [
+            {
+              "author": "cozinha",
+              "content": "Parece uma nonna preparando a massa! Me identifiquei.",
+              "replies": [
+                {
+                  "author": "arte",
+                  "content": "Acho que foi inspirada na minha avó mesmo."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cafe",
+      "user": {
+        "username": "rafael.mendes",
+        "firstName": "Rafael",
+        "lastName": "Mendes",
+        "bio": "Barista e provador de café especial."
+      },
+      "name": "Grão Especial",
+      "slug": "grao-especial",
+      "description": "Cafés especiais, métodos de preparo e torrefações brasileiras. Do grão à xícara.",
+      "profileImage": "cafe/avatar.jpg",
+      "bannerImage": "cafe/banner.jpg",
+      "publications": [
+        {
+          "image": "cafe/post-1.jpg",
+          "content": "Cappuccino com leite vaporizado na textura certa: brilhante, sem bolhas grandes. O desenho é só consequência.",
+          "comments": [
+            {
+              "author": "arte",
+              "content": "Latte art é aquarela com leite 😍"
+            },
+            {
+              "author": "codigo",
+              "content": "Quantas tentativas até sair um desenho assim?",
+              "replies": [
+                {
+                  "author": "cafe",
+                  "content": "Umas trezentas xícaras. Todas bebidas com orgulho!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "cafe/post-2.jpg",
+          "content": "Café começa assim: fruta vermelha, madura, colhida no ponto. Esses vieram de um sítio no sul de Minas.",
+          "comments": [
+            {
+              "author": "cozinha",
+              "content": "Nunca tinha visto o fruto do café tão de perto. Que cor!"
+            },
+            {
+              "author": "viagem",
+              "content": "Fazer uma rota pelos sítios de café do sul de Minas está na minha lista."
+            }
+          ]
+        },
+        {
+          "image": "cafe/post-3.jpg",
+          "content": "Chemex pela manhã: 30 g de café, 500 ml de água a 93 °C e quatro minutos de paciência.",
+          "comments": [
+            {
+              "author": "fitness",
+              "content": "Ritual perfeito antes do treino da manhã."
+            },
+            {
+              "author": "fotografia",
+              "content": "Essa luz de janela na Chemex ficou linda."
+            }
+          ]
+        },
+        {
+          "image": "cafe/post-4.jpg",
+          "content": "Coado na V60 com um natural de Carmo de Minas. Notas de frutas vermelhas e final de chocolate.",
+          "comments": [
+            {
+              "author": "musica",
+              "content": "Esse fundo escuro com a xícara vermelha ficou com cara de capa de disco."
+            },
+            {
+              "author": "pets",
+              "content": "Anotado pra próxima compra!",
+              "replies": [
+                {
+                  "author": "cafe",
+                  "content": "Me avisa que eu separo um pacote de 250 g pra você."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "cafe/post-5.jpg",
+          "content": "Pausa da tarde com um latte bem feito. Qual o método de preparo preferido de vocês?",
+          "comments": [
+            {
+              "author": "codigo",
+              "content": "Prensa francesa, porque é a única que sobrevive à minha falta de tempo."
+            },
+            {
+              "author": "mar",
+              "content": "Espresso duplo antes de cair na água."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mar",
+      "user": {
+        "username": "bruno.salles",
+        "firstName": "Bruno",
+        "lastName": "Salles",
+        "bio": "Surfista, salva-vidas e amante do oceano."
+      },
+      "name": "Mar Aberto",
+      "slug": "mar-aberto",
+      "description": "Surf, oceano e vida na praia. Previsão de ondas, pranchas e respeito ao mar.",
+      "profileImage": "mar/avatar.jpg",
+      "bannerImage": "mar/banner.jpg",
+      "publications": [
+        {
+          "image": "mar/post-1.jpg",
+          "content": "Swell de sul entrou forte hoje cedo. Ondas de dois metros e água verde de tão limpa 🌊",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Congelou o movimento perfeito da onda. Que clique!",
+              "replies": [
+                {
+                  "author": "mar",
+                  "content": "Crédito pro amigo na areia com a teleobjetiva."
+                }
+              ]
+            },
+            {
+              "author": "fitness",
+              "content": "Surf é o treino mais completo que existe."
+            }
+          ]
+        },
+        {
+          "image": "mar/post-2.jpg",
+          "content": "Fim de tarde, quilhas novas testadas e aprovadas. Mais pegada na base da onda.",
+          "comments": [
+            {
+              "author": "viagem",
+              "content": "Esse pôr do sol na praia é o melhor fim de dia possível."
+            }
+          ]
+        },
+        {
+          "image": "mar/post-3.jpg",
+          "content": "Vista de drone da costa. Dá pra ver direitinho onde a onda quebra nas pedras: lugar de respeito.",
+          "comments": [
+            {
+              "author": "plantas",
+              "content": "Esse azul parece de mentira!"
+            },
+            {
+              "author": "games",
+              "content": "Parece mapa de jogo de mundo aberto.",
+              "replies": [
+                {
+                  "author": "mar",
+                  "content": "E é aberto mesmo: a trilha até lá leva uns 40 minutos."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "image": "mar/post-4.jpg",
+          "content": "Prancha nova, a vermelha! Longboard 9'2 pra dias de onda pequena.",
+          "comments": [
+            {
+              "author": "musica",
+              "content": "Vermelha igual guitarra de rock. Aprovada."
+            },
+            {
+              "author": "pets",
+              "content": "O Thor ia querer pegar onda junto 🐶"
+            }
+          ]
+        },
+        {
+          "image": "mar/post-5.jpg",
+          "content": "Praia vazia, céu fechado e a prancha esperando. Os melhores dias quase sempre começam assim.",
+          "comments": [
+            {
+              "author": "fotografia",
+              "content": "Céu dramático e areia vazia: combinação perfeita."
+            },
+            {
+              "author": "cafe",
+              "content": "Só falta a garrafa térmica de café do lado.",
+              "replies": [
+                {
+                  "author": "mar",
+                  "content": "Já estava no carro, pode ter certeza!"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

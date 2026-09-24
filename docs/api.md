@@ -95,6 +95,8 @@ o mesmo bloco `page` de antes:
 | Endpoint | Chave em `_embedded` |
 | --- | --- |
 | `GET /api/v1/channels/me` | `channels` |
+| `GET /api/v1/channels/discover` | `discoverChannels` |
+| `GET /api/v1/channels/{id}/following`, `GET /api/v1/channels/{id}/followers` | `followChannels` |
 | `GET /api/v1/publications` | `publications` |
 | `GET /api/v1/publications/{id}/comments`, `GET /api/v1/comments/{id}/comments` | `comments` |
 | `GET /api/v1/publications/{id}/likes`, `GET /api/v1/comments/{id}/likes` | `likes` |
