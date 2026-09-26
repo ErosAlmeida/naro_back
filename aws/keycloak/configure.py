@@ -83,6 +83,16 @@ def main():
             'redirectUris': [public_origin + '/swagger-ui/oauth2-redirect.html'], 'webOrigins': [public_origin],
             'attributes': {'pkce.code.challenge.method': 'S256'},
         },
+        {
+            # Postman's fixed "Authorize using browser" callbacks (desktop and web).
+            # No web origins: Postman exchanges the code outside the browser.
+            'clientId': 'naro-postman', 'name': 'Naro Postman', 'enabled': True, 'protocol': 'openid-connect',
+            'publicClient': True, 'standardFlowEnabled': True, 'directAccessGrantsEnabled': False,
+            'implicitFlowEnabled': False, 'serviceAccountsEnabled': False,
+            'redirectUris': ['https://oauth.pstmn.io/v1/callback', 'https://oauth.pstmn.io/v1/browser-callback'],
+            'webOrigins': [],
+            'attributes': {'pkce.code.challenge.method': 'S256'},
+        },
     ]
     for client in clients:
         matches = http('GET', realm_path + '/clients?clientId=' + quote(client['clientId']), token=token)
@@ -111,7 +121,7 @@ def main():
     master = http('GET', '/admin/realms/master', token=token)
     attributes = {**master.get('attributes', {}), 'frontendUrl': 'http://localhost:18081/auth'}
     http('PUT', '/admin/realms/master', {'attributes': attributes}, token)
-    print('Realm social configured; confidential naro-web and public PKCE naro-swagger preserved.')
+    print('Realm social configured; confidential naro-web and public PKCE naro-swagger/naro-postman preserved.')
 
 
 if __name__ == '__main__':

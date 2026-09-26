@@ -173,7 +173,7 @@ Não versione `.env*`, credenciais AWS, chaves privadas, dumps com dados/segredo
 
 Roda em Docker na mesma EC2, gerenciado por `naro-keycloak.service`, versão 26.7.3. A porta da aplicação é 8081, com prefixo `/auth`; a gestão/health usa 9000 e não é encaminhada publicamente pelo ALB. O health check é `/health/ready`.
 
-Usa o mesmo RDS, mas banco e usuário `keycloak`. O setup preserva realm `social`, tema Naro, client confidencial `naro-web` e PKCE. O client `naro-swagger` usa PKCE público e callback exato do Swagger. Redirect URLs e Web Origins não usam `*`.
+Usa o mesmo RDS, mas banco e usuário `keycloak`. O setup preserva realm `social`, tema Naro, client confidencial `naro-web` e PKCE. O client `naro-swagger` usa PKCE público e callback exato do Swagger. O client `naro-postman` também é público com PKCE, aceita apenas os callbacks fixos do Postman (`https://oauth.pstmn.io/v1/callback` e `/v1/browser-callback`) e não tem Web Origins. Redirect URLs e Web Origins não usam `*`.
 
 O issuer é `PUBLIC_ORIGIN/auth/realms/social`. Spring valida esse issuer público e busca o JWKS diretamente em `127.0.0.1:8081`, evitando uma volta pelo ALB. `KC_PROXY_HEADERS=xforwarded` aceita os headers do ALB; o hostname é fixo, não derivado livremente de headers de entrada. O profile Spring configura forwarded headers para que links HAL preservem host/esquema.
 
