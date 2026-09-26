@@ -20,7 +20,7 @@ Este diretório configura o backend existente em uma infraestrutura pequena, com
 | Health | Não existia Actuator; acrescentado `/actuator/health`, sem detalhes internos |
 | GitHub | `leonardovilelaaws-del/naro_back`, branch principal **master** |
 
-As senhas fictícias do Compose continuam somente nas configurações locais e de testes. Secrets de produção nunca reutilizam esses valores. O Compose original não foi substituído nem passou a depender da AWS.
+As senhas fictícias do Compose continuam somente nas configurações locais e de testes. Secrets de produção nunca reutilizam esses valores. Os serviços, portas e volumes locais foram preservados; o Compose continua independente da AWS. A imagem MinIO passou a ser construída localmente a partir do código oficial, como explicado abaixo.
 
 ## Arquitetura
 
@@ -62,6 +62,8 @@ flowchart LR
 ```
 
 `buildspec.yml` usa Java 25 e executa a suíte Maven, incluindo testes com PostgreSQL e MinIO em containers. Docker privilegiado fica apenas no ambiente efêmero do CodeBuild. O build não recebe secrets de produção nem acesso ao RDS.
+
+O MinIO dos testes é compilado a partir de uma release oficial fixada, com checksum verificado. Isso acrescenta alguns minutos ao primeiro build sem cache, dentro do CodeBuild pequeno já existente; não cria outro serviço AWS.
 
 `appspec.yml` organiza instalação, parada, inicialização e validação. Os hooks buscam os secrets na própria EC2 usando sua Role. CodeDeploy executa rollback do artefato em falha; isso não reverte migrations Flyway. Migrations devem ser compatíveis com o JAR anterior.
 
@@ -223,6 +225,8 @@ curl http://localhost:9000/minio/health/live
 
 O setup original do Keycloak continua em `scripts/keycloak-setup.sh`. Ele sincroniza o secret com o frontend local usando o script existente. Não o execute contra o Keycloak de produção.
 
+O projeto oficial MinIO passou a distribuir a edição comunitária como código-fonte. Os pulls públicos usados pelo projeto retornaram erro durante esta implantação. `../infra/minio/Dockerfile` compila a mesma release já presente no ambiente local (`RELEASE.2025-09-07T16-13-09Z`), verifica SHA256 do código e fixa as imagens oficiais Go/Debian por digest. Compose e Testcontainers compartilham essa definição; não é necessário instalar Go na máquina. O primeiro build baixa dependências e demora mais; os seguintes reutilizam as camadas Docker. Os containers e volumes locais existentes não foram apagados ou reiniciados. Essa edição arquivada fica restrita ao desenvolvimento/testes; produção usa Amazon S3. [Referência oficial MinIO](https://github.com/minio/minio#source-only-distribution).
+
 Variáveis locais existentes incluem `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `NARO_REALM`, `NARO_CLIENT_ID`, `NARO_APP_URL`, `NARO_FRONTEND_DIR` e as opções SMTP documentadas em `docs/registration.md`. Em produção, os hooks fornecem `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `KEYCLOAK_ISSUER_URI`, `KEYCLOAK_JWK_SET_URI`, `AWS_REGION`, `S3_BUCKET`, `CORS_ALLOWED_ORIGINS` e `SPRING_PROFILES_ACTIVE=prod`.
 
 ## Operação e diagnóstico
@@ -319,6 +323,8 @@ cdk destroy
 - `systemd/`: serviços Spring/Keycloak e logrotate.
 - `keycloak/configure.py`: realm, clients e acesso administrativo via túnel.
 - `tools/prepare_secrets.py`: criação segura de parâmetros ausentes.
+- `tools/smoke_application.py`: teste real de JWT, RDS e S3 pela aplicação na EC2.
+- `../infra/minio/Dockerfile`: MinIO reproduzível para Compose e testes; não vai para a EC2.
 - `../.gitleaks.toml`: ignora somente um falso positivo exato do endpoint JDBC local; mantém demais regras de detecção.
 
 Validação local: 326 testes Maven passaram sem falhas/skips; PostgreSQL e MinIO reais via Testcontainers; smoke do JAR local e descoberta Keycloak local passaram. Runtime ARM foi testado isoladamente com PostgreSQL17/Keycloak26.7.3, incluindo configuração idempotente e login administrativo. Consulte `VALIDATION.md` para o resultado real do deploy AWS.

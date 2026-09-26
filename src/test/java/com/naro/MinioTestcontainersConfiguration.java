@@ -4,7 +4,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.MinIOContainer;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.DockerImageName;
+
+import java.nio.file.Path;
 
 /**
  * MinIO real para testes que sobem o contexto completo.
@@ -15,11 +18,17 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 public class MinioTestcontainersConfiguration {
 
+    // The upstream public images were removed. Build verified official source once
+    // per test JVM; Docker keeps layers for later local test runs and Compose.
+    private static final ImageFromDockerfile IMAGE = new ImageFromDockerfile(
+            "naro-minio:RELEASE.2025-09-07T16-13-09Z", false)
+            .withDockerfile(Path.of("infra/minio/Dockerfile").toAbsolutePath());
+
     @Bean
     MinIOContainer minioContainer() {
         return new MinIOContainer(
                 DockerImageName
-                        .parse("quay.io/minio/minio:latest")
+                        .parse(IMAGE.get())
                         .asCompatibleSubstituteFor("minio/minio")
         );
     }

@@ -48,6 +48,9 @@ class UserRepositoryTest {
     @Test
     void updateLastSeenAtWritesOnlyLastSeenAndNotUpdatedAt() {
 
+        // PostgreSQL stores microseconds; compare against its persisted value, not
+        // the JVM's potentially nanosecond timestamp retained after persistAndFlush.
+        entityManager.refresh(marina);
         Instant updatedAtBefore = marina.getUpdatedAt();
         Instant lastSeen = Instant.now().truncatedTo(ChronoUnit.MICROS);
 
