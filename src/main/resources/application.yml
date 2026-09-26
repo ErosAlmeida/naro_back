@@ -5,9 +5,6 @@ spring:
     default: local
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/naro
-    username: postgres
-    password: naro123
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -31,8 +28,6 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "http://localhost:8180/realms/social"
-
           authorities-claim-expressions:
             - "['realm_access']['roles']"
 
@@ -62,14 +57,19 @@ springdoc:
 app:
   storage:
     s3:
-      endpoint: http://localhost:9000
-      region: us-east-1
-      access-key: naro
-      secret-key: naro12345
-      bucket: naro-publications
       presigned-url-duration: 30m
 
-  websocket:
-    allowed-origins:
-      - http://localhost:3000
-      - http://127.0.0.1:3000
+management:
+  endpoints:
+    access:
+      default: none
+    web:
+      exposure:
+        include: health
+      discovery:
+        enabled: false
+  endpoint:
+    health:
+      access: read-only
+      show-details: never
+      show-components: never

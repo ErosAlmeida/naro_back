@@ -4,6 +4,15 @@ import jakarta.servlet.DispatcherType;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
@@ -19,7 +28,22 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableMethodSecurity
+@EnableConfigurationProperties(CorsProperties.class)
 public class SecurityConfig {
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource(CorsProperties properties) {
+        var configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(properties.allowedOrigins());
+        configuration.setAllowedMethods(List.of("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Channel-Id"));
+        configuration.setExposedHeaders(List.of("Location"));
+        configuration.setMaxAge(3600L);
+        var source = new UrlBasedCorsConfigurationSource();
+        // /ws já valida origins no WebSocketConfig e preserva sua configuração.
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(
@@ -29,6 +53,8 @@ public class SecurityConfig {
     ) throws Exception {
 
         return http
+
+                .cors(withDefaults())
 
                 .csrf(
                         AbstractHttpConfigurer::disable
@@ -51,6 +77,12 @@ public class SecurityConfig {
                                 DispatcherType.ERROR
                         )
                         .permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/actuator/health")
+                        .permitAll()
+
+                        .requestMatchers("/actuator", "/actuator/**")
+                        .denyAll()
 
                         .requestMatchers(
                                 "/api/public/**"

@@ -2,6 +2,7 @@ package com.naro.storage.config;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import software.amazon.awssdk.services.s3.S3Client;
@@ -10,6 +11,7 @@ import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Component
+@Profile("(local | test) & !prod")
 public class S3BucketInitializer implements ApplicationRunner {
 
     private final S3Client s3Client;

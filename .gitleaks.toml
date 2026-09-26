@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+# Gitleaks interprets the local JDBC host:port/database as an API key.
+# Permit only this exact non-secret endpoint, including in existing history.
+[[allowlists]]
+description = "Local Keycloak PostgreSQL endpoint, not a credential"
+regexTarget = "match"
+regexes = ['''^keycloak-postgres:5432/keycloak$''']

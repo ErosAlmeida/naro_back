@@ -3,3 +3,22 @@
 spring:
   profiles:
     active: test
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/social
+
+app:
+  storage:
+    s3:
+      region: us-east-1
+      bucket: naro-publications
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - http://127.0.0.1:3000
+  websocket:
+    allowed-origins:
+      - http://localhost:3000
+      - http://127.0.0.1:3000

@@ -31,3 +31,37 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Segredos e configurações particulares (exemplos sem valores reais podem ser versionados)
+.env
+.env.*
+!.env.example
+!.env.*.example
+.aws/
+**/credentials
+**/credentials.*
+*.pem
+*.key
+*.p12
+*.pfx
+*secrets*.json
+*secrets*.yml
+*secrets*.yaml
+
+# Infraestrutura: saída gerada e configurações locais
+cdk.out/
+cdk.context.json
+cdk.local.json
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# Ferramentas locais
+.claude/
+
+deployment-artifact/

@@ -1,4 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/naro
+    username: postgres
+    # Credenciais fictícias, somente do Docker Compose de desenvolvimento.
+    password: naro123
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/social
+
 app:
+  storage:
+    s3:
+      endpoint: http://localhost:9000
+      region: us-east-1
+      access-key: naro
+      secret-key: naro12345
+      bucket: naro-publications
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - http://127.0.0.1:3000
+  websocket:
+    allowed-origins:
+      - http://localhost:3000
+      - http://127.0.0.1:3000
   seed:
     # Canais, publicações com imagem, comentários, likes e follows de exemplo
     # (seed/content.json + seed/images). Roda uma vez, no primeiro startup com o
