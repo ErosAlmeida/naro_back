@@ -14,6 +14,8 @@ done
 install -m 0644 "${jars[0]}" deployment-artifact/application.jar
 install -m 0644 appspec.yml deployment-artifact/appspec.yml
 cp -R aws/scripts aws/systemd aws/keycloak deployment-artifact/aws/
+install -d deployment-artifact/aws/tools
+install -m 0644 aws/tools/smoke_application.py deployment-artifact/aws/tools/smoke_application.py
 cp -R infra/keycloak/themes deployment-artifact/infra/keycloak/
 install -m 0644 infra/keycloak/realm-settings.json deployment-artifact/infra/keycloak/realm-settings.json
 # Local Python bytecode is neither needed nor appropriate in the deployment bundle.

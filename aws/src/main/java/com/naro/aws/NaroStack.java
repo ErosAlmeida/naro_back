@@ -77,6 +77,7 @@ public final class NaroStack extends Stack {
                 .credentials(Credentials.fromPassword("naro_admin",
                         SecretValue.ssmSecure(PARAMETER_PREFIX + "/database/master-password")))
                 .vpc(vpc).vpcSubnets(SubnetSelection.builder().subnetType(SubnetType.PRIVATE_ISOLATED).build())
+                .availabilityZone(vpc.getAvailabilityZones().getFirst())
                 .securityGroups(List.of(databaseSg)).publiclyAccessible(false)
                 .multiAz(false).allocatedStorage(20).storageType(StorageType.GP3).storageEncrypted(true)
                 .backupRetention(Duration.days(1)).deleteAutomatedBackups(true)
@@ -145,7 +146,8 @@ public final class NaroStack extends Stack {
                                 .volumeType(EbsDeviceVolumeType.GP3).encrypted(true).deleteOnTermination(true).build())).build()))
                 .build();
         AutoScalingGroup host = AutoScalingGroup.Builder.create(this, "Host")
-                .vpc(vpc).vpcSubnets(SubnetSelection.builder().subnetType(SubnetType.PUBLIC).build())
+                // The single application host shares the database AZ to avoid cross-AZ traffic charges.
+                .vpc(vpc).vpcSubnets(SubnetSelection.builder().subnets(List.of(vpc.getPublicSubnets().getFirst())).build())
                 .launchTemplate(launchTemplate).minCapacity(1).desiredCapacity(1).maxCapacity(1)
                 .minHealthyPercentage(0).maxHealthyPercentage(100)
                 // EC2 health avoids replacing the host while its first application revision is not deployed yet.
@@ -220,8 +222,13 @@ public final class NaroStack extends Stack {
         deployRole.addToPolicy(policy(List.of("ec2:DescribeInstances", "ec2:DescribeInstanceStatus", "tag:GetResources",
                 "autoscaling:DescribeAutoScalingGroups", "autoscaling:DescribeLifecycleHooks", "autoscaling:DescribeAutoScalingInstances"), List.of("*")));
         deployRole.addToPolicy(policy(List.of("autoscaling:CompleteLifecycleAction", "autoscaling:DeleteLifecycleHook",
-                "autoscaling:PutLifecycleHook", "autoscaling:RecordLifecycleActionHeartbeat",
-                "autoscaling:SuspendProcesses", "autoscaling:ResumeProcesses"), List.of(host.getAutoScalingGroupArn())));
+                "autoscaling:PutLifecycleHook", "autoscaling:RecordLifecycleActionHeartbeat"), List.of(
+                host.getAutoScalingGroupArn(),
+                // CodeDeploy tests its service role against this fictitious ASG before creating
+                // the deployment group. Observed in CloudTrail; no additional ASG is created.
+                serviceArn("autoscaling", "autoScalingGroup:*:autoScalingGroupName/CodeDeployTestAPICall"))));
+        deployRole.addToPolicy(policy(List.of("autoscaling:SuspendProcesses", "autoscaling:ResumeProcesses"),
+                List.of(host.getAutoScalingGroupArn())));
         // CodeDeploy validates these when attaching an ASG that uses a launch template.
         String templateArn = serviceArn("ec2", "launch-template/" + launchTemplate.getLaunchTemplateId());
         List<String> launchResources = new ArrayList<>(List.of(templateArn,
@@ -352,6 +359,17 @@ public final class NaroStack extends Stack {
 
     private String context(String key, String fallback) {
         Object value = getNode().tryGetContext(key);
+        if (value == null) {
+            // cdk.context.json keeps external selections local to the AWS account/region.
+            // Explicit -c values still win, and a different account never reuses this selection.
+            Object deployment = getNode().tryGetContext("naro:deployment:" + getAccount() + ":" + getRegion());
+            if (deployment != null && !(deployment instanceof Map<?, ?>)) {
+                throw new IllegalArgumentException("O contexto naro:deployment:<conta>:<região> deve ser um objeto JSON.");
+            }
+            if (deployment instanceof Map<?, ?> settings) {
+                value = settings.get(key);
+            }
+        }
         return value == null ? fallback : value.toString();
     }
 

@@ -39,6 +39,13 @@ class NaroStackTest {
         template.hasResourceProperties("AWS::AutoScaling::AutoScalingGroup", Map.of(
                 "MinSize", "1", "DesiredCapacity", "1", "MaxSize", "1",
                 "InstanceMaintenancePolicy", Map.of("MinHealthyPercentage", 0, "MaxHealthyPercentage", 100)));
+        Map<String, Object> asg = map(template.findResources("AWS::AutoScaling::AutoScalingGroup").values().iterator().next().get("Properties"));
+        List<?> hostSubnets = (List<?>) asg.get("VPCZoneIdentifier");
+        assertEquals(1, hostSubnets.size());
+        String hostSubnetId = (String) map(hostSubnets.getFirst()).get("Ref");
+        Map<String, Object> hostSubnet = map(template.findResources("AWS::EC2::Subnet").get(hostSubnetId).get("Properties"));
+        Map<String, Object> database = map(template.findResources("AWS::RDS::DBInstance").values().iterator().next().get("Properties"));
+        assertEquals(database.get("AvailabilityZone"), hostSubnet.get("AvailabilityZone"));
         template.hasResourceProperties("AWS::EC2::LaunchTemplate", Map.of("LaunchTemplateData", Match.objectLike(Map.of(
                 "InstanceType", "t4g.small", "CreditSpecification", Map.of("CpuCredits", "standard"),
                 "MetadataOptions", Match.objectLike(Map.of("HttpTokens", "required")),
@@ -126,6 +133,14 @@ class NaroStackTest {
                 assertFalse(actions.contains("ssm:PutParameter"));
                 assertFalse(actions.contains("secretsmanager:GetSecretValue"));
                 assertFalse(actions.contains("s3:PutObjectLegalHold"));
+                if (actions.contains("autoscaling:CompleteLifecycleAction")) {
+                    assertTrue(entry.getKey().startsWith("DeployRole"));
+                    assertInstanceOf(List.class, statement.get("Resource"));
+                    List<?> resources = (List<?>) statement.get("Resource");
+                    assertEquals(2, resources.size());
+                    assertTrue(resources.toString().contains("CodeDeployTestAPICall"));
+                    assertFalse(resources.contains("*"));
+                }
             }
         }
         template.hasResourceProperties("AWS::CodeDeploy::DeploymentGroup", Map.of("AutoRollbackConfiguration",
@@ -146,6 +161,43 @@ class NaroStackTest {
                 "DefaultActions", Match.arrayWith(List.of(Match.objectLike(Map.of("Type", "redirect",
                         "RedirectConfig", Match.objectLike(Map.of("Protocol", "HTTPS", "Port", "443"))))))));
         template.hasOutput("ApplicationUrl", Map.of("Value", "https://api.example.com"));
+    }
+
+    @Test
+    void accountRegionContextReusesExternalResourcesWithoutCommandLineFlags() {
+        String connectionArn = "arn:aws:codeconnections:us-east-1:123456789012:connection/11111111-1111-1111-1111-111111111111";
+        Template template = template(Map.of("naro:deployment:123456789012:us-east-1", Map.of(
+                "connectionArn", connectionArn, "existingBudgetName", "account-lab-budget")));
+        template.resourceCountIs("AWS::CodeConnections::Connection", 0);
+        template.resourceCountIs("AWS::Budgets::Budget", 0);
+        template.hasOutput("ConnectionArn", Map.of("Value", connectionArn));
+        template.hasOutput("BudgetName", Map.of("Value", "account-lab-budget"));
+    }
+
+    @Test
+    void anotherAccountOrRegionDoesNotReuseTheLocalResourceSelection() {
+        Map<String, Object> settings = Map.of(
+                "connectionArn", "arn:aws:codeconnections:us-west-2:999999999999:connection/11111111-1111-1111-1111-111111111111",
+                "existingBudgetName", "unrelated-budget");
+        Template template = template(Map.of(
+                "naro:deployment:999999999999:us-east-1", settings,
+                "naro:deployment:123456789012:us-west-2", settings));
+        template.resourceCountIs("AWS::CodeConnections::Connection", 1);
+        template.resourceCountIs("AWS::Budgets::Budget", 1);
+    }
+
+    @Test
+    void explicitContextOverridesTheAccountRegionSelection() {
+        String selectedArn = "arn:aws:codeconnections:us-east-1:123456789012:connection/11111111-1111-1111-1111-111111111111";
+        String overrideArn = "arn:aws:codeconnections:us-east-1:123456789012:connection/22222222-2222-2222-2222-222222222222";
+        Template template = template(Map.of(
+                "naro:deployment:123456789012:us-east-1", Map.of(
+                        "connectionArn", selectedArn, "existingBudgetName", "selected-budget"),
+                "connectionArn", overrideArn, "existingBudgetName", "override-budget"));
+        template.resourceCountIs("AWS::CodeConnections::Connection", 0);
+        template.resourceCountIs("AWS::Budgets::Budget", 0);
+        template.hasOutput("ConnectionArn", Map.of("Value", overrideArn));
+        template.hasOutput("BudgetName", Map.of("Value", "override-budget"));
     }
 
     @SuppressWarnings("unchecked")

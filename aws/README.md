@@ -9,7 +9,7 @@ Este diretório configura o backend existente em uma infraestrutura pequena, com
 | Aplicação | Naro, `com.naro:naro`, backend de rede social |
 | Build | Maven Wrapper 3.9.16, Java 25, Spring Boot 4.1.1 |
 | Código | `src/main/java/com/naro`, organizado por funcionalidades; Flyway em `src/main/resources/db/migration` |
-| HTTP | Porta 8080; APIs em `/api/v1`, handshake WebSocket `/ws`, Swagger `/swagger-ui.html` |
+| HTTP | Porta 8080; APIs em `/api/v1` e `/api/users`, handshake WebSocket `/ws`, Swagger `/swagger-ui.html` |
 | Profile original | `local` por padrão; agora também existe `prod` |
 | Banco local | PostgreSQL 17, banco `naro`, porta 5432 |
 | Identidade local | Keycloak 26.7.3, porta externa 8180; PostgreSQL separado no Compose |
@@ -28,7 +28,7 @@ As senhas fictícias do Compose continuam somente nas configurações locais e d
 flowchart TD
   Internet --> ALB[Application Load Balancer]
   ALB -->|rotas atuais :8080| Spring[Spring Boot / systemd]
-  ALB -->|/auth/* :8081| KC[Keycloak / Docker + systemd]
+  ALB -->|realm social e recursos :8081| KC[Keycloak / Docker + systemd]
   subgraph EC2[Uma EC2 t4g.small — ASG 1/1/1]
     Spring
     KC
@@ -46,7 +46,7 @@ O RDS fica nas subnets isoladas, sem acesso público, e aceita 5432 somente do S
 
 **Não há NAT Gateway.** A saída direta da EC2 pelo Internet Gateway evita a cobrança fixa de NAT e de vários VPC endpoints. Não há EKS, ECS, Lambda, Redis, filas, CloudFront ou WAF.
 
-O ASG usa mínimo, desejado e máximo iguais a 1. Créditos de CPU da EC2 ficam em modo Standard para evitar cobrança por créditos ilimitados. O deploy é in-place: há uma pequena indisponibilidade ao reiniciar. Este laboratório não oferece alta disponibilidade.
+O ASG usa mínimo, desejado e máximo iguais a 1. Créditos de CPU da EC2 ficam em modo Standard para evitar cobrança por créditos ilimitados. O deploy é in-place: há uma pequena indisponibilidade ao reiniciar. Este laboratório não oferece alta disponibilidade. EC2 e RDS ficam na mesma AZ para evitar cobrança entre eles; o ALB mantém as duas subnets exigidas pelo serviço.
 
 ## CI/CD
 
@@ -65,7 +65,7 @@ flowchart LR
 
 `appspec.yml` organiza instalação, parada, inicialização e validação. Os hooks buscam os secrets na própria EC2 usando sua Role. CodeDeploy executa rollback do artefato em falha; isso não reverte migrations Flyway. Migrations devem ser compatíveis com o JAR anterior.
 
-A conexão GitHub usa o aplicativo oficial AWS Connector. Durante sua autorização, selecione **Only select repositories → naro_back**. Não use PAT. Uma conexão criada pelo CloudFormation fica pendente até a confirmação no navegador; o CDK não pode autorizar OAuth por você.
+A conexão GitHub usa o aplicativo oficial AWS Connector. Nesta conta reutilizamos `leo-git`, e a instalação foi conferida com acesso somente ao `naro_back`. Durante sua autorização, selecione **Only select repositories → naro_back**. Não use PAT. Uma conexão criada pelo CloudFormation fica pendente até a confirmação no navegador; o CDK não pode autorizar OAuth por você.
 
 O pipeline observa `master`. Mudanças no backend são automáticas; mudanças na própria infraestrutura devem passar por `cdk diff` e `cdk deploy` localmente. Não existe um pipeline adicional de infraestrutura.
 
@@ -75,6 +75,7 @@ Pré-requisitos: Java 25, Maven ou o wrapper `../mvnw`, Node.js, AWS CDK CLI v2,
 
 ```bash
 cd aws
+export PATH="$HOME/.local/bin:$PATH"
 aws login --profile naro-lab --region us-east-1
 export AWS_PROFILE=naro-lab
 export AWS_REGION=us-east-1
@@ -88,6 +89,7 @@ export CDK_DEFAULT_ACCOUNT="$(aws sts get-caller-identity --query Account --outp
 aws configure set credential_process 'aws configure export-credentials --profile naro-lab --format process' --profile naro-cdk
 aws configure set region us-east-1 --profile naro-cdk
 export AWS_PROFILE=naro-cdk
+# Para deploy, informe também --profile naro-cdk explicitamente.
 ```
 
 Crie apenas os secrets ausentes. O script valida a conta, gera valores aleatórios na memória, envia por stdin ao CLI e não imprime os valores nem cria arquivos de senhas. Não sobrescreve parâmetros existentes.
@@ -103,19 +105,45 @@ Compile, sintetize e revise antes de implantar:
 
 ```bash
 mvn clean package
-# Sem Maven global: ../mvnw clean package
+# Sem Maven global (esta máquina): ../mvnw clean package
 cdk synth
 cdk diff
 # Conta atual: reutiliza conexão e Budget, sem duplicar recursos:
 cdk diff -c connectionArn=ARN_DA_CONEXAO -c 'existingBudgetName=Passou de 15 dolares'
-cdk deploy -c connectionArn=ARN_DA_CONEXAO -c 'existingBudgetName=Passou de 15 dolares'
+cdk deploy --profile naro-cdk --no-rollback -c connectionArn=ARN_DA_CONEXAO -c 'existingBudgetName=Passou de 15 dolares'
 # Conta nova, sem conexão/Budget prévios:
 # cdk deploy --parameters BudgetEmail=SEU_EMAIL
 ```
 
 **Sempre examine `cdk diff` antes de um deploy importante**, principalmente substituições de RDS, buckets e VPC. Não execute substituições que possam apagar dados sem avaliar o plano. Não é necessário `cdk bootstrap`: esta aplicação não publica assets CDK e utiliza o synthesizer legado, evitando bucket, ECR e roles extras do bootstrap.
 
+Na primeira criação, `--no-rollback` preserva recursos se algo falhar, permitindo corrigir e repetir o deploy sem recriar o RDS. Recursos preservados continuam cobrando; investigue e conclua ou planeje a remoção consciente.
+
 Depois da criação, abra a conexão indicada nos outputs, conclua a autorização do GitHub e confira o estado `AVAILABLE`. Uma execução iniciada antes disso pode falhar no Source; após a autorização, use “Release change” no pipeline ou faça o próximo push na `master`.
+
+Para conservar a seleção dos recursos já existentes em comandos posteriores sem `-c`, use o arquivo local ignorado `cdk.context.json`. Mantenha a chave de availability zones gerada pelo CDK e acrescente uma seleção por conta/região, sem secrets:
+
+```json
+{
+  "naro:deployment:SUA_CONTA:us-east-1": {
+    "connectionArn": "ARN_DA_CONEXAO_EXISTENTE",
+    "existingBudgetName": "Passou de 15 dolares"
+  }
+}
+```
+
+O arquivo desta máquina já contém a seleção correta. Num clone novo, restaure-a ou informe os dois `-c` em cada synth/diff/deploy. Não execute `cdk context --clear` sem restaurar essas escolhas. Um override `-c` tem prioridade. A configuração de uma conta/região não é reutilizada em outra.
+
+Exemplo para um domínio que você já possui e um certificado ACM emitido em `us-east-1`:
+
+```bash
+cdk diff --profile naro-cdk -c publicHostname=api.SEUDOMINIO \
+  -c certificateArn=ARN_DO_CERTIFICADO -c frontendOrigin=https://SEU_FRONTEND
+cdk deploy --profile naro-cdk -c publicHostname=api.SEUDOMINIO \
+  -c certificateArn=ARN_DO_CERTIFICADO -c frontendOrigin=https://SEU_FRONTEND
+```
+
+Conserve esses contextos nas atualizações seguintes. Configure o DNS de seu domínio para o ALB; o stack não cria registros DNS. Sem certificado/hostname, permanece HTTP. A alteração do hostname/issuer exige atualizar a configuração do frontend.
 
 Os parâmetros/contextos e outputs exatos estão no código Java. Valores sensíveis não devem ser fornecidos com `-c`, `cdk.json`, templates ou user-data.
 
@@ -145,7 +173,7 @@ Roda em Docker na mesma EC2, gerenciado por `naro-keycloak.service`, versão 26.
 
 Usa o mesmo RDS, mas banco e usuário `keycloak`. O setup preserva realm `social`, tema Naro, client confidencial `naro-web` e PKCE. O client `naro-swagger` usa PKCE público e callback exato do Swagger. Redirect URLs e Web Origins não usam `*`.
 
-O issuer é `PUBLIC_BASE_URL/auth/realms/social`. Spring valida esse issuer público e busca o JWKS diretamente em `127.0.0.1:8081`, evitando uma volta pelo ALB. `KC_PROXY_HEADERS=xforwarded` aceita os headers do ALB; o hostname é fixo, não derivado livremente de headers de entrada. O profile Spring configura forwarded headers para que links HAL preservem host/esquema.
+O issuer é `PUBLIC_ORIGIN/auth/realms/social`. Spring valida esse issuer público e busca o JWKS diretamente em `127.0.0.1:8081`, evitando uma volta pelo ALB. `KC_PROXY_HEADERS=xforwarded` aceita os headers do ALB; o hostname é fixo, não derivado livremente de headers de entrada. O profile Spring configura forwarded headers para que links HAL preservem host/esquema.
 
 Sem domínio, HTTP é permitido apenas para os testes do laboratório. Não use senhas ou dados reais nessa condição. Para uso real, informe um certificado ACM da mesma região e um hostname do seu domínio; configure DNS para o ALB. Não compramos domínio nem criamos Route 53.
 
@@ -271,7 +299,7 @@ cdk diff
 cdk destroy
 ```
 
-**Esse comando remove infraestrutura e interrompe a aplicação. Revise e confirme conscientemente; não o execute automaticamente.** O RDS gera snapshot final e os buckets são retidos para evitar perda silenciosa de dados. Snapshots, buckets, logs retidos e parâmetros podem continuar existindo/cobrando após `destroy`; confira os recursos restantes e só os apague depois de decidir que os dados não são necessários. Objetos dentro de buckets retidos impedem certas recriações com os mesmos nomes: planeje importação/reuso ou limpeza explícita, sem apagar automaticamente.
+**Esse comando remove infraestrutura e interrompe a aplicação. Revise e confirme conscientemente; não o execute automaticamente.** O RDS gera snapshot final e os buckets são retidos para evitar perda silenciosa de dados. Snapshots, buckets e parâmetros podem continuar existindo/cobrando após `destroy`; confira os recursos restantes e só os apague depois de decidir que os dados não são necessários. Buckets retidos, mesmo vazios, impedem recriação com os mesmos nomes: planeje importação/reuso ou limpeza explícita, sem apagar automaticamente.
 
 ## Referências oficiais
 
@@ -294,3 +322,13 @@ cdk destroy
 - `../.gitleaks.toml`: ignora somente um falso positivo exato do endpoint JDBC local; mantém demais regras de detecção.
 
 Validação local: 326 testes Maven passaram sem falhas/skips; PostgreSQL e MinIO reais via Testcontainers; smoke do JAR local e descoberta Keycloak local passaram. Runtime ARM foi testado isoladamente com PostgreSQL17/Keycloak26.7.3, incluindo configuração idempotente e login administrativo. Consulte `VALIDATION.md` para o resultado real do deploy AWS.
+
+Recursos anteriores da conta, como stacks antigas do Elastic Beanstalk e buckets de outros estudos, não pertencem ao NaroLab e não foram apagados. A conexão e o Budget reutilizados também permanecem fora do ciclo de destruição do stack.
+
+O teste manual completo roda pela EC2/SSM como root:
+
+```bash
+python3 /opt/naro/deployment/aws/tools/smoke_application.py
+```
+
+Ele cria um usuário/client de diagnóstico exclusivo, um canal e uma publicação com imagem de um pixel. Verifica JWT, RDS, upload pelo backend, download por URL assinada e negação de acesso anônimo ao S3. Ao terminar desabilita o usuário/client e encerra suas sessões, sem apagar dados existentes. Reexecuções na mesma EC2 reutilizam os IDs em `/var/lib/naro/smoke-state.json` (0600), que não contém senhas/tokens. Uma nova EC2 cria seu próprio diagnóstico; não execute esse teste em loop.
