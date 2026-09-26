@@ -1,0 +1,10 @@
+/var/log/naro/*.log {
+    daily
+    rotate 3
+    maxsize 20M
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}

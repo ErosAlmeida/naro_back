@@ -1,0 +1,10 @@
+{
+  "app": "../mvnw -q -f pom.xml compile exec:java",
+  "versionReporting": false,
+  "context": {
+    "repositoryOwner": "leonardovilelaaws-del",
+    "repositoryName": "naro_back",
+    "repositoryBranch": "master",
+    "frontendOrigin": "http://localhost:3000"
+  }
+}

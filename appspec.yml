@@ -1,0 +1,27 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /opt/naro/deployment
+file_exists_behavior: OVERWRITE
+hooks:
+  ApplicationStop:
+    - location: aws/scripts/stop_application.sh
+      timeout: 120
+      runas: root
+  BeforeInstall:
+    - location: aws/scripts/prepare_install.sh
+      timeout: 120
+      runas: root
+  AfterInstall:
+    - location: aws/scripts/install_application.sh
+      timeout: 600
+      runas: root
+  ApplicationStart:
+    - location: aws/scripts/start_application.sh
+      timeout: 600
+      runas: root
+  ValidateService:
+    - location: aws/scripts/validate_service.sh
+      timeout: 240
+      runas: root

@@ -1,0 +1,27 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      java: corretto25
+    commands:
+      - java -version
+      - docker info >/dev/null
+      - python3 -m unittest discover -s aws/scripts/tests -v
+  build:
+    commands:
+      # Privileged mode is required for the existing PostgreSQL/MinIO Testcontainers tests.
+      - ./mvnw --batch-mode --no-transfer-progress clean verify
+  post_build:
+    commands:
+      - test "$CODEBUILD_BUILD_SUCCEEDING" = 1
+      - bash aws/scripts/package_artifact.sh
+reports:
+  junit:
+    files:
+      - '**/*.xml'
+    base-directory: target/surefire-reports
+    file-format: JUNITXML
+artifacts:
+  base-directory: deployment-artifact
+  files:
+    - '**/*'

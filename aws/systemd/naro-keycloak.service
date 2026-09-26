@@ -1,0 +1,23 @@
+[Unit]
+Description=Naro Keycloak 26.7.3
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+# Only root can read the Docker env file or control this container.
+ExecStartPre=-/usr/bin/docker rm -f naro-keycloak
+ExecStart=/usr/bin/docker run --rm --name naro-keycloak --network host --memory=896m --memory-swap=896m --cap-drop=ALL --security-opt=no-new-privileges --log-driver=none --env-file=/etc/naro/keycloak.env --volume=/opt/naro/deployment/infra/keycloak/themes/naro:/opt/keycloak/themes/naro:ro --volume=/etc/pki/rds/global-bundle.pem:/opt/keycloak/conf/rds-ca.pem:ro quay.io/keycloak/keycloak:26.7.3 start
+ExecStop=/usr/bin/docker stop --time 40 naro-keycloak
+Restart=on-failure
+RestartSec=15
+TimeoutStartSec=300
+TimeoutStopSec=60
+StandardOutput=append:/var/log/naro/keycloak.log
+StandardError=append:/var/log/naro/keycloak.log
+
+[Install]
+WantedBy=multi-user.target

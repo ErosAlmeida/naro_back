@@ -1,0 +1,34 @@
+[Unit]
+Description=Naro Spring Boot backend
+After=network-online.target naro-keycloak.service
+Wants=network-online.target naro-keycloak.service
+StartLimitIntervalSec=120
+StartLimitBurst=6
+
+[Service]
+Type=simple
+User=naro
+Group=naro
+WorkingDirectory=/opt/naro
+EnvironmentFile=/etc/naro/backend.env
+ExecStart=/usr/bin/java -Xms128m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:+ExitOnOutOfMemoryError -jar /opt/naro/application.jar
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=40
+SuccessExitStatus=143
+MemoryMax=640M
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+StandardOutput=append:/var/log/naro/backend.log
+StandardError=append:/var/log/naro/backend.log
+
+[Install]
+WantedBy=multi-user.target
