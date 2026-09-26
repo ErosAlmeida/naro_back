@@ -24,7 +24,16 @@ public record ConversationResponse(
         /*
          * null quando a conversa ainda não tem mensagens.
          */
-        ChatMessageResponse lastMessage
+        ChatMessageResponse lastMessage,
+
+        /* Histórico permanece visível quando a amizade termina. */
+        boolean canMessage
 
 ) {
+    public ConversationResponse(UUID id, ConversationType type,
+                                Set<ChatParticipantResponse> participants,
+                                Instant createdAt, Instant updatedAt,
+                                ChatMessageResponse lastMessage) {
+        this(id, type, participants, createdAt, updatedAt, lastMessage, false);
+    }
 }

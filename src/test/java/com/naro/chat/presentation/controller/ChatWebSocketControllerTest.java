@@ -5,6 +5,7 @@ import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.SendChatMessageRequest;
 import com.naro.chat.application.service.ChatService;
 import com.naro.exception.ForbiddenException;
+import com.naro.exception.ChatFriendshipRequiredException;
 import com.naro.exception.NotFoundException;
 import com.naro.security.RealtimePrincipal;
 import com.naro.user.application.service.CurrentUserService;
@@ -67,6 +68,31 @@ class ChatWebSocketControllerTest {
 
         assertThat(response.message())
                 .isEqualTo("You are not a participant of this conversation");
+    }
+
+    @Test
+    void friendshipRequiredCorrelatesOnlyTheRejectedMessage() {
+        UUID conversationId = UUID.randomUUID();
+        UUID clientMessageId = UUID.randomUUID();
+
+        ChatErrorResponse response = controller.handleErrorResponse(
+                new ChatFriendshipRequiredException(conversationId, clientMessageId));
+
+        assertThat(response.code()).isEqualTo("FRIENDSHIP_REQUIRED");
+        assertThat(response.message()).isEqualTo("You can only message your friends");
+        assertThat(response.conversationId()).isEqualTo(conversationId);
+        assertThat(response.clientMessageId()).isEqualTo(clientMessageId);
+    }
+
+    @Test
+    void typingFriendshipErrorHasConversationWithoutMessageCorrelation() {
+        UUID conversationId = UUID.randomUUID();
+        ChatErrorResponse response = controller.handleErrorResponse(
+                new ChatFriendshipRequiredException(conversationId, null));
+
+        assertThat(response.code()).isEqualTo("FRIENDSHIP_REQUIRED");
+        assertThat(response.conversationId()).isEqualTo(conversationId);
+        assertThat(response.clientMessageId()).isNull();
     }
 
 

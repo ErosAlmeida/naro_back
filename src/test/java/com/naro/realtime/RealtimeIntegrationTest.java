@@ -3,6 +3,10 @@ package com.naro.realtime;
 import com.naro.MinioTestcontainersConfiguration;
 import com.naro.PostgresTestcontainersConfiguration;
 import com.naro.chat.domain.entity.Conversation;
+import com.naro.chat.application.service.ChatService;
+import com.naro.friend.application.service.FriendService;
+import com.naro.friend.domain.entity.Friendship;
+import com.naro.friend.domain.repository.FriendshipRepository;
 import com.naro.chat.domain.enums.ConversationType;
 import com.naro.chat.domain.repository.ConversationRepository;
 import com.naro.presence.application.service.PresenceStore;
@@ -16,6 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.context.annotation.Import;
 import org.springframework.messaging.converter.JacksonJsonMessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -36,11 +43,19 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Fluxo real: WebSocket + STOMP + ticket + broker + banco.
@@ -49,6 +64,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * conectado realmente recebe.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 @Import({
         PostgresTestcontainersConfiguration.class,
         MinioTestcontainersConfiguration.class
@@ -74,6 +90,11 @@ class RealtimeIntegrationTest {
 
     @Autowired
     private ConversationRepository conversationRepository;
+
+    @Autowired private FriendshipRepository friendships;
+    @Autowired private FriendService friends;
+    @Autowired private ChatService chat;
+    @Autowired private MockMvc mvc;
 
     @Autowired
     private WebSocketTicketService ticketService;
@@ -106,6 +127,7 @@ class RealtimeIntegrationTest {
         maria = userRepository.save(new User("kc-maria-" + suffix, "maria" + suffix, null, null, null));
         outsider = userRepository.save(new User("kc-out-" + suffix, "outsider" + suffix, null, null, null));
 
+        friendships.saveAndFlush(Friendship.between(leonardo, maria));
         conversation = conversationRepository.save(
                 new Conversation(ConversationType.DIRECT, Set.of(leonardo, maria))
         );
@@ -241,6 +263,106 @@ class RealtimeIntegrationTest {
         assertThat(next(leonardoChat)).containsEntry("clientMessageId", clientMessageId.toString());
     }
 
+
+    @Test
+    void friendshipIsRequiredBeforeCreationAndPendingRequestDoesNotGrantAccess() throws Exception {
+        var auth = jwt().jwt(token -> token.subject(leonardo.getKeycloakId())
+                .claim("preferred_username", leonardo.getUsername()));
+        mvc.perform(post("/api/v1/chats/direct/{id}", outsider.getId()).with(auth))
+                .andExpect(status().isForbidden());
+        var request = friends.sendRequest(outsider.getId(), leonardo);
+        mvc.perform(post("/api/v1/chats/direct/{id}", outsider.getId()).with(auth))
+                .andExpect(status().isForbidden());
+        friends.acceptRequest(request.id(), outsider);
+        var created = chat.createDirectConversation(outsider.getId(), leonardo);
+        mvc.perform(post("/api/v1/chats/direct/{id}", outsider.getId()).with(auth))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(created.id().toString()))
+                .andExpect(jsonPath("$.canMessage").value(true));
+        friends.removeFriend(outsider.getId(), leonardo);
+        // Reusing an existing conversation cannot bypass the friendship check.
+        mvc.perform(post("/api/v1/chats/direct/{id}", outsider.getId()).with(auth))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/api/v1/chats").with(auth))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.conversations[?(@.id == '" + created.id() + "')].canMessage")
+                        .value(org.hamcrest.Matchers.contains(false)));
+    }
+
+    @Test
+    void endingFriendshipBlocksMessagesAndTypingOnAlreadyConnectedSocketsAndKeepsHistory() throws Exception {
+        StompSession sender = connect(leonardo);
+        StompSession recipient = connect(maria);
+        var sent = subscribe(sender, "/user/queue/chat");
+        var received = subscribe(recipient, "/user/queue/chat");
+        var recipientTyping = subscribe(recipient, "/user/queue/typing");
+        var errors = subscribe(sender, "/user/queue/errors");
+        settle();
+        sender.send("/app/chat/send", Map.of("conversationId", conversation.getId().toString(),
+                "content", "Antes de encerrar a amizade", "clientMessageId", UUID.randomUUID().toString()));
+        next(sent);
+        next(received);
+        friends.removeFriend(maria.getId(), leonardo);
+        assertThat(chat.getConversations(leonardo)).filteredOn(c -> c.id().equals(conversation.getId()))
+                .extracting(c -> c.canMessage()).containsExactly(false);
+        UUID rejectedClientId = UUID.randomUUID();
+        sender.send("/app/chat/send", Map.of("conversationId", conversation.getId().toString(),
+                "content", "Mensagem que deve ser bloqueada", "clientMessageId", rejectedClientId.toString()));
+        assertThat(next(errors)).containsEntry("code", "FRIENDSHIP_REQUIRED")
+                .containsEntry("conversationId", conversation.getId().toString())
+                .containsEntry("clientMessageId", rejectedClientId.toString());
+        sender.send("/app/chat/typing", Map.of("conversationId", conversation.getId().toString(), "typing", true));
+        assertThat(next(errors)).containsEntry("code", "FRIENDSHIP_REQUIRED")
+                .containsEntry("conversationId", conversation.getId().toString());
+        assertNothingArrives(received);
+        assertNothingArrives(sent);
+        assertNothingArrives(recipientTyping);
+        assertThat(chat.getMessages(conversation.getId(), leonardo, PageRequest.of(0, 30)).getContent())
+                .extracting(message -> message.content()).containsExactly("Antes de encerrar a amizade");
+        assertThat(chat.getMessages(conversation.getId(), maria, PageRequest.of(0, 30)).getTotalElements()).isEqualTo(1);
+        assertThatThrownBy(() -> chat.getMessages(conversation.getId(), outsider, PageRequest.of(0, 30)))
+                .isInstanceOf(com.naro.exception.ForbiddenException.class);
+        var renewed = friends.sendRequest(maria.getId(), leonardo);
+        friends.acceptRequest(renewed.id(), maria);
+        assertThat(chat.createDirectConversation(maria.getId(), leonardo).id()).isEqualTo(conversation.getId());
+        sender.send("/app/chat/send", Map.of("conversationId", conversation.getId().toString(),
+                "content", "Amizade retomada", "clientMessageId", UUID.randomUUID().toString()));
+        assertThat(next(received)).containsEntry("content", "Amizade retomada");
+        next(sent);
+        assertThat(chat.getMessages(conversation.getId(), maria, PageRequest.of(0, 30)).getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void concurrentCreationInBothDirectionsProducesOnlyOneDirectConversation() throws Exception {
+        var request = friends.sendRequest(outsider.getId(), leonardo);
+        friends.acceptRequest(request.id(), outsider);
+        var ready = new CountDownLatch(6);
+        var start = new CountDownLatch(1);
+        var executor = Executors.newFixedThreadPool(6);
+        List<Future<UUID>> results = new ArrayList<>();
+        try {
+            for (int index = 0; index < 6; index++) {
+                boolean forward = index % 2 == 0;
+                results.add(executor.submit(() -> {
+                    ready.countDown();
+                    if (!start.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("Race not released");
+                    return forward ? chat.createDirectConversation(outsider.getId(), leonardo).id()
+                            : chat.createDirectConversation(leonardo.getId(), outsider).id();
+                }));
+            }
+            assertThat(ready.await(5, TimeUnit.SECONDS)).isTrue();
+            start.countDown();
+            var ids = new ArrayList<UUID>();
+            for (var result : results) ids.add(result.get(20, TimeUnit.SECONDS));
+            assertThat(ids.stream().distinct().count()).isEqualTo(1);
+            assertThat(conversationRepository.findDirectConversation(ConversationType.DIRECT,
+                    leonardo.getId(), outsider.getId())).get().extracting(Conversation::getId).isEqualTo(ids.getFirst());
+        } finally {
+            start.countDown();
+            executor.shutdownNow();
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue();
+        }
+    }
 
     @Test
     void ticketCannotBeReused() throws Exception {

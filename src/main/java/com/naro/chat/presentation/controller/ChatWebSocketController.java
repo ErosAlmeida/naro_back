@@ -5,6 +5,7 @@ import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.SendChatMessageRequest;
 
 import com.naro.chat.application.service.ChatService;
+import com.naro.exception.ChatFriendshipRequiredException;
 
 import com.naro.security.RealtimePrincipal;
 
@@ -126,6 +127,11 @@ public class ChatWebSocketController {
     public ChatErrorResponse handleErrorResponse(
             ErrorResponseException exception
     ) {
+
+        if (exception instanceof ChatFriendshipRequiredException friendshipRequired) {
+            return new ChatErrorResponse("FRIENDSHIP_REQUIRED", exception.getBody().getDetail(),
+                    Instant.now(), friendshipRequired.getConversationId(), friendshipRequired.getClientMessageId());
+        }
 
         return new ChatErrorResponse(
                 "CHAT_ERROR",

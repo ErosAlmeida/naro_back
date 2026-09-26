@@ -20,7 +20,10 @@ import com.naro.chat.domain.repository.ConversationRepository;
 
 import com.naro.exception.BadRequestException;
 import com.naro.exception.ForbiddenException;
+import com.naro.exception.ChatFriendshipRequiredException;
 import com.naro.exception.NotFoundException;
+import com.naro.friend.domain.entity.Friendship;
+import com.naro.friend.domain.repository.FriendshipRepository;
 
 import com.naro.user.domain.entity.User;
 import com.naro.user.domain.repository.UserRepository;
@@ -34,6 +37,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -54,19 +59,23 @@ public class ChatServiceImpl
 
     private final ApplicationEventPublisher eventPublisher;
 
+    private final FriendshipRepository friendshipRepository;
+
 
     public ChatServiceImpl(
             ConversationRepository conversationRepository,
             ChatMessageRepository chatMessageRepository,
             UserRepository userRepository,
             ChatMapper chatMapper,
-            ApplicationEventPublisher eventPublisher
+            ApplicationEventPublisher eventPublisher,
+            FriendshipRepository friendshipRepository
     ) {
         this.conversationRepository = conversationRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
         this.chatMapper = chatMapper;
         this.eventPublisher = eventPublisher;
+        this.friendshipRepository = friendshipRepository;
     }
 
 
@@ -94,6 +103,9 @@ public class ChatServiceImpl
                                 )
                         );
 
+        requireRealParticipants(Set.of(currentUser, targetUser));
+        lockUsers(List.of(currentUser.getId(), targetUserId));
+        requireFriendship(currentUser.getId(), targetUserId, null, null);
 
         return conversationRepository
                 .findDirectConversation(
@@ -102,7 +114,10 @@ public class ChatServiceImpl
                         targetUserId
                 )
                 .map(
-                        this::toConversationResponse
+                        conversation -> {
+                            requireValidParticipants(conversation, currentUser);
+                            return toConversationResponse(conversation, true);
+                        }
                 )
                 .orElseGet(() -> {
 
@@ -129,7 +144,7 @@ public class ChatServiceImpl
 
 
                     return chatMapper
-                            .toConversationResponse(saved, null);
+                            .toConversationResponse(saved, null, true);
                 });
     }
 
@@ -155,13 +170,23 @@ public class ChatServiceImpl
                                 .toList()
                 );
 
+        Set<UUID> participantIds = conversations.stream()
+                .flatMap(conversation -> conversation.getParticipants().stream())
+                .map(User::getId)
+                .filter(id -> !id.equals(currentUser.getId()))
+                .collect(Collectors.toSet());
+        Set<UUID> friendIds = participantIds.isEmpty() ? Set.of() :
+                friendshipRepository.findFriendshipsAmong(currentUser.getId(), participantIds).stream()
+                        .map(friendship -> otherFriendId(friendship, currentUser.getId()))
+                        .collect(Collectors.toSet());
 
         return conversations
                 .stream()
                 .map(conversation ->
                         chatMapper.toConversationResponse(
                                 conversation,
-                                lastMessages.get(conversation.getId())
+                                lastMessages.get(conversation.getId()),
+                                canMessage(conversation, currentUser, friendIds)
                         )
                 )
                 .toList();
@@ -206,6 +231,7 @@ public class ChatServiceImpl
                         sender
                 );
 
+        requireMessagingAllowed(conversation, sender, request.clientMessageId());
 
         User senderReference =
                 userRepository.getReferenceById(
@@ -264,7 +290,7 @@ public class ChatServiceImpl
      * recebem o evento.
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void notifyTyping(
             ChatTypingRequest request,
             User sender
@@ -276,6 +302,7 @@ public class ChatServiceImpl
                         sender
                 );
 
+        requireMessagingAllowed(conversation, sender, null);
 
         Set<String> recipients =
                 conversation
@@ -312,14 +339,16 @@ public class ChatServiceImpl
 
 
     private ConversationResponse toConversationResponse(
-            Conversation conversation
+            Conversation conversation,
+            boolean canMessage
     ) {
 
         return chatMapper.toConversationResponse(
                 conversation,
                 findLastMessages(
                         List.of(conversation.getId())
-                ).get(conversation.getId())
+                ).get(conversation.getId()),
+                canMessage
         );
     }
 
@@ -389,5 +418,66 @@ public class ChatServiceImpl
 
 
         return conversation;
+    }
+
+    private void requireMessagingAllowed(Conversation conversation, User sender, UUID clientMessageId) {
+        requireValidParticipants(conversation, sender);
+        requireRealParticipants(conversation.getParticipants());
+        // Same ordering as FriendServiceImpl: create/send/typing and friendship
+        // removal serialize on the user rows, including an already connected socket.
+        lockUsers(conversation.getParticipants().stream().map(User::getId).toList());
+        conversation.getParticipants().stream()
+                .filter(participant -> !participant.getId().equals(sender.getId()))
+                .forEach(participant -> requireFriendship(sender.getId(), participant.getId(),
+                        conversation.getId(), clientMessageId));
+    }
+
+    private void lockUsers(Collection<UUID> ids) {
+        ids.stream().distinct().sorted(Comparator.comparing(UUID::toString)).forEach(id ->
+                userRepository.findByIdForUpdate(id)
+                        .orElseThrow(() -> new NotFoundException("User not found")));
+    }
+
+    private void requireFriendship(UUID senderId, UUID recipientId, UUID conversationId, UUID clientMessageId) {
+        if (!friendshipRepository.existsFriendshipBetweenUsers(senderId, recipientId)) {
+            throw new ChatFriendshipRequiredException(conversationId, clientMessageId);
+        }
+    }
+
+    private static void requireRealParticipants(Collection<User> participants) {
+        if (participants.stream().anyMatch(participant -> !isRealUser(participant))) {
+            throw new ForbiddenException("You can only message real friends");
+        }
+    }
+
+    private static boolean isRealUser(User participant) {
+        String subject = participant.getKeycloakId();
+        return subject != null && !subject.startsWith("seed:") && !subject.startsWith("friend-seed:");
+    }
+
+    private static void requireValidParticipants(Conversation conversation, User sender) {
+        if (!hasValidParticipants(conversation, sender)) {
+            throw new ForbiddenException("Conversation has invalid participants");
+        }
+    }
+
+    private static boolean hasValidParticipants(Conversation conversation, User sender) {
+        Set<User> participants = conversation.getParticipants();
+        return participants.stream().anyMatch(participant -> participant.getId().equals(sender.getId()))
+                && ((conversation.getType() == ConversationType.DIRECT && participants.size() == 2)
+                || (conversation.getType() == ConversationType.GROUP && participants.size() >= 2));
+    }
+
+    private static boolean canMessage(Conversation conversation, User sender, Set<UUID> friendIds) {
+        return hasValidParticipants(conversation, sender)
+                && conversation.getParticipants().stream().allMatch(ChatServiceImpl::isRealUser)
+                && conversation.getParticipants().stream()
+                        .filter(participant -> !participant.getId().equals(sender.getId()))
+                        .allMatch(participant -> friendIds.contains(participant.getId()));
+    }
+
+    private static UUID otherFriendId(Friendship friendship, UUID currentUserId) {
+        return friendship.getUserA().getId().equals(currentUserId)
+                ? friendship.getUserB().getId() : friendship.getUserA().getId();
     }
 }

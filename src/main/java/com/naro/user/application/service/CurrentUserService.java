@@ -42,7 +42,7 @@ public class CurrentUserService {
 
     private User createUser(Jwt jwt) {
 
-        User user = new User(
+        userRepository.provisionIfAbsent(
                 jwt.getSubject(),
                 jwt.getClaimAsString("preferred_username"),
                 jwt.getClaimAsString("email"),
@@ -50,6 +50,10 @@ public class CurrentUserService {
                 jwt.getClaimAsString("family_name")
         );
 
-        return userRepository.save(user);
+        // Under READ COMMITTED this sees either our insert or the winner of a
+        // concurrent insert. The database operation waits for that transaction.
+        // Never resolve a username collision as someone else's account.
+        return userRepository.findByKeycloakId(jwt.getSubject())
+                .orElseThrow(() -> new BadCredentialsException("Authenticated subject could not be provisioned"));
     }
 }

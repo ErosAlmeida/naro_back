@@ -103,6 +103,9 @@ o mesmo bloco `page` de antes:
 | `GET /api/v1/chats` | `conversations` |
 | `GET /api/v1/chats/{id}/messages` | `messages` |
 | `GET /api/users/search` | `users` |
+| `GET /api/v1/friends` | `friends` |
+| `GET /api/v1/friends/discover` | `people` |
+| `GET /api/v1/friends/requests/received`, `GET /api/v1/friends/requests/sent` | `friendRequests` |
 
 ### Links de cada recurso
 

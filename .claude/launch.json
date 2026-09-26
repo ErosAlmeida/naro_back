@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "naro-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--dir",
+        "/Users/leonardo/Documents/interface-da-rede-naro",
+        "dev"
+      ],
+      "port": 3000
+    }
+  ]
+}

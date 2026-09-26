@@ -60,10 +60,16 @@ public interface ChatMapper {
             target = "lastMessage",
             source = "lastMessage"
     )
+    @Mapping(target = "canMessage", source = "canMessage")
     ConversationResponse toConversationResponse(
             Conversation conversation,
-            ChatMessage lastMessage
+            ChatMessage lastMessage,
+            boolean canMessage
     );
+
+    default ConversationResponse toConversationResponse(Conversation conversation, ChatMessage lastMessage) {
+        return toConversationResponse(conversation, lastMessage, false);
+    }
 
 
     @Mapping(

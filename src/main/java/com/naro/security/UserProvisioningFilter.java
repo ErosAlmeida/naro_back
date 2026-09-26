@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,7 +34,15 @@ public class UserProvisioningFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication instanceof JwtAuthenticationToken jwtAuthentication) {
-            currentUserService.resolve(jwtAuthentication.getToken());
+            try {
+                currentUserService.resolve(jwtAuthentication.getToken());
+            } catch (BadCredentialsException exception) {
+                // This filter runs before ExceptionTranslationFilter, so handle
+                // a subject/username mismatch here and stop the request safely.
+                SecurityContextHolder.clearContext();
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);

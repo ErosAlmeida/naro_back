@@ -14,11 +14,15 @@ import com.naro.chat.domain.repository.ConversationRepository;
 import com.naro.exception.BadRequestException;
 import com.naro.exception.ForbiddenException;
 import com.naro.exception.NotFoundException;
+import com.naro.friend.domain.entity.Friendship;
+import com.naro.friend.domain.repository.FriendshipRepository;
 import com.naro.user.domain.entity.User;
 import com.naro.user.domain.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -40,6 +44,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.inOrder;
 
 @ExtendWith(MockitoExtension.class)
 class ChatServiceImplTest {
@@ -52,6 +58,9 @@ class ChatServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private FriendshipRepository friendshipRepository;
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
@@ -70,7 +79,8 @@ class ChatServiceImplTest {
                 chatMessageRepository,
                 userRepository,
                 new ChatMapperImpl(),
-                eventPublisher
+                eventPublisher,
+                friendshipRepository
         );
     }
 
@@ -108,6 +118,7 @@ class ChatServiceImplTest {
         Conversation existing = conversation(currentUser, otherUser);
 
         when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        allowMessaging(currentUser, otherUser);
         when(conversationRepository.findDirectConversation(
                 ConversationType.DIRECT, currentUser.getId(), otherUser.getId()
         )).thenReturn(Optional.of(existing));
@@ -116,6 +127,7 @@ class ChatServiceImplTest {
                 chatService.createDirectConversation(otherUser.getId(), currentUser);
 
         assertThat(response.id()).isEqualTo(existing.getId());
+        assertThat(response.canMessage()).isTrue();
         verify(conversationRepository, never()).save(any());
     }
 
@@ -124,6 +136,7 @@ class ChatServiceImplTest {
     void createDirectConversationCreatesNewConversationWithBothParticipants() {
 
         when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        allowMessaging(currentUser, otherUser);
         when(conversationRepository.findDirectConversation(
                 ConversationType.DIRECT, currentUser.getId(), otherUser.getId()
         )).thenReturn(Optional.empty());
@@ -135,6 +148,7 @@ class ChatServiceImplTest {
                 chatService.createDirectConversation(otherUser.getId(), currentUser);
 
         assertThat(response.type()).isEqualTo(ConversationType.DIRECT);
+        assertThat(response.canMessage()).isTrue();
         assertThat(response.participants())
                 .extracting(participant -> participant.username())
                 .containsExactlyInAnyOrder("leonardo", "maria");
@@ -179,6 +193,7 @@ class ChatServiceImplTest {
 
         Conversation conversation = conversation(currentUser, otherUser);
         UUID clientMessageId = UUID.randomUUID();
+        allowMessaging(currentUser, otherUser);
 
         when(conversationRepository.findByIdWithParticipants(conversation.getId()))
                 .thenReturn(Optional.of(conversation));
@@ -233,6 +248,8 @@ class ChatServiceImplTest {
                 .thenReturn(List.of(withMessages, empty));
         when(chatMessageRepository.findLastMessages(List.of(withMessages.getId(), empty.getId())))
                 .thenReturn(List.of(last));
+        when(friendshipRepository.findFriendshipsAmong(org.mockito.ArgumentMatchers.eq(currentUser.getId()), any()))
+                .thenReturn(List.of(Friendship.between(currentUser, otherUser)));
 
         List<ConversationResponse> conversations = chatService.getConversations(currentUser);
 
@@ -240,6 +257,10 @@ class ChatServiceImplTest {
         assertThat(conversations.get(0).lastMessage().content()).isEqualTo("Até amanhã");
         assertThat(conversations.get(0).lastMessage().senderUsername()).isEqualTo("maria");
         assertThat(conversations.get(1).lastMessage()).isNull();
+        assertThat(conversations.get(0).canMessage()).isTrue();
+        assertThat(conversations.get(1).canMessage()).isFalse();
+        verify(friendshipRepository, times(1)).findFriendshipsAmong(org.mockito.ArgumentMatchers.eq(currentUser.getId()), any());
+        verify(friendshipRepository, never()).existsFriendshipBetweenUsers(any(), any());
     }
 
 
@@ -249,6 +270,7 @@ class ChatServiceImplTest {
         User third = user("joao");
         Conversation conversation =
                 withId(new Conversation(ConversationType.GROUP, Set.of(currentUser, otherUser, third)));
+        allowMessaging(currentUser, otherUser, third);
 
         when(conversationRepository.findByIdWithParticipants(conversation.getId()))
                 .thenReturn(Optional.of(conversation));
@@ -285,6 +307,133 @@ class ChatServiceImplTest {
                 .isInstanceOf(ForbiddenException.class);
 
         verifyNoInteractions(eventPublisher);
+    }
+
+    @Test
+    void nonFriendsCannotCreateOrReuseConversationEvenWithPendingRequest() {
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        lockable(currentUser, otherUser);
+        // Only an accepted friendship authorizes chat; pending requests and
+        // follows do not create a row in the friendship repository.
+        when(friendshipRepository.existsFriendshipBetweenUsers(currentUser.getId(), otherUser.getId()))
+                .thenReturn(false);
+
+        assertThatThrownBy(() -> chatService.createDirectConversation(otherUser.getId(), currentUser))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessageContaining("friends");
+
+        verifyNoInteractions(conversationRepository, chatMessageRepository, eventPublisher);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"seed:old", "friend-seed:old"})
+    void seededUserCannotStartConversation(String subject) {
+        ReflectionTestUtils.setField(otherUser, "keycloakId", subject);
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+
+        assertThatThrownBy(() -> chatService.createDirectConversation(otherUser.getId(), currentUser))
+                .isInstanceOf(ForbiddenException.class);
+
+        verifyNoInteractions(friendshipRepository, conversationRepository, eventPublisher);
+    }
+
+    @Test
+    void friendshipRemovalBlocksNextMessageAndTypingOnExistingConversation() {
+        Conversation conversation = conversation(currentUser, otherUser);
+        when(conversationRepository.findByIdWithParticipants(conversation.getId()))
+                .thenReturn(Optional.of(conversation));
+        lockable(currentUser, otherUser);
+        when(friendshipRepository.existsFriendshipBetweenUsers(currentUser.getId(), otherUser.getId()))
+                .thenReturn(true, false);
+        when(userRepository.getReferenceById(currentUser.getId())).thenReturn(currentUser);
+        when(chatMessageRepository.saveAndFlush(any(ChatMessage.class)))
+                .thenAnswer(invocation -> withId(invocation.getArgument(0)));
+
+        chatService.sendMessage(new SendChatMessageRequest(conversation.getId(), "Antes", null), currentUser);
+        assertThatThrownBy(() -> chatService.sendMessage(
+                new SendChatMessageRequest(conversation.getId(), "Depois", null), currentUser))
+                .isInstanceOf(ForbiddenException.class);
+        assertThatThrownBy(() -> chatService.notifyTyping(
+                new ChatTypingRequest(conversation.getId(), true), currentUser))
+                .isInstanceOf(ForbiddenException.class);
+
+        verify(chatMessageRepository, times(1)).saveAndFlush(any(ChatMessage.class));
+        verify(eventPublisher, times(1)).publishEvent(any(ChatMessageCreatedEvent.class));
+        verify(eventPublisher, never()).publishEvent(any(ChatTypingEvent.class));
+    }
+
+    @Test
+    void formerFriendsCanStillReadHistory() {
+        Conversation conversation = conversation(currentUser, otherUser);
+        when(conversationRepository.findByIdWithParticipants(conversation.getId()))
+                .thenReturn(Optional.of(conversation));
+        when(chatMessageRepository.findByConversation_IdOrderByCreatedAtDesc(conversation.getId(), PageRequest.of(0, 50)))
+                .thenReturn(org.springframework.data.domain.Page.empty());
+
+        assertThat(chatService.getMessages(conversation.getId(), currentUser, PageRequest.of(0, 50))).isEmpty();
+        verifyNoInteractions(friendshipRepository);
+    }
+
+    @Test
+    void groupCannotSendWhenAnyRecipientIsNotAFriend() {
+        User third = user("joao");
+        Conversation conversation = withId(new Conversation(ConversationType.GROUP,
+                Set.of(currentUser, otherUser, third)));
+        when(conversationRepository.findByIdWithParticipants(conversation.getId()))
+                .thenReturn(Optional.of(conversation));
+        lockable(currentUser, otherUser, third);
+        when(friendshipRepository.existsFriendshipBetweenUsers(org.mockito.ArgumentMatchers.eq(currentUser.getId()), any()))
+                .thenAnswer(invocation -> invocation.getArgument(1).equals(otherUser.getId()));
+
+        assertThatThrownBy(() -> chatService.sendMessage(
+                new SendChatMessageRequest(conversation.getId(), "Grupo", null), currentUser))
+                .isInstanceOf(ForbiddenException.class);
+        verifyNoInteractions(chatMessageRepository, eventPublisher);
+    }
+
+    @Test
+    void malformedDirectCannotSendOrNotifyTyping() {
+        Conversation conversation = withId(new Conversation(ConversationType.DIRECT,
+                Set.of(currentUser, otherUser, user("joao"))));
+        when(conversationRepository.findByIdWithParticipants(conversation.getId()))
+                .thenReturn(Optional.of(conversation));
+
+        assertThatThrownBy(() -> chatService.sendMessage(
+                new SendChatMessageRequest(conversation.getId(), "Oi", null), currentUser))
+                .isInstanceOf(ForbiddenException.class);
+        assertThatThrownBy(() -> chatService.notifyTyping(new ChatTypingRequest(conversation.getId(), true), currentUser))
+                .isInstanceOf(ForbiddenException.class);
+        verifyNoInteractions(userRepository, friendshipRepository, chatMessageRepository, eventPublisher);
+    }
+
+    @Test
+    void usersAreLockedInFriendServiceUuidOrderBeforeFriendshipCheck() {
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        lockable(currentUser, otherUser);
+        assertThatThrownBy(() -> chatService.createDirectConversation(otherUser.getId(), currentUser))
+                .isInstanceOf(ForbiddenException.class);
+
+        List<UUID> ordered = List.of(currentUser.getId(), otherUser.getId()).stream()
+                .sorted(java.util.Comparator.comparing(UUID::toString)).toList();
+        var order = inOrder(userRepository, friendshipRepository);
+        order.verify(userRepository).findById(otherUser.getId());
+        order.verify(userRepository).findByIdForUpdate(ordered.get(0));
+        order.verify(userRepository).findByIdForUpdate(ordered.get(1));
+        order.verify(friendshipRepository).existsFriendshipBetweenUsers(currentUser.getId(), otherUser.getId());
+    }
+
+    private void allowMessaging(User sender, User... recipients) {
+        lockable(sender);
+        lockable(recipients);
+        for (User recipient : recipients) {
+            when(friendshipRepository.existsFriendshipBetweenUsers(sender.getId(), recipient.getId())).thenReturn(true);
+        }
+    }
+
+    private void lockable(User... users) {
+        for (User user : users) {
+            when(userRepository.findByIdForUpdate(user.getId())).thenReturn(Optional.of(user));
+        }
     }
 
 
