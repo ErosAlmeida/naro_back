@@ -1,4 +1,9 @@
 version: 0.2
+env:
+  variables:
+    # Ryuk only exists on Docker Hub, whose anonymous limit CodeBuild exhausts.
+    # The build container is ephemeral, so leftover test containers die with it.
+    TESTCONTAINERS_RYUK_DISABLED: "true"
 phases:
   install:
     runtime-versions:

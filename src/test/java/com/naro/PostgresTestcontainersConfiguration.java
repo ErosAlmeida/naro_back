@@ -15,11 +15,17 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 public class PostgresTestcontainersConfiguration {
 
+    /**
+     * Imagem oficial via espelho ECR Public: o CodeBuild compartilha IPs e
+     * esgota o limite de pulls anônimos do Docker Hub.
+     */
+    public static final DockerImageName IMAGE = DockerImageName
+            .parse("public.ecr.aws/docker/library/postgres:17-alpine")
+            .asCompatibleSubstituteFor("postgres");
+
     @Bean
     @ServiceConnection
     PostgreSQLContainer postgresContainer() {
-        return new PostgreSQLContainer(
-                DockerImageName.parse("postgres:17-alpine")
-        );
+        return new PostgreSQLContainer(IMAGE);
     }
 }
