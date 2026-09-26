@@ -4,6 +4,9 @@ env:
     # Ryuk only exists on Docker Hub, whose anonymous limit CodeBuild exhausts.
     # The build container is ephemeral, so leftover test containers die with it.
     TESTCONTAINERS_RYUK_DISABLED: "true"
+    # dockerd runs inside this build container, so published ports are on localhost.
+    # Without this Testcontainers reports the bridge IP and the local seed guard skips.
+    TESTCONTAINERS_HOST_OVERRIDE: localhost
 phases:
   install:
     runtime-versions:
