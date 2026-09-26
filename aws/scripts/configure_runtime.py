@@ -34,10 +34,12 @@ def database_setup(settings, secrets):
         (settings['KEYCLOAK_DB_USER'], settings['KEYCLOAK_DB_NAME'], secrets['/keycloak/db-password']),
     ]:
         # Identifiers are validated in infrastructure(); all password literals are escaped.
+        # The RDS master is not a superuser: naming SUPERUSER/REPLICATION at all is denied,
+        # and roles it creates can never hold them, so only the grantable attributes appear.
         execute('postgres', f"""
 SET standard_conforming_strings = on;
 SELECT 'CREATE ROLE {user} LOGIN' WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{user}')\n\\gexec
-ALTER ROLE {user} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION PASSWORD {sql_literal(password)};
+ALTER ROLE {user} LOGIN NOCREATEDB NOCREATEROLE PASSWORD {sql_literal(password)};
 GRANT {user} TO {settings['DB_ADMIN_USER']};
 SELECT 'CREATE DATABASE {database} OWNER {user}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{database}')\n\\gexec
 ALTER DATABASE {database} OWNER TO {user};
