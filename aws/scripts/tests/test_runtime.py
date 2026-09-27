@@ -45,6 +45,38 @@ class RuntimeTests(unittest.TestCase):
         self.assertNotIn('fake-value', ' '.join(run.call_args.args[0]))
         self.assertIn('--with-decryption', run.call_args.args[0])
 
+    def test_web_push_is_optional_and_never_breaks_the_deployment(self):
+        settings = {'NARO_PARAMETER_PREFIX': '/naro/prod', 'AWS_REGION': 'us-east-1'}
+
+        class Denied:
+            returncode = 255
+            stdout = ''
+
+        class Partial:
+            returncode = 0
+            stdout = json.dumps({'Parameters': [{'Name': '/naro/prod/push/vapid-public-key', 'Value': 'public'}]})
+
+        class Complete:
+            returncode = 0
+            stdout = json.dumps({'Parameters': [
+                {'Name': '/naro/prod/push/vapid-public-key', 'Value': 'public'},
+                {'Name': '/naro/prod/push/vapid-private-key', 'Value': 'fake-private'},
+                {'Name': '/naro/prod/push/vapid-subject', 'Value': 'mailto:ops@example.com'},
+            ]})
+
+        for missing in (Denied(), Partial()):
+            with patch('runtime_support.subprocess.run', return_value=missing):
+                self.assertEqual(configure_runtime.push_environment(settings), {})
+
+        with patch('runtime_support.subprocess.run', return_value=Complete()) as run:
+            environment = configure_runtime.push_environment(settings)
+        self.assertEqual(environment, {
+            'NARO_PUSH_VAPID_PUBLIC_KEY': 'public',
+            'NARO_PUSH_VAPID_PRIVATE_KEY': 'fake-private',
+            'NARO_PUSH_VAPID_SUBJECT': 'mailto:ops@example.com',
+        })
+        self.assertNotIn('fake-private', ' '.join(run.call_args.args[0]))
+
 
 if __name__ == '__main__':
     unittest.main()

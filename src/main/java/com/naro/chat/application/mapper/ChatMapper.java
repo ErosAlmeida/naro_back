@@ -65,6 +65,7 @@ public interface ChatMapper {
             source = "lastMessage"
     )
     @Mapping(target = "canMessage", source = "canMessage")
+    @Mapping(target = "unreadCount", ignore = true)
     ConversationResponse toConversationResponse(
             Conversation conversation,
             ChatMessage lastMessage,

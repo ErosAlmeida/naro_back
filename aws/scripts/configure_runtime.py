@@ -6,7 +6,7 @@ import subprocess
 import sys
 from urllib.parse import urlencode
 
-from runtime_support import environment_file, infrastructure, parameters, private_file
+from runtime_support import environment_file, infrastructure, optional_parameters, parameters, private_file
 
 
 CA_FILE = '/etc/pki/rds/global-bundle.pem'
@@ -52,6 +52,20 @@ GRANT USAGE, CREATE ON SCHEMA public TO {user};
 """)
 
 
+PUSH_PARAMETERS = {
+    '/push/vapid-public-key': 'NARO_PUSH_VAPID_PUBLIC_KEY',
+    '/push/vapid-private-key': 'NARO_PUSH_VAPID_PRIVATE_KEY',
+    '/push/vapid-subject': 'NARO_PUSH_VAPID_SUBJECT',
+}
+
+
+def push_environment(settings):
+    """Web Push is optional: without its three SSM parameters the backend runs with push off."""
+    values = optional_parameters(settings, list(PUSH_PARAMETERS))
+    print('Web Push ' + ('configured from SSM.' if values else 'not configured (optional /push/* parameters absent).'), flush=True)
+    return {PUSH_PARAMETERS[suffix]: value for suffix, value in values.items()}
+
+
 def main():
     settings = infrastructure()
     print('Reading required SSM parameters through the EC2 instance role.', flush=True)
@@ -63,7 +77,7 @@ def main():
     frontend_origin = settings['FRONTEND_ORIGIN'].rstrip('/')
     database_url = f"jdbc:postgresql://{settings['DB_HOST']}:{settings['DB_PORT']}/{settings['DB_NAME']}"
     database_url += '?' + urlencode({'sslmode': 'verify-full', 'sslrootcert': CA_FILE})
-    environment_file('/etc/naro/backend.env', {
+    backend = {
         'SPRING_PROFILES_ACTIVE': 'prod', 'SERVER_PORT': '8080',
         'DATABASE_URL': database_url, 'DATABASE_USERNAME': settings['DB_USER'],
         'DATABASE_PASSWORD': secrets['/database/password'],
@@ -71,7 +85,9 @@ def main():
         'KEYCLOAK_ISSUER_URI': public_origin + '/auth/realms/social',
         'KEYCLOAK_JWK_SET_URI': 'http://127.0.0.1:8081/auth/realms/social/protocol/openid-connect/certs',
         'CORS_ALLOWED_ORIGINS': frontend_origin,
-    })
+    }
+    backend.update(push_environment(settings))
+    environment_file('/etc/naro/backend.env', backend)
     keycloak_url = f"jdbc:postgresql://{settings['DB_HOST']}:{settings['DB_PORT']}/{settings['KEYCLOAK_DB_NAME']}"
     keycloak_url += '?' + urlencode({'sslmode': 'verify-full', 'sslrootcert': '/opt/keycloak/conf/rds-ca.pem'})
     environment_file('/etc/naro/keycloak.env', {

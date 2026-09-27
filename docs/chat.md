@@ -69,3 +69,12 @@ envio e marque apenas a mensagem recusada. Eventos de digitação não têm
 `clientMessageId`. Mensagens recusadas pelo E2EE voltam com `E2EE_REQUIRED`,
 `E2EE_INVALID_PAYLOAD` ou `E2EE_UNAVAILABLE`, com a mesma correlação. Os outros
 erros preservam `CHAT_ERROR` e `INVALID_PAYLOAD`.
+
+## Notificações e não lidas
+
+`GET /api/v1/chats` inclui `unreadCount` em cada conversa, e `GET /api/v1/chats/unread`
+devolve o total (`conversations`, `messages`). Uma conversa é lida quando fica na tela:
+o cliente envia `/app/chat/focus`, que também impede push dessa conversa enquanto ela
+está aberta. Avisos sem conteúdo chegam em `/user/queue/notifications`, e o Naro fechado
+recebe Web Push. O fluxo completo, a configuração VAPID e os testes por plataforma estão
+em `docs/notifications.md`.

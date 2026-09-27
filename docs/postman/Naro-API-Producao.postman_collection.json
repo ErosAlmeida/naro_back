@@ -5233,10 +5233,10 @@
         },
         {
           "id": "c56f0249-601a-44aa-a045-a315725484e9",
-          "name": "Busca pessoas pelo username (com ou sem @) e informa o relacionamento com o usuário autenticado",
+          "name": "Busca pessoas pelo username (com ou sem @) ou pelo email exato e informa o relacionamento com o usuário autenticado",
           "request": {
-            "name": "Busca pessoas pelo username (com ou sem @) e informa o relacionamento com o usuário autenticado",
-            "description": "Busca global por username. Coloque em `searchTerm` o username da segunda conta para salvar `otherUserId`.",
+            "name": "Busca pessoas pelo username (com ou sem @) ou pelo email exato e informa o relacionamento com o usuário autenticado",
+            "description": "Busca global por username, ou pelo email completo. Coloque em `searchTerm` o username ou o email da segunda conta para salvar `otherUserId`.",
             "url": {
               "path": [
                 "api",
@@ -5324,112 +5324,6 @@
                 }
               ],
               "body": "{\n  \"_embedded\": {\n    \"people\": [\n      {\n        \"id\": \"ea162b53-ff5a-8988-0e4e-f40dd1f39f00\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"relationshipStatus\": \"REQUEST_RECEIVED\",\n        \"mutualFriendsCount\": 7308,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"f4e55a39-8b78-e7ee-cb72-ae3fa9cdc9be\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"relationshipStatus\": \"REQUEST_RECEIVED\",\n        \"mutualFriendsCount\": 7187,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 9679,\n    \"totalElements\": 3924,\n    \"totalPages\": 2519,\n    \"number\": 9668\n  }\n}",
-              "cookie": [],
-              "_postman_previewlanguage": "json"
-            }
-          ],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('HTTP 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));",
-                  "const list = ((pm.response.json() || {})._embedded || {}).people || [];",
-                  "const item = list.find((x) => x.id && x.id !== pm.environment.get('userId'));",
-                  "if (item && !pm.environment.get('otherUserId')) pm.environment.set('otherUserId', item.id);"
-                ]
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
-        },
-        {
-          "id": "2ad9f74f-93e1-4e8e-a888-d18ee7bf04af",
-          "name": "Recomenda somente amigos de amigos, com mais amigos em comum primeiro",
-          "request": {
-            "name": "Recomenda somente amigos de amigos, com mais amigos em comum primeiro",
-            "description": "Pessoas que talvez você conheça. Vazio enquanto a conta não tiver amigos com outros amigos.",
-            "url": {
-              "path": [
-                "api",
-                "v1",
-                "friends",
-                "recommendations"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "query": [
-                {
-                  "disabled": false,
-                  "key": "page",
-                  "value": "0"
-                },
-                {
-                  "disabled": false,
-                  "key": "size",
-                  "value": "20"
-                }
-              ],
-              "variable": [],
-              "raw": "{{baseUrl}}/api/v1/friends/recommendations?page=0&size=20"
-            },
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "method": "GET"
-          },
-          "response": [
-            {
-              "id": "fc9af680-d34d-4b5f-8a97-abcf95e4e226",
-              "name": "OK",
-              "originalRequest": {
-                "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "friends",
-                    "recommendations"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "query": [
-                    {
-                      "key": "page",
-                      "value": "0"
-                    },
-                    {
-                      "key": "size",
-                      "value": "20"
-                    }
-                  ],
-                  "variable": []
-                },
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "GET",
-                "body": {}
-              },
-              "status": "OK",
-              "code": 200,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"_embedded\": {\n    \"people\": [\n      {\n        \"id\": \"ea162b53-ff5a-8988-0e4e-f40dd1f39f00\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"relationshipStatus\": \"NONE\",\n        \"mutualFriendsCount\": 7308,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"f4e55a39-8b78-e7ee-cb72-ae3fa9cdc9be\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"relationshipStatus\": \"NONE\",\n        \"mutualFriendsCount\": 7187,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 9679,\n    \"totalElements\": 3924,\n    \"totalPages\": 2519,\n    \"number\": 9668\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }

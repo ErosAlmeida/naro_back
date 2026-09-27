@@ -2,6 +2,7 @@ package com.naro.chat.presentation.controller;
 
 import com.naro.chat.application.dto.ChatMessageResponse;
 import com.naro.chat.application.dto.ConversationResponse;
+import com.naro.chat.application.dto.UnreadChatsResponse;
 
 import com.naro.chat.application.service.ChatService;
 
@@ -97,6 +98,19 @@ public class ChatRestController {
                                 currentUser
                         )
                 );
+    }
+
+
+    @GetMapping("/unread")
+    @Operation(summary = "Total de não lidas do usuário autenticado (conversas e mensagens), para os badges")
+    public UnreadChatsResponse getUnreadSummary(
+
+            @CurrentUser
+            User currentUser
+
+    ) {
+
+        return chatService.getUnreadSummary(currentUser);
     }
 
 

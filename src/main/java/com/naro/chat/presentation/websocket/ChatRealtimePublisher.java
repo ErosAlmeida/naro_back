@@ -1,7 +1,9 @@
 package com.naro.chat.presentation.websocket;
 
+import com.naro.chat.application.dto.ChatNotificationResponse;
 import com.naro.chat.application.event.ChatMessageCreatedEvent;
 import com.naro.chat.application.event.ChatTypingEvent;
+import com.naro.chat.application.event.ConversationReadEvent;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -41,6 +43,58 @@ public class ChatRealtimePublisher {
                     event.message()
             );
         }
+    }
+
+
+    /*
+     * Aviso sem conteúdo para qualquer tela do Naro (badge, lista, toast).
+     * O texto/ciphertext continua só em /queue/chat, aberto na área do chat.
+     */
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT
+    )
+    public void publishNotification(
+            ChatMessageCreatedEvent event
+    ) {
+
+        ChatNotificationResponse notification =
+                ChatNotificationResponse.message(event.message());
+
+
+        for (
+                String keycloakId :
+                event.recipientKeycloakIds()
+        ) {
+
+            messagingTemplate.convertAndSendToUser(
+                    keycloakId,
+                    "/queue/notifications",
+                    notification
+            );
+        }
+    }
+
+
+    /*
+     * Só para o próprio leitor: as outras abas e aparelhos dele
+     * zeram o contador da conversa.
+     */
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT,
+            fallbackExecution = true
+    )
+    public void publishRead(
+            ConversationReadEvent event
+    ) {
+
+        messagingTemplate.convertAndSendToUser(
+                event.readerKeycloakId(),
+                "/queue/notifications",
+                ChatNotificationResponse.read(
+                        event.conversationId(),
+                        event.readAt()
+                )
+        );
     }
 
 

@@ -1,13 +1,16 @@
 package com.naro.chat.application.service;
 
+import com.naro.chat.application.dto.ChatFocusRequest;
 import com.naro.chat.application.dto.ChatMessageResponse;
 import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.ChatTypingResponse;
 import com.naro.chat.application.dto.ConversationResponse;
 import com.naro.chat.application.dto.SendChatMessageRequest;
+import com.naro.chat.application.dto.UnreadChatsResponse;
 
 import com.naro.chat.application.event.ChatMessageCreatedEvent;
 import com.naro.chat.application.event.ChatTypingEvent;
+import com.naro.chat.application.event.ConversationReadEvent;
 import com.naro.chat.application.mapper.ChatMapper;
 
 import com.naro.chat.domain.entity.ChatMessage;
@@ -17,6 +20,8 @@ import com.naro.chat.domain.enums.ConversationType;
 
 import com.naro.chat.domain.repository.ChatMessageRepository;
 import com.naro.chat.domain.repository.ConversationRepository;
+import com.naro.chat.domain.repository.ConversationUnreadCount;
+import com.naro.chat.domain.repository.UnreadSummary;
 
 import com.naro.exception.BadRequestException;
 import com.naro.exception.ForbiddenException;
@@ -36,6 +41,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Collection;
 import java.util.Comparator;
@@ -63,6 +70,8 @@ public class ChatServiceImpl
 
     private final ChatMessagePayloadPolicy payloadPolicy;
 
+    private final ConversationFocusRegistry focusRegistry;
+
 
     public ChatServiceImpl(
             ConversationRepository conversationRepository,
@@ -71,7 +80,8 @@ public class ChatServiceImpl
             ChatMapper chatMapper,
             ApplicationEventPublisher eventPublisher,
             FriendshipRepository friendshipRepository,
-            ChatMessagePayloadPolicy payloadPolicy
+            ChatMessagePayloadPolicy payloadPolicy,
+            ConversationFocusRegistry focusRegistry
     ) {
         this.conversationRepository = conversationRepository;
         this.chatMessageRepository = chatMessageRepository;
@@ -80,6 +90,7 @@ public class ChatServiceImpl
         this.eventPublisher = eventPublisher;
         this.friendshipRepository = friendshipRepository;
         this.payloadPolicy = payloadPolicy;
+        this.focusRegistry = focusRegistry;
     }
 
 
@@ -184,6 +195,15 @@ public class ChatServiceImpl
                         .map(friendship -> otherFriendId(friendship, currentUser.getId()))
                         .collect(Collectors.toSet());
 
+        Map<UUID, Long> unreadCounts =
+                countUnread(
+                        currentUser.getId(),
+                        conversations
+                                .stream()
+                                .map(Conversation::getId)
+                                .toList()
+                );
+
         return conversations
                 .stream()
                 .map(conversation ->
@@ -191,6 +211,8 @@ public class ChatServiceImpl
                                 conversation,
                                 lastMessages.get(conversation.getId()),
                                 canMessage(conversation, currentUser, friendIds)
+                        ).withUnreadCount(
+                                unreadCounts.getOrDefault(conversation.getId(), 0L)
                         )
                 )
                 .toList();
@@ -358,6 +380,70 @@ public class ChatServiceImpl
     }
 
 
+    /*
+     * Chamado quando a aba mostra (ou deixa de mostrar) uma conversa.
+     * Só participantes ficam com foco e marcador de leitura; qualquer
+     * outro id apenas limpa o foco da sessão, sem erro para o cliente.
+     */
+    @Override
+    @Transactional
+    public void updateFocus(
+            ChatFocusRequest request,
+            User user,
+            String sessionId
+    ) {
+
+        UUID conversationId = request.conversationId();
+
+        boolean member =
+                conversationId != null
+                        && conversationRepository
+                        .findByIdWithParticipants(conversationId)
+                        .filter(conversation -> isParticipant(conversation, user))
+                        .isPresent();
+
+
+        if (!member) {
+            focusRegistry.clear(user.getId(), sessionId);
+            return;
+        }
+
+
+        focusRegistry.focus(user.getId(), sessionId, conversationId);
+
+        Instant readAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
+
+        conversationRepository.markRead(conversationId, user.getId(), readAt);
+
+
+        eventPublisher.publishEvent(
+                new ConversationReadEvent(
+                        conversationId,
+                        user.getKeycloakId(),
+                        readAt
+                )
+        );
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public UnreadChatsResponse getUnreadSummary(
+            User currentUser
+    ) {
+
+        UnreadSummary summary =
+                chatMessageRepository.countUnread(
+                        currentUser.getId()
+                );
+
+        return new UnreadChatsResponse(
+                summary.getConversations(),
+                summary.getMessages()
+        );
+    }
+
+
     private ConversationResponse toConversationResponse(
             Conversation conversation,
             boolean canMessage
@@ -395,6 +481,43 @@ public class ChatServiceImpl
                                 (first, second) -> first
                         )
                 );
+    }
+
+
+    /*
+     * Não lidas por conversa em uma query; conversas sem não lidas
+     * ficam fora do mapa (contam 0).
+     */
+    private Map<UUID, Long> countUnread(
+            UUID userId,
+            List<UUID> conversationIds
+    ) {
+
+        if (conversationIds.isEmpty()) {
+            return Map.of();
+        }
+
+
+        return chatMessageRepository
+                .countUnreadByConversation(userId, conversationIds)
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                ConversationUnreadCount::getConversationId,
+                                ConversationUnreadCount::getUnread
+                        )
+                );
+    }
+
+
+    private static boolean isParticipant(
+            Conversation conversation,
+            User user
+    ) {
+        return conversation
+                .getParticipants()
+                .stream()
+                .anyMatch(participant -> participant.getId().equals(user.getId()));
     }
 
 

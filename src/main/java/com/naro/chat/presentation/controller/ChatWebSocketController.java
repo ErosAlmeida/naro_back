@@ -1,6 +1,7 @@
 package com.naro.chat.presentation.controller;
 
 import com.naro.chat.application.dto.ChatErrorResponse;
+import com.naro.chat.application.dto.ChatFocusRequest;
 import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.SendChatMessageRequest;
 
@@ -15,11 +16,13 @@ import com.naro.user.application.service.CurrentUserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -88,6 +91,32 @@ public class ChatWebSocketController {
         chatService.notifyTyping(
                 request,
                 currentUserService.resolveRealtime(principal)
+        );
+    }
+
+
+    /*
+     * A aba mostra (ou deixou de mostrar) uma conversa. Vale só para
+     * esta sessão STOMP; a identidade vem da conexão, nunca do payload.
+     */
+    @MessageMapping("/chat/focus")
+    public void focus(
+
+            @Payload
+            ChatFocusRequest request,
+
+            @Header(SimpMessageHeaderAccessor.SESSION_ID_HEADER)
+            String sessionId,
+
+            @AuthenticationPrincipal
+            RealtimePrincipal principal
+
+    ) {
+
+        chatService.updateFocus(
+                request,
+                currentUserService.resolveRealtime(principal),
+                sessionId
         );
     }
 

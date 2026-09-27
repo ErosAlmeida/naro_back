@@ -7,3 +7,13 @@ useDefault = true
 description = "Local Keycloak PostgreSQL endpoint, not a credential"
 regexTarget = "match"
 regexes = ['''^keycloak-postgres:5432/keycloak$''']
+
+# Chaves de demonstração publicadas no RFC 8291, seção 5 (vetor de teste do
+# Web Push). Não protegem nada; só estes valores exatos são liberados.
+[[allowlists]]
+description = "RFC 8291 section 5 example keys used by WebPushEncryptionTest"
+regexes = [
+  '''^yfWPiYE-n46HLnH0KqZOF1fJJU3MYrct3AELtAQ-oRw$''',
+  '''^q1dXpw3UpT5VOmu_cf_v6ih07Aems3njxI-JWgLcM94$''',
+  '''^BTBZMqHH6r4Tts7J_aSIgg$''',
+]

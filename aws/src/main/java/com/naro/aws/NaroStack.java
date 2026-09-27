@@ -102,7 +102,9 @@ public final class NaroStack extends Stack {
         artifactAccess(hostRole, artifacts, false);
         hostRole.addToPolicy(policy(List.of("ssm:GetParameters"), List.of(
                 parameterArn("/database/master-password"), parameterArn("/database/password"),
-                parameterArn("/keycloak/db-password"), parameterArn("/keycloak/admin-password"), parameterArn("/keycloak/client-secret"))));
+                parameterArn("/keycloak/db-password"), parameterArn("/keycloak/admin-password"), parameterArn("/keycloak/client-secret"),
+                // Web Push (opcional): sem estes parâmetros o backend sobe com o push desligado.
+                parameterArn("/push/vapid-public-key"), parameterArn("/push/vapid-private-key"), parameterArn("/push/vapid-subject"))));
         // SSM registration/session channels do not support resource-scoped IAM permissions.
         hostRole.addToPolicy(policy(List.of("ssm:UpdateInstanceInformation", "ssmmessages:CreateControlChannel",
                 "ssmmessages:CreateDataChannel", "ssmmessages:OpenControlChannel", "ssmmessages:OpenDataChannel"), List.of("*")));

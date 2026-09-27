@@ -69,6 +69,19 @@ naro:
       available: ${E2EE_AVAILABLE:false}
       required: ${E2EE_REQUIRED:false}
 
+  # Notificações Web Push (docs/notifications.md). Sem as chaves VAPID o push
+  # fica desligado e todo o resto funciona igual. A chave privada só existe no
+  # ambiente do servidor: nunca no Git, no frontend ou em logs.
+  # Gere o par com scripts/generate-vapid-keys.sh.
+  push:
+    vapid:
+      public-key: ${NARO_PUSH_VAPID_PUBLIC_KEY:}
+      private-key: ${NARO_PUSH_VAPID_PRIVATE_KEY:}
+      # Contato para os push services: mailto:voce@dominio ou https://seu-site
+      subject: ${NARO_PUSH_VAPID_SUBJECT:}
+    # NAME_AND_PREVIEW | NAME_ONLY | GENERIC. Mensagens E2EE nunca têm prévia.
+    preview: ${NARO_PUSH_PREVIEW:NAME_AND_PREVIEW}
+
 management:
   endpoints:
     access:

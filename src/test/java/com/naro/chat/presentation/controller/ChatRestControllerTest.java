@@ -1,6 +1,7 @@
 package com.naro.chat.presentation.controller;
 
 import com.naro.chat.application.dto.ConversationResponse;
+import com.naro.chat.application.dto.UnreadChatsResponse;
 import com.naro.chat.application.service.ChatService;
 import com.naro.chat.domain.enums.ConversationType;
 import com.naro.exception.BadRequestException;
@@ -153,6 +154,21 @@ class ChatRestControllerTest {
                 .andExpect(status().isUnauthorized());
 
         verifyNoInteractions(chatService);
+    }
+
+
+    @Test
+    void unreadSummaryIsOnlyForTheAuthenticatedUser() throws Exception {
+
+        when(chatService.getUnreadSummary(currentUser)).thenReturn(new UnreadChatsResponse(2, 5));
+
+        mockMvc.perform(get("/api/v1/chats/unread").with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.conversations").value(2))
+                .andExpect(jsonPath("$.messages").value(5));
+
+        mockMvc.perform(get("/api/v1/chats/unread"))
+                .andExpect(status().isUnauthorized());
     }
 
 

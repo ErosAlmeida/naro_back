@@ -15,12 +15,14 @@ import java.util.UUID;
 
 public interface FriendshipRepository extends JpaRepository<Friendship, UUID> {
 
-    /* Manual search: any real account whose username contains the term, in any
-     * relationship state. Friendships are undirected, so every hop reads both
-     * columns through their own index. Mutual friends are counted once for the
-     * few friends of friends and joined, instead of once per matching user.
-     * Mutuals only count real accounts. Exact username first, then prefix, then
-     * the rest, each by mutual friends. The count query applies the same filters. */
+    /* Manual search: any real account whose username contains the term, or whose
+     * email is exactly the term, in any relationship state. The email is only
+     * matched, never returned, and a partial email finds nobody. Friendships are
+     * undirected, so every hop reads both columns through their own index. Mutual
+     * friends are counted once for the few friends of friends and joined, instead
+     * of once per matching user. Mutuals only count real accounts. Exact username
+     * first, then prefix, then the rest, each by mutual friends. The count query
+     * applies the same filters. */
     @Query(value = """
             WITH my_friends AS (
                 SELECT f.user_b_id AS friend_id FROM friendships f WHERE f.user_a_id = :currentUserId
@@ -61,7 +63,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, UUID> {
             WHERE u.id <> :currentUserId
               AND u.keycloak_id NOT LIKE 'seed:%'
               AND u.keycloak_id NOT LIKE 'friend-seed:%'
-              AND LOWER(u.username) LIKE :pattern ESCAPE '\\'
+              AND (LOWER(u.username) LIKE :pattern ESCAPE '\\' OR LOWER(u.email) = :term)
             ORDER BY LOWER(u.username) = :term DESC, STRPOS(LOWER(u.username), :term) = 1 DESC,
                      "mutualFriendsCount" DESC, LOWER(u.username), u.id
             """, countQuery = """
@@ -69,86 +71,12 @@ public interface FriendshipRepository extends JpaRepository<Friendship, UUID> {
             WHERE u.id <> :currentUserId
               AND u.keycloak_id NOT LIKE 'seed:%'
               AND u.keycloak_id NOT LIKE 'friend-seed:%'
-              AND LOWER(u.username) LIKE :pattern ESCAPE '\\'
+              AND (LOWER(u.username) LIKE :pattern ESCAPE '\\' OR LOWER(u.email) = :term)
             """, nativeQuery = true)
-    Page<FriendDiscoveryCandidate> searchByUsername(@Param("term") String term,
-                                                    @Param("pattern") String pattern,
-                                                    @Param("currentUserId") UUID currentUserId,
-                                                    Pageable pageable);
-
-    /* Recommendations are friends of friends only: current user -> real friends ->
-     * their friends, grouped per candidate with COUNT(DISTINCT mutual). Never the
-     * user, a friend, or anyone with a pending request in either direction; no
-     * global, random or popularity fallback. Every hop is an indexed lookup on
-     * user_a_id or user_b_id, and candidates are aggregated before reading users,
-     * so users is only read by primary key. The count query applies the same filters. */
-    @Query(value = """
-            WITH my_friends AS (
-                SELECT f.user_b_id AS friend_id FROM friendships f WHERE f.user_a_id = :currentUserId
-                UNION ALL
-                SELECT f.user_a_id AS friend_id FROM friendships f WHERE f.user_b_id = :currentUserId
-            ), real_friends AS (
-                SELECT mf.friend_id FROM my_friends mf
-                JOIN users mutual ON mutual.id = mf.friend_id
-                WHERE mutual.keycloak_id NOT LIKE 'seed:%'
-                  AND mutual.keycloak_id NOT LIKE 'friend-seed:%'
-            ), friends_of_friends AS (
-                SELECT f.user_b_id AS candidate_id, f.user_a_id AS mutual_id
-                FROM friendships f JOIN real_friends rf ON f.user_a_id = rf.friend_id
-                UNION ALL
-                SELECT f.user_a_id AS candidate_id, f.user_b_id AS mutual_id
-                FROM friendships f JOIN real_friends rf ON f.user_b_id = rf.friend_id
-            ), candidates AS (
-                SELECT fof.candidate_id, COUNT(DISTINCT fof.mutual_id) AS mutual_friends
-                FROM friends_of_friends fof
-                WHERE fof.candidate_id <> :currentUserId
-                  AND NOT EXISTS (SELECT 1 FROM my_friends mf WHERE mf.friend_id = fof.candidate_id)
-                  AND NOT EXISTS (SELECT 1 FROM friend_requests r WHERE r.status = 'PENDING'
-                                  AND ((r.sender_id = :currentUserId AND r.receiver_id = fof.candidate_id)
-                                    OR (r.receiver_id = :currentUserId AND r.sender_id = fof.candidate_id)))
-                GROUP BY fof.candidate_id
-            )
-            SELECT u.id, u.username, u.first_name AS "firstName",
-                   u.last_name AS "lastName", u.avatar_url AS "avatarUrl",
-                   'NONE' AS "relationshipStatus", c.mutual_friends AS "mutualFriendsCount"
-            FROM candidates c
-            JOIN users u ON u.id = c.candidate_id
-            WHERE u.keycloak_id NOT LIKE 'seed:%'
-              AND u.keycloak_id NOT LIKE 'friend-seed:%'
-            ORDER BY c.mutual_friends DESC, LOWER(u.username), u.id
-            """, countQuery = """
-            WITH my_friends AS (
-                SELECT f.user_b_id AS friend_id FROM friendships f WHERE f.user_a_id = :currentUserId
-                UNION ALL
-                SELECT f.user_a_id AS friend_id FROM friendships f WHERE f.user_b_id = :currentUserId
-            ), real_friends AS (
-                SELECT mf.friend_id FROM my_friends mf
-                JOIN users mutual ON mutual.id = mf.friend_id
-                WHERE mutual.keycloak_id NOT LIKE 'seed:%'
-                  AND mutual.keycloak_id NOT LIKE 'friend-seed:%'
-            ), friends_of_friends AS (
-                SELECT f.user_b_id AS candidate_id
-                FROM friendships f JOIN real_friends rf ON f.user_a_id = rf.friend_id
-                UNION ALL
-                SELECT f.user_a_id AS candidate_id
-                FROM friendships f JOIN real_friends rf ON f.user_b_id = rf.friend_id
-            ), candidates AS (
-                SELECT DISTINCT fof.candidate_id
-                FROM friends_of_friends fof
-                WHERE fof.candidate_id <> :currentUserId
-                  AND NOT EXISTS (SELECT 1 FROM my_friends mf WHERE mf.friend_id = fof.candidate_id)
-                  AND NOT EXISTS (SELECT 1 FROM friend_requests r WHERE r.status = 'PENDING'
-                                  AND ((r.sender_id = :currentUserId AND r.receiver_id = fof.candidate_id)
-                                    OR (r.receiver_id = :currentUserId AND r.sender_id = fof.candidate_id)))
-            )
-            SELECT COUNT(*)
-            FROM candidates c
-            JOIN users u ON u.id = c.candidate_id
-            WHERE u.keycloak_id NOT LIKE 'seed:%'
-              AND u.keycloak_id NOT LIKE 'friend-seed:%'
-            """, nativeQuery = true)
-    Page<FriendDiscoveryCandidate> findRecommendations(@Param("currentUserId") UUID currentUserId,
-                                                       Pageable pageable);
+    Page<FriendDiscoveryCandidate> searchByUsernameOrEmail(@Param("term") String term,
+                                                           @Param("pattern") String pattern,
+                                                           @Param("currentUserId") UUID currentUserId,
+                                                           Pageable pageable);
 
     @Query("""
             SELECT COUNT(f) > 0 FROM Friendship f

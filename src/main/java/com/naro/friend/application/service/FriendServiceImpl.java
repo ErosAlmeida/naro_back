@@ -151,23 +151,17 @@ public class FriendServiceImpl implements FriendService {
     @Transactional(readOnly = true)
     public Page<FriendDiscoveryResponse> discover(String search, Pageable pageable, User currentUser) {
         String normalized = search == null ? "" : search.trim();
-        if (normalized.length() > 50) {
-            throw new BadRequestException("Search query must have at most 50 characters");
+        // Same limit as users.email: any stored address can be searched.
+        if (normalized.length() > 255) {
+            throw new BadRequestException("Search query must have at most 255 characters");
         }
         // "@leonardo" and "leonardo" are the same search: the handle is the username.
         String term = (normalized.startsWith("@") ? normalized.substring(1).trim() : normalized)
                 .toLowerCase(Locale.ROOT);
-        // Without a term there is nothing to search; keep the old contract without
-        // listing the whole platform: it returns the friends-of-friends recommendations.
-        if (term.isEmpty()) return getRecommendations(pageable, currentUser);
-        return friendshipRepository.searchByUsername(term, containsPattern(term), currentUser.getId(), pageable)
-                .map(FriendServiceImpl::toDiscoveryResponse);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<FriendDiscoveryResponse> getRecommendations(Pageable pageable, User currentUser) {
-        return friendshipRepository.findRecommendations(currentUser.getId(), pageable)
+        // Nobody is suggested: without a term there is nothing to search, and the
+        // platform is never listed.
+        if (term.isEmpty()) return Page.empty(pageable);
+        return friendshipRepository.searchByUsernameOrEmail(term, containsPattern(term), currentUser.getId(), pageable)
                 .map(FriendServiceImpl::toDiscoveryResponse);
     }
 

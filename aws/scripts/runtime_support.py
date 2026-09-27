@@ -51,6 +51,18 @@ def parameters(settings, suffixes):
     return {suffix: values[prefix + suffix] for suffix in suffixes}
 
 
+def optional_parameters(settings, suffixes):
+    """Like parameters(), for optional features: all or nothing, never an error.
+
+    Absent parameters, or an instance role that cannot read them yet (before the
+    next cdk deploy), leave the feature off instead of failing the deployment.
+    """
+    try:
+        return parameters(settings, suffixes)
+    except (RuntimeError, ValueError):
+        return {}
+
+
 def private_file(path, content):
     destination = Path(path)
     descriptor, temporary = tempfile.mkstemp(prefix='.naro-', dir=destination.parent)

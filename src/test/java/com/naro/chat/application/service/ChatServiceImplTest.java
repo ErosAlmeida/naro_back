@@ -1,16 +1,19 @@
 package com.naro.chat.application.service;
 
+import com.naro.chat.application.dto.ChatFocusRequest;
 import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.ConversationResponse;
 import com.naro.chat.application.dto.SendChatMessageRequest;
 import com.naro.chat.application.event.ChatMessageCreatedEvent;
 import com.naro.chat.application.event.ChatTypingEvent;
+import com.naro.chat.application.event.ConversationReadEvent;
 import com.naro.chat.application.mapper.ChatMapperImpl;
 import com.naro.chat.domain.entity.ChatMessage;
 import com.naro.chat.domain.entity.Conversation;
 import com.naro.chat.domain.enums.ConversationType;
 import com.naro.chat.domain.repository.ChatMessageRepository;
 import com.naro.chat.domain.repository.ConversationRepository;
+import com.naro.chat.domain.repository.ConversationUnreadCount;
 import com.naro.encryption.config.E2eeProperties;
 import com.naro.exception.BadRequestException;
 import com.naro.exception.ForbiddenException;
@@ -41,6 +44,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -66,6 +70,8 @@ class ChatServiceImplTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
+    private final ConversationFocusRegistry focusRegistry = new ConversationFocusRegistry();
+
     private ChatServiceImpl chatService;
 
     private final User currentUser = user("leonardo");
@@ -82,7 +88,8 @@ class ChatServiceImplTest {
                 new ChatMapperImpl(),
                 eventPublisher,
                 friendshipRepository,
-                new ChatMessagePayloadPolicy(new E2eeProperties(true, false))
+                new ChatMessagePayloadPolicy(new E2eeProperties(true, false)),
+                focusRegistry
         );
     }
 
@@ -422,6 +429,68 @@ class ChatServiceImplTest {
         order.verify(userRepository).findByIdForUpdate(ordered.get(0));
         order.verify(userRepository).findByIdForUpdate(ordered.get(1));
         order.verify(friendshipRepository).existsFriendshipBetweenUsers(currentUser.getId(), otherUser.getId());
+    }
+
+    @Test
+    void focusingAConversationMarksItReadAndSilencesItsPush() {
+        Conversation conversation = conversation(currentUser, otherUser);
+        when(conversationRepository.findByIdWithParticipants(conversation.getId())).thenReturn(Optional.of(conversation));
+
+        chatService.updateFocus(new ChatFocusRequest(conversation.getId()), currentUser, "session-1");
+
+        assertThat(focusRegistry.isViewing(currentUser.getId(), conversation.getId())).isTrue();
+        verify(conversationRepository).markRead(eq(conversation.getId()), eq(currentUser.getId()), any());
+        ArgumentCaptor<ConversationReadEvent> event = ArgumentCaptor.forClass(ConversationReadEvent.class);
+        verify(eventPublisher).publishEvent(event.capture());
+        assertThat(event.getValue().conversationId()).isEqualTo(conversation.getId());
+        assertThat(event.getValue().readerKeycloakId()).isEqualTo(currentUser.getKeycloakId());
+
+        chatService.updateFocus(new ChatFocusRequest(null), currentUser, "session-1");
+
+        assertThat(focusRegistry.isViewing(currentUser.getId(), conversation.getId())).isFalse();
+    }
+
+    @Test
+    void focusOnAConversationOfOtherPeopleIsIgnoredWithoutError() {
+        User stranger = user("eve");
+        Conversation conversation = conversation(otherUser, stranger);
+        when(conversationRepository.findByIdWithParticipants(conversation.getId())).thenReturn(Optional.of(conversation));
+        UUID unknown = UUID.randomUUID();
+
+        chatService.updateFocus(new ChatFocusRequest(conversation.getId()), currentUser, "session-1");
+        chatService.updateFocus(new ChatFocusRequest(unknown), currentUser, "session-1");
+
+        assertThat(focusRegistry.isViewing(currentUser.getId(), conversation.getId())).isFalse();
+        assertThat(focusRegistry.isViewing(currentUser.getId(), unknown)).isFalse();
+        verify(conversationRepository, never()).markRead(any(), any(), any());
+        verifyNoInteractions(eventPublisher);
+    }
+
+    @Test
+    void conversationListCarriesTheUnreadCountOfEachConversation() {
+        Conversation withUnread = conversation(currentUser, otherUser);
+        Conversation allRead = conversation(currentUser, user("ana"));
+        when(conversationRepository.findAllByParticipantId(currentUser.getId())).thenReturn(List.of(withUnread, allRead));
+        when(chatMessageRepository.countUnreadByConversation(currentUser.getId(), List.of(withUnread.getId(), allRead.getId())))
+                .thenReturn(List.of(unread(withUnread.getId(), 4)));
+
+        List<ConversationResponse> conversations = chatService.getConversations(currentUser);
+
+        assertThat(conversations).extracting(ConversationResponse::unreadCount).containsExactly(4L, 0L);
+    }
+
+    private static ConversationUnreadCount unread(UUID conversationId, long count) {
+        return new ConversationUnreadCount() {
+            @Override
+            public UUID getConversationId() {
+                return conversationId;
+            }
+
+            @Override
+            public long getUnread() {
+                return count;
+            }
+        };
     }
 
     private void allowMessaging(User sender, User... recipients) {

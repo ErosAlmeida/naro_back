@@ -27,13 +27,24 @@ public record ConversationResponse(
         ChatMessageResponse lastMessage,
 
         /* Histórico permanece visível quando a amizade termina. */
-        boolean canMessage
+        boolean canMessage,
+
+        /*
+         * Mensagens de outras pessoas depois da última leitura do usuário
+         * autenticado. Preenchido na lista (GET /api/v1/chats); 0 nas demais
+         * respostas.
+         */
+        long unreadCount
 
 ) {
     public ConversationResponse(UUID id, ConversationType type,
                                 Set<ChatParticipantResponse> participants,
                                 Instant createdAt, Instant updatedAt,
                                 ChatMessageResponse lastMessage) {
-        this(id, type, participants, createdAt, updatedAt, lastMessage, false);
+        this(id, type, participants, createdAt, updatedAt, lastMessage, false, 0);
+    }
+
+    public ConversationResponse withUnreadCount(long unreadCount) {
+        return new ConversationResponse(id, type, participants, createdAt, updatedAt, lastMessage, canMessage, unreadCount);
     }
 }

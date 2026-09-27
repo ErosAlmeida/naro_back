@@ -137,6 +137,7 @@ public class WebSocketSecurityConfig
                         "/user/queue/chat",
                         "/user/queue/typing",
                         "/user/queue/presence",
+                        "/user/queue/notifications",
                         "/user/queue/errors"
                 )
                 .authenticated()

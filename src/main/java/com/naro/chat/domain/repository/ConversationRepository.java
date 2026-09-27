@@ -5,9 +5,11 @@ import com.naro.chat.domain.enums.ConversationType;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -107,5 +109,51 @@ public interface ConversationRepository
     Set<String> findContactKeycloakIds(
             @Param("userId")
             UUID userId
+    );
+
+
+    /*
+     * Marca a conversa como lida até readAt. Nunca volta no tempo
+     * (duas abas concorrentes ficam com a leitura mais recente).
+     * A FK para conversation_participants recusa quem não participa.
+     */
+    @Modifying
+    @Query(value = """
+            INSERT INTO conversation_reads (conversation_id, user_id, last_read_at)
+            VALUES (:conversationId, :userId, :readAt)
+            ON CONFLICT (conversation_id, user_id) DO UPDATE
+                SET last_read_at = GREATEST(conversation_reads.last_read_at, EXCLUDED.last_read_at)
+            """, nativeQuery = true)
+    int markRead(
+            @Param("conversationId")
+            UUID conversationId,
+
+            @Param("userId")
+            UUID userId,
+
+            @Param("readAt")
+            Instant readAt
+    );
+
+
+    /* A mensagem criada em createdAt já foi vista pelo usuário? */
+    @Query(value = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM conversation_reads r
+                WHERE r.conversation_id = :conversationId
+                  AND r.user_id = :userId
+                  AND r.last_read_at >= :createdAt
+            )
+            """, nativeQuery = true)
+    boolean isReadSince(
+            @Param("conversationId")
+            UUID conversationId,
+
+            @Param("userId")
+            UUID userId,
+
+            @Param("createdAt")
+            Instant createdAt
     );
 }

@@ -130,138 +130,7 @@ class FriendRepositoryTest {
                 .extracting(FriendRequest::getStatus).isEqualTo(FriendRequestStatus.ACCEPTED);
     }
 
-    /* Leonardo -> João -> Maria: Maria is a friend of a friend of Leonardo. */
-    @Test
-    void recommendsAFriendOfAFriendWithTheMutualCountAndNobodyElse() {
-        User leonardo = user("leonardo");
-        User joao = user("joao");
-        User maria = user("maria");
-        User carlos = user("carlos");
-        friendships.saveAndFlush(Friendship.between(leonardo, joao));
-        friendships.saveAndFlush(Friendship.between(maria, joao));
-        entityManager.clear();
-
-        var page = friendships.findRecommendations(leonardo.getId(), PageRequest.of(0, 20));
-
-        assertThat(page.getTotalElements()).isEqualTo(1);
-        assertThat(page.getContent()).singleElement().satisfies(person -> {
-            assertThat(person.getId()).isEqualTo(maria.getId());
-            assertThat(person.getUsername()).isEqualTo("maria");
-            assertThat(person.getFirstName()).isEqualTo("maria");
-            assertThat(person.getRelationshipStatus()).isEqualTo("NONE");
-            assertThat(person.getMutualFriendsCount()).isEqualTo(1L);
-        });
-        // Leonardo himself, João (already a friend) and Carlos (no connection) never appear.
-        assertThat(recommendationIds(leonardo)).doesNotContain(leonardo.getId(), joao.getId(), carlos.getId());
-        assertThat(recommendationIds(maria)).containsExactly(leonardo.getId());
-    }
-
-    /* Leonardo -> João -> Maria, and Leonardo -> Maria. */
-    @Test
-    void friendOfAFriendWhoIsAlreadyAFriendIsNotRecommended() {
-        User leonardo = user("leonardo");
-        User joao = user("joao");
-        User maria = user("maria");
-        friendships.saveAndFlush(Friendship.between(leonardo, joao));
-        friendships.saveAndFlush(Friendship.between(joao, maria));
-        friendships.saveAndFlush(Friendship.between(maria, leonardo));
-        entityManager.clear();
-
-        var page = friendships.findRecommendations(leonardo.getId(), PageRequest.of(0, 20));
-
-        assertThat(page.getContent()).isEmpty();
-        assertThat(page.getTotalElements()).isZero();
-    }
-
-    /* Leonardo -> João -> Maria, with a request between Leonardo and Maria. */
-    @Test
-    void pendingRequestsInEitherDirectionHideTheRecommendationButAnsweredOnesDoNot() {
-        User leonardo = user("leonardo");
-        User joao = user("joao");
-        User maria = user("maria");
-        friendships.saveAndFlush(Friendship.between(leonardo, joao));
-        friendships.saveAndFlush(Friendship.between(joao, maria));
-
-        FriendRequest sent = requests.saveAndFlush(FriendRequest.between(leonardo, maria));
-        assertThat(recommendationIds(leonardo)).isEmpty();
-        assertThat(recommendationIds(maria)).isEmpty();
-        assertThat(friendships.findRecommendations(leonardo.getId(), PageRequest.of(0, 20)).getTotalElements()).isZero();
-
-        sent.respond(FriendRequestStatus.CANCELED);
-        requests.flush();
-        assertThat(recommendationIds(leonardo)).containsExactly(maria.getId());
-
-        FriendRequest received = requests.saveAndFlush(FriendRequest.between(maria, leonardo));
-        assertThat(recommendationIds(leonardo)).isEmpty();
-
-        received.respond(FriendRequestStatus.REJECTED);
-        requests.flush();
-        assertThat(recommendationIds(leonardo)).containsExactly(maria.getId());
-    }
-
-    /* Leonardo and Carlos have no connection at all. */
-    @Test
-    void peopleWithoutAnyConnectionAreNeverRecommendedAndThereIsNoGlobalFallback() {
-        User leonardo = user("leonardo");
-        User carlos = user("carlos");
-        friendships.saveAndFlush(Friendship.between(user("joao"), user("maria")));
-        entityManager.clear();
-
-        assertThat(friendships.findRecommendations(leonardo.getId(), PageRequest.of(0, 20))).isEmpty();
-        assertThat(friendships.findRecommendations(carlos.getId(), PageRequest.of(0, 20))).isEmpty();
-        assertThat(users.count()).isEqualTo(8);
-    }
-
-    @Test
-    void recommendationsRankByMutualFriendsWithStableTieBreakBeforePagination() {
-        User leonardo = user("leonardo");
-        User joao = user("joao");
-        User ana = user("ana");
-        User bia = user("bia");
-        User maria = user("maria");
-        User carla = user("carla");
-        User zeca = user("zeca");
-        User alice = user("alice");
-        User fixtureFriend = entityManager.persistAndFlush(new User("seed:friend", "fixture-friend", null, null, null));
-        User fixtureCandidate = entityManager.persistAndFlush(
-                new User("friend-seed:candidate", "fixture-candidate", null, null, null));
-        // Pairs are undirected: Leonardo's friends sit on both columns.
-        friendships.saveAndFlush(Friendship.between(leonardo, joao));
-        friendships.saveAndFlush(Friendship.between(ana, leonardo));
-        friendships.saveAndFlush(Friendship.between(leonardo, bia));
-        // Friends who are also friends of each other are not recommendations.
-        friendships.saveAndFlush(Friendship.between(joao, ana));
-        friendships.saveAndFlush(Friendship.between(maria, joao));
-        friendships.saveAndFlush(Friendship.between(ana, maria));
-        friendships.saveAndFlush(Friendship.between(maria, bia));
-        friendships.saveAndFlush(Friendship.between(joao, carla));
-        friendships.saveAndFlush(Friendship.between(carla, ana));
-        friendships.saveAndFlush(Friendship.between(zeca, bia));
-        friendships.saveAndFlush(Friendship.between(joao, alice));
-        // Artificial accounts are never candidates nor counted as mutuals.
-        friendships.saveAndFlush(Friendship.between(leonardo, fixtureFriend));
-        friendships.saveAndFlush(Friendship.between(fixtureFriend, carla));
-        friendships.saveAndFlush(Friendship.between(fixtureFriend, other));
-        friendships.saveAndFlush(Friendship.between(joao, fixtureCandidate));
-        entityManager.clear();
-
-        var all = friendships.findRecommendations(leonardo.getId(), PageRequest.of(0, 20));
-        assertThat(all.getContent()).extracting(FriendDiscoveryCandidate::getId)
-                .containsExactly(maria.getId(), carla.getId(), alice.getId(), zeca.getId());
-        assertThat(all.getContent()).extracting(FriendDiscoveryCandidate::getMutualFriendsCount)
-                .containsExactly(3L, 2L, 1L, 1L);
-
-        var first = friendships.findRecommendations(leonardo.getId(), PageRequest.of(0, 3));
-        var second = friendships.findRecommendations(leonardo.getId(), PageRequest.of(1, 3));
-        assertThat(first.getTotalElements()).isEqualTo(4);
-        assertThat(first.getTotalPages()).isEqualTo(2);
-        assertThat(first.getContent()).extracting(FriendDiscoveryCandidate::getId)
-                .containsExactly(maria.getId(), carla.getId(), alice.getId());
-        assertThat(second.getTotalElements()).isEqualTo(4);
-        assertThat(second.getContent()).extracting(FriendDiscoveryCandidate::getId).containsExactly(zeca.getId());
-    }
-
-    /* Leonardo searches "mari": manual search is global, unlike recommendations. */
+    /* Leonardo searches "mari": manual search is global. */
     @Test
     void usernameSearchIsGlobalRanksExactThenPrefixAndReportsEachRelationship() {
         User leonardo = user("leonardo");
@@ -278,7 +147,7 @@ class FriendRepositoryTest {
         requests.saveAndFlush(FriendRequest.between(marilia, leonardo));
         entityManager.clear();
 
-        var page = friendships.searchByUsername("mari", "%mari%", leonardo.getId(), PageRequest.of(0, 20));
+        var page = friendships.searchByUsernameOrEmail("mari", "%mari%", leonardo.getId(), PageRequest.of(0, 20));
 
         // Username only (not first name), no artificial accounts, prefix before contains.
         assertThat(page.getTotalElements()).isEqualTo(5);
@@ -288,16 +157,36 @@ class FriendRepositoryTest {
                 .containsExactly("NONE", "NONE", "REQUEST_RECEIVED", "REQUEST_SENT", "FRIEND");
         assertThat(page.getContent()).extracting(FriendDiscoveryCandidate::getMutualFriendsCount)
                 .containsExactly(1L, 0L, 0L, 0L, 0L);
-        assertThat(recommendationIds(leonardo)).containsExactly(mariana.getId());
 
         // The exact username wins over a prefix match with more mutual friends.
-        assertThat(friendships.searchByUsername("maria", "%maria%", leonardo.getId(), PageRequest.of(0, 20))
+        assertThat(friendships.searchByUsernameOrEmail("maria", "%maria%", leonardo.getId(), PageRequest.of(0, 20))
                 .getContent()).extracting(FriendDiscoveryCandidate::getId).containsExactly(maria.getId(), mariana.getId());
-        var paged = friendships.searchByUsername("mari", "%mari%", leonardo.getId(), PageRequest.of(2, 2));
+        var paged = friendships.searchByUsernameOrEmail("mari", "%mari%", leonardo.getId(), PageRequest.of(2, 2));
         assertThat(paged.getTotalElements()).isEqualTo(5);
         assertThat(paged.getContent()).extracting(FriendDiscoveryCandidate::getId).containsExactly(amariz.getId());
-        assertThat(friendships.searchByUsername("leonardo", "%leonardo%", leonardo.getId(), PageRequest.of(0, 20)))
+        assertThat(friendships.searchByUsernameOrEmail("leonardo", "%leonardo%", leonardo.getId(), PageRequest.of(0, 20)))
                 .isEmpty();
+    }
+
+    /* The email only finds someone when it is typed in full; it is never returned. */
+    @Test
+    void emailSearchMatchesOnlyTheWholeAddressIgnoringCase() {
+        User leonardo = user("leonardo");
+        User maria = entityManager.persistAndFlush(new User("kc-maria", "maria", "Maria.Silva@Naro.local", "Maria", "Silva"));
+        entityManager.persistAndFlush(new User("seed:fixture", "fixture", "fixture@naro.local", null, null));
+
+        assertThat(friendships.searchByUsernameOrEmail("maria.silva@naro.local", "%maria.silva@naro.local%",
+                leonardo.getId(), PageRequest.of(0, 20)).getContent())
+                .extracting(FriendDiscoveryCandidate::getId).containsExactly(maria.getId());
+        // Part of an address, the domain or an artificial account's address finds nobody.
+        for (String term : List.of("maria.silva@naro", "silva@naro.local", "naro.local", "fixture@naro.local")) {
+            var page = friendships.searchByUsernameOrEmail(term, "%" + term + "%", leonardo.getId(), PageRequest.of(0, 20));
+            assertThat(page.getContent()).as(term).isEmpty();
+            assertThat(page.getTotalElements()).as(term).isZero();
+        }
+        // Nobody finds themselves by their own email.
+        assertThat(friendships.searchByUsernameOrEmail("maria.silva@naro.local", "%maria.silva@naro.local%",
+                maria.getId(), PageRequest.of(0, 20))).isEmpty();
     }
 
     @Test
@@ -305,7 +194,7 @@ class FriendRepositoryTest {
         User wildcard = user("percent%_user");
         user("percent-any-user");
 
-        assertThat(friendships.searchByUsername("percent%_user", "%percent\\%\\_user%", current.getId(),
+        assertThat(friendships.searchByUsernameOrEmail("percent%_user", "%percent\\%\\_user%", current.getId(),
                 PageRequest.of(0, 10)).getContent())
                 .extracting(FriendDiscoveryCandidate::getId).containsExactly(wildcard.getId());
     }
@@ -336,11 +225,6 @@ class FriendRepositoryTest {
         assertThat(friendships.findFriendsByUser(current.getId(), PageRequest.of(0, 10)).getTotalElements()).isEqualTo(2);
         assertThat(users.findById(pending.getId())).isPresent();
         assertThat(users.findById(stranger.getId())).isPresent();
-    }
-
-    private List<UUID> recommendationIds(User user) {
-        return friendships.findRecommendations(user.getId(), PageRequest.of(0, 20)).getContent().stream()
-                .map(FriendDiscoveryCandidate::getId).toList();
     }
 
     private User user(String username) {
