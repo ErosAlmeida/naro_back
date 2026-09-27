@@ -26,6 +26,8 @@ public interface FriendService {
 
     Page<FriendDiscoveryResponse> discover(String search, Pageable pageable, User currentUser);
 
+    Page<FriendDiscoveryResponse> getRecommendations(Pageable pageable, User currentUser);
+
     Page<FriendResponse> getFriends(Pageable pageable, User currentUser);
 
     Page<FriendResponse> searchFriends(String search, Pageable pageable, User currentUser);

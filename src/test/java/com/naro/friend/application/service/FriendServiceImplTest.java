@@ -419,7 +419,7 @@ class FriendServiceImplTest {
         var pageable = PageRequest.of(0, 2);
         var people = List.of(candidate(receiver, RelationshipStatus.FRIEND, 3),
                 candidate(outsider, RelationshipStatus.REQUEST_RECEIVED, 2));
-        when(friendshipRepository.findDiscoveryCandidates("%ma%", sender.getId(), false, pageable))
+        when(friendshipRepository.searchByUsername("ma", "%ma%", sender.getId(), pageable))
                 .thenReturn(new PageImpl<>(people, pageable, 4));
 
         var response = service.discover("  MA  ", pageable, sender);
@@ -439,29 +439,68 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void emptyAndBlankDiscoveryUseRecommendationsOnlyBeforePagination() {
+    void emptyDiscoveryNeverListsThePlatformAndFallsBackToFriendsOfFriends() {
         var pageable = PageRequest.of(0, 10);
-        when(friendshipRepository.findDiscoveryCandidates("%%", sender.getId(), true, pageable))
+        when(friendshipRepository.findRecommendations(sender.getId(), pageable))
                 .thenReturn(Page.empty(pageable));
 
         assertThat(service.discover(null, pageable, sender)).isEmpty();
         assertThat(service.discover("   ", pageable, sender)).isEmpty();
+        assertThat(service.discover(" @ ", pageable, sender)).isEmpty();
 
-        verify(friendshipRepository, times(2)).findDiscoveryCandidates("%%", sender.getId(), true, pageable);
+        verify(friendshipRepository, times(3)).findRecommendations(sender.getId(), pageable);
+        verify(friendshipRepository, never()).searchByUsername(anyString(), anyString(), any(), any());
         verifyNoInteractions(userRepository, requestRepository);
     }
 
     @Test
     void discoveryTreatsSqlWildcardsAsLiteralSearchCharacters() {
         var pageable = PageRequest.of(0, 10);
-        when(friendshipRepository.findDiscoveryCandidates(anyString(), eq(sender.getId()), eq(false), eq(pageable)))
+        when(friendshipRepository.searchByUsername(anyString(), anyString(), eq(sender.getId()), eq(pageable)))
                 .thenReturn(Page.empty(pageable));
 
         service.discover("  LEO%_\\  ", pageable, sender);
 
+        var term = ArgumentCaptor.forClass(String.class);
         var pattern = ArgumentCaptor.forClass(String.class);
-        verify(friendshipRepository).findDiscoveryCandidates(pattern.capture(), eq(sender.getId()), eq(false), eq(pageable));
+        verify(friendshipRepository).searchByUsername(term.capture(), pattern.capture(), eq(sender.getId()), eq(pageable));
+        assertThat(term.getValue()).isEqualTo("leo%_\\");
         assertThat(pattern.getValue()).isEqualTo("%leo\\%\\_\\\\%");
+        verifyNoInteractions(userRepository, requestRepository);
+    }
+
+    @Test
+    void usernameSearchAcceptsTheHandleWithOrWithoutAtSign() {
+        var pageable = PageRequest.of(0, 20);
+        when(friendshipRepository.searchByUsername("leonardo", "%leonardo%", sender.getId(), pageable))
+                .thenReturn(Page.empty(pageable));
+
+        service.discover("@Leonardo", pageable, sender);
+        service.discover("  leonardo ", pageable, sender);
+        service.discover(" @ LEONARDO", pageable, sender);
+
+        verify(friendshipRepository, times(3)).searchByUsername("leonardo", "%leonardo%", sender.getId(), pageable);
+        verify(friendshipRepository, never()).findRecommendations(any(), any());
+        verifyNoInteractions(userRepository, requestRepository);
+    }
+
+    @Test
+    void recommendationsUseOnlyTheAuthenticatedUserAndKeepPagination() {
+        var pageable = PageRequest.of(1, 2);
+        var people = List.of(candidate(receiver, RelationshipStatus.NONE, 4));
+        when(friendshipRepository.findRecommendations(sender.getId(), pageable))
+                .thenReturn(new PageImpl<>(people, pageable, 3));
+
+        var response = service.getRecommendations(pageable, sender);
+
+        assertThat(response.getContent()).singleElement().satisfies(person -> {
+            assertThat(person.id()).isEqualTo(receiver.getId());
+            assertThat(person.relationshipStatus()).isEqualTo(RelationshipStatus.NONE);
+            assertThat(person.mutualFriendsCount()).isEqualTo(4L);
+        });
+        assertThat(response.getNumber()).isEqualTo(1);
+        assertThat(response.getTotalElements()).isEqualTo(3);
+        verify(friendshipRepository).findRecommendations(sender.getId(), pageable);
         verifyNoInteractions(userRepository, requestRepository);
     }
 
@@ -471,7 +510,9 @@ class FriendServiceImplTest {
         FriendRequest outgoing = persisted(FriendRequest.between(sender, receiver));
         FriendRequest incoming = persisted(FriendRequest.between(receiver, sender));
         when(requestRepository.findPendingRequestBetweenUsers(sender.getId(), receiver.getId()))
-                .thenReturn(Optional.of(outgoing), Optional.of(incoming), Optional.empty());
+                .thenReturn(Optional.of(outgoing))
+                .thenReturn(Optional.of(incoming))
+                .thenReturn(Optional.empty());
         assertThat(service.getRelationship(receiver.getId(), sender)).satisfies(response -> {
             assertThat(response.status()).isEqualTo(RelationshipStatus.REQUEST_SENT);
             assertThat(response.requestId()).isEqualTo(outgoing.getId());

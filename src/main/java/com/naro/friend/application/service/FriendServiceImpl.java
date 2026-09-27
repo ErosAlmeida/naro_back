@@ -154,12 +154,20 @@ public class FriendServiceImpl implements FriendService {
         if (normalized.length() > 50) {
             throw new BadRequestException("Search query must have at most 50 characters");
         }
-        String pattern = "%" + normalized.toLowerCase(Locale.ROOT)
-                .replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%";
-        // Filter and rank before pagination: pages always contain addable people
-        // when no search was entered. The same query resolves status and mutuals.
-        return friendshipRepository.findDiscoveryCandidates(pattern, currentUser.getId(),
-                        normalized.isEmpty(), pageable)
+        // "@leonardo" and "leonardo" are the same search: the handle is the username.
+        String term = (normalized.startsWith("@") ? normalized.substring(1).trim() : normalized)
+                .toLowerCase(Locale.ROOT);
+        // Without a term there is nothing to search; keep the old contract without
+        // listing the whole platform: it returns the friends-of-friends recommendations.
+        if (term.isEmpty()) return getRecommendations(pageable, currentUser);
+        return friendshipRepository.searchByUsername(term, containsPattern(term), currentUser.getId(), pageable)
+                .map(FriendServiceImpl::toDiscoveryResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<FriendDiscoveryResponse> getRecommendations(Pageable pageable, User currentUser) {
+        return friendshipRepository.findRecommendations(currentUser.getId(), pageable)
                 .map(FriendServiceImpl::toDiscoveryResponse);
     }
 
@@ -181,8 +189,7 @@ public class FriendServiceImpl implements FriendService {
             throw new BadRequestException("Search query must have at most 50 characters");
         }
         if (normalized.isEmpty()) return getFriends(pageable, currentUser);
-        String pattern = "%" + normalized.toLowerCase(Locale.ROOT)
-                .replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%";
+        String pattern = containsPattern(normalized.toLowerCase(Locale.ROOT));
         return friendshipRepository.searchFriendsByUser(currentUser.getId(), pattern, pageable).map(friendship -> {
             User friend = otherUser(friendship, currentUser);
             return new FriendResponse(friend.getId(), friend.getUsername(), friend.getFirstName(),
@@ -202,6 +209,11 @@ public class FriendServiceImpl implements FriendService {
     public Page<FriendRequestResponse> getSentRequests(Pageable pageable, User currentUser) {
         return requestRepository.findSentPendingRequests(currentUser.getId(), pageable)
                 .map(FriendServiceImpl::toResponse);
+    }
+
+    /** LIKE wildcards typed by the user are literal text: "%" or "_" never match everything. */
+    private static String containsPattern(String lowerCaseTerm) {
+        return "%" + lowerCaseTerm.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%";
     }
 
     private static void requireRealUser(User user) {

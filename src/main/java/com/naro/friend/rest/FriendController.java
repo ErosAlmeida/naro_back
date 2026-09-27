@@ -44,7 +44,7 @@ public class FriendController {
     }
 
     @GetMapping("/discover")
-    @Operation(summary = "Busca pessoas e informa o relacionamento com o usuário autenticado")
+    @Operation(summary = "Busca pessoas pelo username (com ou sem @) e informa o relacionamento com o usuário autenticado")
     public PagedModel<EntityModel<FriendDiscoveryResponse>> discover(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
@@ -53,6 +53,18 @@ public class FriendController {
             PagedResourcesAssembler<FriendDiscoveryResponse> pagedAssembler
     ) {
         return pagedAssembler.toModel(friendService.discover(search,
+                PageRequest.of(Math.max(page, 0), Math.clamp(size, 1, 100)), currentUser));
+    }
+
+    @GetMapping("/recommendations")
+    @Operation(summary = "Recomenda somente amigos de amigos, com mais amigos em comum primeiro")
+    public PagedModel<EntityModel<FriendDiscoveryResponse>> recommendations(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @CurrentUser User currentUser,
+            PagedResourcesAssembler<FriendDiscoveryResponse> pagedAssembler
+    ) {
+        return pagedAssembler.toModel(friendService.getRecommendations(
                 PageRequest.of(Math.max(page, 0), Math.clamp(size, 1, 100)), currentUser));
     }
 

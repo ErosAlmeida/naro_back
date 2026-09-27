@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -135,6 +136,43 @@ class FriendControllerTest {
     }
 
     @Test
+    void recommendationsUseOnlyTheAuthenticatedUserAndReturnPagedPeople() throws Exception {
+        var pageable = PageRequest.of(0, 100);
+        var maria = new FriendDiscoveryResponse(other.getId(), "maria", "Maria", "Silva", null,
+                RelationshipStatus.NONE, 4);
+        when(friendService.getRecommendations(pageable, currentUser))
+                .thenReturn(new PageImpl<>(List.of(maria), pageable, 1));
+
+        // A userId in the query string is ignored: identity only comes from the JWT.
+        mockMvc.perform(get("/api/v1/friends/recommendations").param("userId", other.getId().toString())
+                        .param("page", "-3").param("size", "500").with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.people[0].id").value(other.getId().toString()))
+                .andExpect(jsonPath("$._embedded.people[0].username").value("maria"))
+                .andExpect(jsonPath("$._embedded.people[0].mutualFriendsCount").value(4))
+                .andExpect(jsonPath("$._embedded.people[0].relationshipStatus").value("NONE"))
+                .andExpect(jsonPath("$._embedded.people[0].email").doesNotExist())
+                .andExpect(jsonPath("$._embedded.people[0].keycloakId").doesNotExist())
+                .andExpect(jsonPath("$.page.number").value(0))
+                .andExpect(jsonPath("$.page.size").value(100))
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.page.totalPages").value(1));
+
+        verify(friendService).getRecommendations(pageable, currentUser);
+    }
+
+    @Test
+    void emptyRecommendationsKeepTheHalPageWithoutEmbedded() throws Exception {
+        var pageable = PageRequest.of(0, 20);
+        when(friendService.getRecommendations(pageable, currentUser)).thenReturn(Page.empty(pageable));
+
+        mockMvc.perform(get("/api/v1/friends/recommendations").with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded").doesNotExist())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+    }
+
+    @Test
     void relationshipReturnsActionableRequestIdUsingAuthenticatedUser() throws Exception {
         when(friendService.getRelationship(other.getId(), currentUser))
                 .thenReturn(new FriendRelationshipResponse(RelationshipStatus.REQUEST_RECEIVED, requestId));
@@ -165,7 +203,7 @@ class FriendControllerTest {
 
     @Test
     void everyEndpointRequiresJwt() throws Exception {
-        for (String path : List.of("", "/discover", "/requests/received", "/requests/sent")) {
+        for (String path : List.of("", "/discover", "/recommendations", "/requests/received", "/requests/sent")) {
             mockMvc.perform(get("/api/v1/friends" + path)).andExpect(status().isUnauthorized());
         }
         mockMvc.perform(get("/api/v1/friends/relationships/{id}", other.getId())).andExpect(status().isUnauthorized());

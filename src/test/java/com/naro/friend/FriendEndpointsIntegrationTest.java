@@ -54,11 +54,18 @@ class FriendEndpointsIntegrationTest {
         UUID firstId = me(first);
         UUID secondId = me(second);
         assertThat(firstId).isNotEqualTo(secondId);
+        // Strangers never list each other; the username search finds them, with or without "@".
         mvc.perform(get("/api/v1/friends/discover").with(first))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+        mvc.perform(get("/api/v1/friends/recommendations").with(first))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+        mvc.perform(get("/api/v1/friends/discover").param("search", "@" + secondUsername).with(first))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.people[?(@.id == '" + secondId + "')].relationshipStatus").value(org.hamcrest.Matchers.contains("NONE")))
                 .andExpect(jsonPath("$._embedded.people[?(@.id == '" + firstId + "')]").isEmpty());
-        mvc.perform(get("/api/v1/friends/discover").with(second))
+        mvc.perform(get("/api/v1/friends/discover").param("search", firstUsername).with(second))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.people[?(@.id == '" + firstId + "')].relationshipStatus").value(org.hamcrest.Matchers.contains("NONE")));
 
@@ -118,6 +125,64 @@ class FriendEndpointsIntegrationTest {
         mvc.perform(post("/api/v1/friends/requests/{id}/reject", rejectedId).with(first))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("REJECTED"));
         relationship(firstId, second, "NONE", null);
+    }
+
+    /* Leonardo -> João -> Maria, all real accounts provisioned from a JWT. */
+    @Test
+    void recommendationsReachOnlyFriendsOfFriendsThroughTheApi() throws Exception {
+        String suffix = UUID.randomUUID().toString().substring(0, 8);
+        var leonardo = as(UUID.randomUUID().toString(), "leonardo-" + suffix);
+        var joao = as(UUID.randomUUID().toString(), "joao-" + suffix);
+        var maria = as(UUID.randomUUID().toString(), "maria-" + suffix);
+        var carlos = as(UUID.randomUUID().toString(), "carlos-" + suffix);
+        UUID leonardoId = me(leonardo);
+        UUID joaoId = me(joao);
+        UUID mariaId = me(maria);
+        UUID carlosId = me(carlos);
+        befriend(leonardo, joaoId, joao);
+        befriend(joao, mariaId, maria);
+
+        mvc.perform(get("/api/v1/friends/recommendations").with(leonardo))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$._embedded.people[0].id").value(mariaId.toString()))
+                .andExpect(jsonPath("$._embedded.people[0].mutualFriendsCount").value(1))
+                .andExpect(jsonPath("$._embedded.people[0].relationshipStatus").value("NONE"));
+        // The old contract keeps working: an empty discovery is the same recommendation list.
+        mvc.perform(get("/api/v1/friends/discover").with(leonardo))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$._embedded.people[0].id").value(mariaId.toString()));
+        // Carlos has no connection: never recommended, but a manual search still finds him.
+        mvc.perform(get("/api/v1/friends/discover").param("search", "carlos-" + suffix).with(leonardo))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.people[0].id").value(carlosId.toString()))
+                .andExpect(jsonPath("$._embedded.people[0].mutualFriendsCount").value(0));
+
+        mvc.perform(get("/api/v1/friends/recommendations").with(maria))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.people[0].id").value(leonardoId.toString()));
+
+        mvc.perform(post("/api/v1/friends/requests/{id}", mariaId).with(leonardo))
+                .andExpect(status().isCreated());
+        mvc.perform(get("/api/v1/friends/recommendations").with(leonardo))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+        mvc.perform(get("/api/v1/friends/recommendations").with(maria))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+        mvc.perform(get("/api/v1/friends/discover").param("search", "maria-" + suffix).with(leonardo))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.people[0].relationshipStatus").value("REQUEST_SENT"))
+                .andExpect(jsonPath("$._embedded.people[0].mutualFriendsCount").value(1));
+    }
+
+    private void befriend(RequestPostProcessor sender, UUID receiverId, RequestPostProcessor receiver) throws Exception {
+        String body = mvc.perform(post("/api/v1/friends/requests/{id}", receiverId).with(sender))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        mvc.perform(post("/api/v1/friends/requests/{id}/accept", UUID.fromString(JsonPath.read(body, "$.id")))
+                        .with(receiver))
+                .andExpect(status().isOk());
     }
 
     private UUID me(RequestPostProcessor identity) throws Exception {
