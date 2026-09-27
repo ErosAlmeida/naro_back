@@ -61,6 +61,8 @@ public class ChatServiceImpl
 
     private final FriendshipRepository friendshipRepository;
 
+    private final ChatMessagePayloadPolicy payloadPolicy;
+
 
     public ChatServiceImpl(
             ConversationRepository conversationRepository,
@@ -68,7 +70,8 @@ public class ChatServiceImpl
             UserRepository userRepository,
             ChatMapper chatMapper,
             ApplicationEventPublisher eventPublisher,
-            FriendshipRepository friendshipRepository
+            FriendshipRepository friendshipRepository,
+            ChatMessagePayloadPolicy payloadPolicy
     ) {
         this.conversationRepository = conversationRepository;
         this.chatMessageRepository = chatMessageRepository;
@@ -76,6 +79,7 @@ public class ChatServiceImpl
         this.chatMapper = chatMapper;
         this.eventPublisher = eventPublisher;
         this.friendshipRepository = friendshipRepository;
+        this.payloadPolicy = payloadPolicy;
     }
 
 
@@ -225,6 +229,13 @@ public class ChatServiceImpl
             User sender
     ) {
 
+        /*
+         * Antes de qualquer acesso ao banco: com o E2EE obrigatório,
+         * uma mensagem sem criptografia é recusada aqui e nunca persiste.
+         */
+        ChatMessagePayload payload =
+                payloadPolicy.validate(request);
+
         Conversation conversation =
                 getConversationForMember(
                         request.conversationId(),
@@ -240,11 +251,20 @@ public class ChatServiceImpl
 
 
         ChatMessage message =
-                new ChatMessage(
-                        conversation,
-                        senderReference,
-                        request.content().trim()
-                );
+                switch (payload) {
+                    case ChatMessagePayload.Encrypted encrypted -> ChatMessage.encrypted(
+                            conversation,
+                            senderReference,
+                            encrypted.ciphertext(),
+                            encrypted.iv(),
+                            encrypted.version()
+                    );
+                    case ChatMessagePayload.Plaintext plaintext -> new ChatMessage(
+                            conversation,
+                            senderReference,
+                            plaintext.content()
+                    );
+                };
 
 
         ChatMessage saved =

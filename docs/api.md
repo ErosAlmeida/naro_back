@@ -106,6 +106,8 @@ o mesmo bloco `page` de antes:
 | `GET /api/v1/friends` | `friends` |
 | `GET /api/v1/friends/discover`, `GET /api/v1/friends/recommendations` | `people` |
 | `GET /api/v1/friends/requests/received`, `GET /api/v1/friends/requests/sent` | `friendRequests` |
+| `GET /api/v1/encryption/keys` | `encryptionKeys` |
+| `GET /api/v1/encryption/identities` | `identities` |
 
 ### Links de cada recurso
 
@@ -118,11 +120,14 @@ o mesmo bloco `page` de antes:
 | Comentário | `publication`, `author`, `replies`, `likes` (sem `self`: não há GET de um comentário) |
 | Like | `channel` |
 | Conversa | `messages` (sem `self`: não há GET de uma conversa) |
+| Identidade E2EE (`/api/v1/encryption/identity`) | `self`, `keys` |
 
 `/api/users/me` é a porta de entrada: dele se chega a tudo que é do usuário.
 
 Continuam em JSON simples, sem HAL, as respostas de estado ou de ação:
-resumo de likes, presença e ticket do WebSocket. As mensagens do WebSocket
+resumo de likes, presença, ticket do WebSocket e status do E2EE
+(`/api/v1/encryption/status`). Passkeys e chaves públicas vão sem links por
+item, como as mensagens: não existe GET de um item isolado. Veja `docs/e2ee.md`. As mensagens do WebSocket
 também não mudaram.
 
 ### Onde os links são montados

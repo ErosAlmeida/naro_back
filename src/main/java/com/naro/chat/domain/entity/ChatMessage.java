@@ -43,11 +43,40 @@ public class ChatMessage {
     private User sender;
 
 
+    /*
+     * Plaintext das mensagens anteriores ao E2EE (encrypted = false).
+     * Mensagens E2EE nunca têm content: só ciphertext.
+     */
     @Column(
-            nullable = false,
             length = 4000
     )
     private String content;
+
+
+    @Column(
+            nullable = false
+    )
+    private boolean encrypted;
+
+
+    /* AES-256-GCM (ciphertext + tag), em Base64. O servidor não decifra. */
+    @Column(
+            columnDefinition = "text"
+    )
+    private String ciphertext;
+
+
+    @Column(
+            name = "encryption_iv",
+            length = 32
+    )
+    private String encryptionIv;
+
+
+    @Column(
+            name = "encryption_version"
+    )
+    private Integer encryptionVersion;
 
 
     @Column(
@@ -58,6 +87,10 @@ public class ChatMessage {
     private Instant createdAt;
 
 
+    /**
+     * Mensagem sem criptografia (formato legado). Com
+     * naro.security.e2ee.required=true o chat nunca cria esta forma.
+     */
     public ChatMessage(
             Conversation conversation,
             User sender,
@@ -66,6 +99,29 @@ public class ChatMessage {
         this.conversation = conversation;
         this.sender = sender;
         this.content = content;
+        this.encrypted = false;
+    }
+
+
+    /**
+     * Mensagem E2EE: o servidor guarda o ciphertext como recebeu,
+     * sem decifrar, alterar ou registrar em log.
+     */
+    public static ChatMessage encrypted(
+            Conversation conversation,
+            User sender,
+            String ciphertext,
+            String encryptionIv,
+            int encryptionVersion
+    ) {
+        ChatMessage message = new ChatMessage();
+        message.conversation = conversation;
+        message.sender = sender;
+        message.encrypted = true;
+        message.ciphertext = ciphertext;
+        message.encryptionIv = encryptionIv;
+        message.encryptionVersion = encryptionVersion;
+        return message;
     }
 
 

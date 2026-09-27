@@ -32,3 +32,11 @@ app:
     # banco sem o seed, e só com banco e MinIO em localhost.
     # Veja com.naro.seed.LocalContentSeeder.
     enabled: true
+
+# Localmente o chat já roda em modo E2EE obrigatório, para testar o fluxo
+# completo (passkey em http://localhost:3000). E2EE_REQUIRED=false volta ao legado.
+naro:
+  security:
+    e2ee:
+      available: ${E2EE_AVAILABLE:true}
+      required: ${E2EE_REQUIRED:true}

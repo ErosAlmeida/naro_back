@@ -6,6 +6,7 @@ import com.naro.chat.application.dto.SendChatMessageRequest;
 
 import com.naro.chat.application.service.ChatService;
 import com.naro.exception.ChatFriendshipRequiredException;
+import com.naro.exception.E2eeException;
 
 import com.naro.security.RealtimePrincipal;
 
@@ -131,6 +132,13 @@ public class ChatWebSocketController {
         if (exception instanceof ChatFriendshipRequiredException friendshipRequired) {
             return new ChatErrorResponse("FRIENDSHIP_REQUIRED", exception.getBody().getDetail(),
                     Instant.now(), friendshipRequired.getConversationId(), friendshipRequired.getClientMessageId());
+        }
+
+        // E2EE_REQUIRED, E2EE_INVALID_PAYLOAD...: a mensagem recusada não foi
+        // persistida nem entregue; o cliente marca só ela como falha.
+        if (exception instanceof E2eeException e2ee) {
+            return new ChatErrorResponse(e2ee.getError().code(), exception.getBody().getDetail(),
+                    Instant.now(), e2ee.getConversationId(), e2ee.getClientMessageId());
         }
 
         return new ChatErrorResponse(

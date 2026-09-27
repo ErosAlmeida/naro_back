@@ -6,6 +6,8 @@ import com.naro.chat.application.dto.SendChatMessageRequest;
 import com.naro.chat.application.service.ChatService;
 import com.naro.exception.ForbiddenException;
 import com.naro.exception.ChatFriendshipRequiredException;
+import com.naro.exception.E2eeError;
+import com.naro.exception.E2eeException;
 import com.naro.exception.NotFoundException;
 import com.naro.security.RealtimePrincipal;
 import com.naro.user.application.service.CurrentUserService;
@@ -93,6 +95,21 @@ class ChatWebSocketControllerTest {
         assertThat(response.code()).isEqualTo("FRIENDSHIP_REQUIRED");
         assertThat(response.conversationId()).isEqualTo(conversationId);
         assertThat(response.clientMessageId()).isNull();
+    }
+
+
+    @Test
+    void e2eeRequiredCorrelatesOnlyTheRejectedMessage() {
+        UUID conversationId = UUID.randomUUID();
+        UUID clientMessageId = UUID.randomUUID();
+
+        ChatErrorResponse response = controller.handleErrorResponse(
+                new E2eeException(E2eeError.REQUIRED, conversationId, clientMessageId));
+
+        assertThat(response.code()).isEqualTo("E2EE_REQUIRED");
+        assertThat(response.message()).isEqualTo("Private messages must be end-to-end encrypted");
+        assertThat(response.conversationId()).isEqualTo(conversationId);
+        assertThat(response.clientMessageId()).isEqualTo(clientMessageId);
     }
 
 

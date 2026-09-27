@@ -28,6 +28,10 @@ public interface ChatMapper {
             source = "sender.username"
     )
     @Mapping(
+            target = "iv",
+            source = "encryptionIv"
+    )
+    @Mapping(
             target = "clientMessageId",
             ignore = true
     )

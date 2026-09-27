@@ -36,7 +36,7 @@ public class SecurityConfig {
         var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(properties.allowedOrigins());
         configuration.setAllowedMethods(List.of("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Channel-Id"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Channel-Id", "X-E2EE-Key-Proof"));
         configuration.setExposedHeaders(List.of("Location"));
         configuration.setMaxAge(3600L);
         var source = new UrlBasedCorsConfigurationSource();

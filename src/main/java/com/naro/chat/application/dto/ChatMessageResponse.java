@@ -5,6 +5,13 @@ import org.springframework.hateoas.server.core.Relation;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Uma mensagem é de uma das duas formas:
+ *
+ *   encrypted = false   mensagem anterior ao E2EE, texto em content
+ *   encrypted = true    content null; ciphertext, iv e encryptionVersion
+ *                       são repassados como chegaram, e só o browser decifra
+ */
 @Relation(collectionRelation = "messages")
 public record ChatMessageResponse(
 
@@ -17,6 +24,14 @@ public record ChatMessageResponse(
         String senderUsername,
 
         String content,
+
+        boolean encrypted,
+
+        String ciphertext,
+
+        String iv,
+
+        Integer encryptionVersion,
 
         Instant createdAt,
 
@@ -38,6 +53,10 @@ public record ChatMessageResponse(
                 senderId,
                 senderUsername,
                 content,
+                encrypted,
+                ciphertext,
+                iv,
+                encryptionVersion,
                 createdAt,
                 clientMessageId
         );

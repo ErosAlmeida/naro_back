@@ -11,6 +11,7 @@ import com.naro.chat.domain.entity.Conversation;
 import com.naro.chat.domain.enums.ConversationType;
 import com.naro.chat.domain.repository.ChatMessageRepository;
 import com.naro.chat.domain.repository.ConversationRepository;
+import com.naro.encryption.config.E2eeProperties;
 import com.naro.exception.BadRequestException;
 import com.naro.exception.ForbiddenException;
 import com.naro.exception.NotFoundException;
@@ -80,7 +81,8 @@ class ChatServiceImplTest {
                 userRepository,
                 new ChatMapperImpl(),
                 eventPublisher,
-                friendshipRepository
+                friendshipRepository,
+                new ChatMessagePayloadPolicy(new E2eeProperties(true, false))
         );
     }
 

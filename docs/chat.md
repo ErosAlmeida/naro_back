@@ -55,8 +55,17 @@ concorrentes.
 
 ## Erros no WebSocket
 
+## Criptografia ponta a ponta
+
+Com `naro.security.e2ee.required=true`, toda mensagem nova é cifrada no browser e o
+servidor só aceita `{ conversationId, ciphertext, iv, encryptionVersion }`. Mensagens
+antigas continuam em `content` (`encrypted = false`). O fluxo completo, as flags e
+as limitações estão em `docs/e2ee.md`.
+
 A fila privada `/user/queue/errors` retorna `FRIENDSHIP_REQUIRED` quando não existe
 mais amizade autorizando o envio. O evento contém `conversationId` e, para mensagens,
 o `clientMessageId` enviado pelo cliente. Isso permite que a interface interrompa o
 envio e marque apenas a mensagem recusada. Eventos de digitação não têm
-`clientMessageId`. Os outros erros preservam `CHAT_ERROR` e `INVALID_PAYLOAD`.
+`clientMessageId`. Mensagens recusadas pelo E2EE voltam com `E2EE_REQUIRED`,
+`E2EE_INVALID_PAYLOAD` ou `E2EE_UNAVAILABLE`, com a mesma correlação. Os outros
+erros preservam `CHAT_ERROR` e `INVALID_PAYLOAD`.

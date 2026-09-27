@@ -22,3 +22,10 @@ app:
     allowed-origins:
       - http://localhost:3000
       - http://127.0.0.1:3000
+
+# Os testes que exigem E2EE sobem com naro.security.e2ee.required=true.
+naro:
+  security:
+    e2ee:
+      available: true
+      required: false

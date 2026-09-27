@@ -59,6 +59,16 @@ app:
     s3:
       presigned-url-duration: 30m
 
+# Criptografia ponta a ponta do chat privado (docs/e2ee.md).
+#   available  endpoints de chaves ligados; mensagens E2EE aceitas
+#   required   chat privado somente E2EE: mensagem nova sem criptografia é recusada
+# required=true exige available=true (a aplicação não sobe sem isso).
+naro:
+  security:
+    e2ee:
+      available: ${E2EE_AVAILABLE:false}
+      required: ${E2EE_REQUIRED:false}
+
 management:
   endpoints:
     access:

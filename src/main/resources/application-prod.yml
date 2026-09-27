@@ -31,3 +31,11 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:}
   seed:
     enabled: false
+
+# Fase 1 do E2EE: infraestrutura no ar, chat sem mudança para ninguém.
+# Fase 2 (depois da validação): E2EE_REQUIRED=true, ou troque o padrão abaixo.
+naro:
+  security:
+    e2ee:
+      available: ${E2EE_AVAILABLE:true}
+      required: ${E2EE_REQUIRED:false}
