@@ -145,6 +145,8 @@ cdk deploy --profile naro-cdk -c publicHostname=api.SEUDOMINIO \
   -c certificateArn=ARN_DO_CERTIFICADO -c frontendOrigin=https://SEU_FRONTEND
 ```
 
+Nesta conta: `api.naro.api.br` (backend e Keycloak) e `naro.api.br` (frontend na Vercel). O domínio está no registro.br, com os servidores DNS da zona Route 53 `naro.api.br`. A zona não pertence ao stack; o registro `api` é um alias para o ALB, e `publicHostname`/`certificateArn` ficam em `cdk.context.json`. A zona custa US$ 0,50/mês.
+
 Conserve esses contextos nas atualizações seguintes. Configure o DNS de seu domínio para o ALB; o stack não cria registros DNS. Sem certificado/hostname, permanece HTTP. A alteração do hostname/issuer exige atualizar a configuração do frontend.
 
 Os parâmetros/contextos e outputs exatos estão no código Java. Valores sensíveis não devem ser fornecidos com `-c`, `cdk.json`, templates ou user-data.

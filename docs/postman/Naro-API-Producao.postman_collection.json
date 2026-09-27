@@ -3,7 +3,7 @@
     "_postman_id": "6f1f7a52-3c1e-4a8e-9a55-7b1d2e0c4a11",
     "name": "Naro API — Produção",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "API da Naro em produção na AWS: http://NaroLa-LoadB-ZOFkrl795e1D-1520969490.us-east-1.elb.amazonaws.com\n\n1. Selecione o environment **Naro Produção** (canto superior direito).\n2. Rode **01 Criar conta** (passos 1 → 4). Para uma conta existente, use **02 Login** (passos 1 → 3).\n3. Pronto: todas as requisições usam o token e ele é renovado sozinho.\n4. Crie um canal em **11 Canais → Cria um canal** antes de publicar, curtir ou comentar.\n\nIDs criados (canal, publicação, comentário, conversa...) ficam salvos no environment e são reutilizados.\nAmizades, seguir canais e conversas precisam de uma segunda conta: rode 01 Criar conta de novo com outros dados.\n**90 Apagar** remove dados de verdade em produção.\nConexão HTTP sem domínio próprio: não use senhas que você usa em outros serviços."
+    "description": "API da Naro em produção na AWS: https://api.naro.api.br\n\n1. Selecione o environment **Naro Produção** (canto superior direito).\n2. Rode **01 Criar conta** (passos 1 → 4). Para uma conta existente, use **02 Login** (passos 1 → 3).\n3. Pronto: todas as requisições usam o token e ele é renovado sozinho.\n4. Crie um canal em **11 Canais → Cria um canal** antes de publicar, curtir ou comentar.\n\nIDs criados (canal, publicação, comentário, conversa...) ficam salvos no environment e são reutilizados.\nAmizades, seguir canais e conversas precisam de uma segunda conta: rode 01 Criar conta de novo com outros dados.\n**90 Apagar** remove dados de verdade em produção.\nConexão HTTP sem domínio próprio: não use senhas que você usa em outros serviços."
   },
   "auth": {
     "type": "bearer",
@@ -881,7 +881,7 @@
       "name": "10 Usuários",
       "item": [
         {
-          "id": "5821b3c9-9612-414e-a3a6-2bcec44877c8",
+          "id": "2e7aab71-5f97-42fb-b532-e8a5ceed6adf",
           "name": "Perfil público de um usuário",
           "request": {
             "name": "Perfil público de um usuário",
@@ -917,7 +917,7 @@
           },
           "response": [
             {
-              "id": "9be5b9ec-78cc-4b21-ac52-f9424b0bca05",
+              "id": "59355ee4-e49d-401a-a811-9bf5463ddc14",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -934,7 +934,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "userId",
                       "description": "(Required) "
                     }
@@ -957,7 +957,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"aad4108e-937e-219c-89f4-3c37a5330429\",\n  \"username\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"bio\": \"string\",\n  \"avatarUrl\": \"string\",\n  \"createdAt\": \"1950-01-27T19:39:34.017Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"a9687238-8670-4280-1a70-d18cbd5bb64d\",\n  \"username\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"bio\": \"string\",\n  \"avatarUrl\": \"string\",\n  \"createdAt\": \"1962-05-27T09:28:53.742Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_3\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -978,7 +978,7 @@
           }
         },
         {
-          "id": "2efdd7db-3da1-4412-b88e-a0c41fa4340b",
+          "id": "20ce1258-e731-49c0-a0c7-7210b6ce3b61",
           "name": "Busca usuários por username ou nome, em ordem alfabética",
           "request": {
             "name": "Busca usuários por username ou nome, em ordem alfabética",
@@ -1023,7 +1023,7 @@
           },
           "response": [
             {
-              "id": "c05869f0-a8ed-42bc-b4fd-b12f81cca41a",
+              "id": "5194e0de-9208-46e1-88d9-be927ae3bd1d",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -1068,7 +1068,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"users\": [\n      {\n        \"id\": \"24b6b132-5abe-ee71-7419-c30bf6c547b6\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"a27c6e9f-0085-fb6a-187b-430c501a425e\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 2963,\n    \"totalElements\": 5866,\n    \"totalPages\": 2615,\n    \"number\": 2575\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"users\": [\n      {\n        \"id\": \"7271c1d2-7948-32c8-1f38-2e2a6ff263aa\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_3\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_4\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"2a240a4f-2108-e52b-88ac-4eb9d27bc3c5\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 9343,\n    \"totalElements\": 3205,\n    \"totalPages\": 6093,\n    \"number\": 2024\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1092,7 +1092,7 @@
           }
         },
         {
-          "id": "f52d0a57-5656-4ca5-bf49-9866afafb414",
+          "id": "fcda1605-3457-4fcd-b902-4d0aa721dc0b",
           "name": "Usuário autenticado, com links para os canais e as conversas dele",
           "request": {
             "name": "Usuário autenticado, com links para os canais e as conversas dele",
@@ -1120,7 +1120,7 @@
           },
           "response": [
             {
-              "id": "9bb81f64-29dc-461c-a2d7-641ec49739e0",
+              "id": "11a8c03b-44ca-428b-97eb-c02498b4a32f",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -1152,7 +1152,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"3171568b-57ee-64ba-328f-893033f2d83c\",\n  \"username\": \"string\",\n  \"email\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"032cbbb7-3412-33f4-cda9-d33fdb00d0f8\",\n  \"username\": \"string\",\n  \"email\": \"string\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1175,7 +1175,7 @@
           }
         },
         {
-          "id": "3eb9886f-a2a2-42ef-b620-806aed7bd911",
+          "id": "33146bff-ec1f-4e15-99a6-18fb4c00b00a",
           "name": "me 1",
           "request": {
             "name": "me 1",
@@ -1203,7 +1203,7 @@
           },
           "response": [
             {
-              "id": "b8a3985b-80f1-4873-8a9a-237e5ea4ee02",
+              "id": "f846f9fb-e522-4f07-ae77-72d5cd791646",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -1261,7 +1261,7 @@
       "name": "11 Canais",
       "item": [
         {
-          "id": "852b7f50-d2ad-4832-8957-e6a0e69200ff",
+          "id": "4c63465f-452a-40f9-aeee-8cad3f6ccbdb",
           "name": "Cria um canal para o usuário autenticado",
           "request": {
             "name": "Cria um canal para o usuário autenticado",
@@ -1330,7 +1330,7 @@
           },
           "response": [
             {
-              "id": "11acb5e9-ae74-4897-93a7-1c2df89f01f1",
+              "id": "68ae502c-fd8b-4ed8-8b3f-27e208d9b4f2",
               "name": "Created",
               "originalRequest": {
                 "url": {
@@ -1409,7 +1409,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"0c5e3680-280a-57ea-b5ad-b5d3ae3e22c2\",\n  \"ownerId\": \"f3a368da-01bc-41c4-82fb-f963cf2957fb\",\n  \"name\": \"string\",\n  \"slug\": \"string\",\n  \"description\": \"string\",\n  \"profileImageUrl\": \"string\",\n  \"bannerImageUrl\": \"string\",\n  \"createdAt\": \"1966-05-29T11:54:16.350Z\",\n  \"updatedAt\": \"1947-12-15T07:30:22.767Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"48462d85-c869-9a4d-1e7c-493983782ee9\",\n  \"ownerId\": \"482a6c80-a2f2-5da0-2ec7-8b847f62426c\",\n  \"name\": \"string\",\n  \"slug\": \"string\",\n  \"description\": \"string\",\n  \"profileImageUrl\": \"string\",\n  \"bannerImageUrl\": \"string\",\n  \"createdAt\": \"1955-09-15T09:17:56.866Z\",\n  \"updatedAt\": \"1976-04-06T09:13:02.865Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_3\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1441,7 +1441,7 @@
           }
         },
         {
-          "id": "db803488-1549-476a-ae00-3c72c604665e",
+          "id": "294611a5-2bd2-4148-9662-b6f694ee8eb6",
           "name": "Busca um canal pelo id",
           "request": {
             "name": "Busca um canal pelo id",
@@ -1478,7 +1478,7 @@
           },
           "response": [
             {
-              "id": "60a752f5-a6d0-46c6-be0c-dcc9eaf822c1",
+              "id": "8da5c1be-1012-41e3-be63-920c18e0d7ab",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -1496,7 +1496,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "id",
                       "description": "(Required) "
                     }
@@ -1519,7 +1519,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"0c5e3680-280a-57ea-b5ad-b5d3ae3e22c2\",\n  \"ownerId\": \"f3a368da-01bc-41c4-82fb-f963cf2957fb\",\n  \"name\": \"string\",\n  \"slug\": \"string\",\n  \"description\": \"string\",\n  \"profileImageUrl\": \"string\",\n  \"bannerImageUrl\": \"string\",\n  \"createdAt\": \"1966-05-29T11:54:16.350Z\",\n  \"updatedAt\": \"1947-12-15T07:30:22.767Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"48462d85-c869-9a4d-1e7c-493983782ee9\",\n  \"ownerId\": \"482a6c80-a2f2-5da0-2ec7-8b847f62426c\",\n  \"name\": \"string\",\n  \"slug\": \"string\",\n  \"description\": \"string\",\n  \"profileImageUrl\": \"string\",\n  \"bannerImageUrl\": \"string\",\n  \"createdAt\": \"1955-09-15T09:17:56.866Z\",\n  \"updatedAt\": \"1976-04-06T09:13:02.865Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_3\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1540,7 +1540,7 @@
           }
         },
         {
-          "id": "3dc78397-527c-4a55-afc6-1fc80ec7102b",
+          "id": "1039853e-22b1-4ed7-960c-25e314258956",
           "name": "Busca um canal pelo slug",
           "request": {
             "name": "Busca um canal pelo slug",
@@ -1578,7 +1578,7 @@
           },
           "response": [
             {
-              "id": "80ec0b5c-9d37-4003-8812-4ae164d08aab",
+              "id": "bba94e89-da38-430a-8389-c56dc2887339",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -1620,7 +1620,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"0c5e3680-280a-57ea-b5ad-b5d3ae3e22c2\",\n  \"ownerId\": \"f3a368da-01bc-41c4-82fb-f963cf2957fb\",\n  \"name\": \"string\",\n  \"slug\": \"string\",\n  \"description\": \"string\",\n  \"profileImageUrl\": \"string\",\n  \"bannerImageUrl\": \"string\",\n  \"createdAt\": \"1966-05-29T11:54:16.350Z\",\n  \"updatedAt\": \"1947-12-15T07:30:22.767Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"48462d85-c869-9a4d-1e7c-493983782ee9\",\n  \"ownerId\": \"482a6c80-a2f2-5da0-2ec7-8b847f62426c\",\n  \"name\": \"string\",\n  \"slug\": \"string\",\n  \"description\": \"string\",\n  \"profileImageUrl\": \"string\",\n  \"bannerImageUrl\": \"string\",\n  \"createdAt\": \"1955-09-15T09:17:56.866Z\",\n  \"updatedAt\": \"1976-04-06T09:13:02.865Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_3\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1641,7 +1641,7 @@
           }
         },
         {
-          "id": "291aab25-72c8-40fb-baf2-5c475667e09a",
+          "id": "c6ec0a5a-2133-454d-b44b-7c4fd337a091",
           "name": "Lista os canais do usuário autenticado",
           "request": {
             "name": "Lista os canais do usuário autenticado",
@@ -1670,7 +1670,7 @@
           },
           "response": [
             {
-              "id": "cf148a3a-6985-4933-b61a-b7e562f407f9",
+              "id": "abfa9797-83e6-4ac1-858b-cd9422431f5a",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -1703,7 +1703,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"channels\": [\n      {\n        \"id\": \"9e47c34c-1fd5-875b-811b-3d2c2e8d41b3\",\n        \"ownerId\": \"2c8c2828-d5e9-d932-33d1-a5590a267ad7\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"bannerImageUrl\": \"string\",\n        \"createdAt\": \"1961-08-26T07:23:29.009Z\",\n        \"updatedAt\": \"2007-06-04T18:11:04.000Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"aac87c33-65d4-d883-560d-97b36e2c27fb\",\n        \"ownerId\": \"d4d93791-ca00-4b3d-faae-4b761f56ff29\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"bannerImageUrl\": \"string\",\n        \"createdAt\": \"1952-01-29T21:19:47.348Z\",\n        \"updatedAt\": \"2021-05-11T08:45:14.170Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"channels\": [\n      {\n        \"id\": \"a2b9257c-7dee-38a0-77d0-c8590c88d88b\",\n        \"ownerId\": \"cddb6537-5e11-b471-5e6e-35a944e064d8\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"bannerImageUrl\": \"string\",\n        \"createdAt\": \"1949-06-30T16:33:01.004Z\",\n        \"updatedAt\": \"1992-09-13T19:38:41.309Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"8d51c56e-35c8-aa0f-e453-ea619c565467\",\n        \"ownerId\": \"53ad11e8-cdbb-5d86-c7aa-19f75bd8c46b\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"bannerImageUrl\": \"string\",\n        \"createdAt\": \"2021-04-24T10:14:47.529Z\",\n        \"updatedAt\": \"2015-10-24T14:42:15.936Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1728,7 +1728,7 @@
           }
         },
         {
-          "id": "c01e2a6d-92c4-4d23-b5a7-014d0b69e7dc",
+          "id": "5da5d56b-f208-4e01-aeb0-8eb2296d9800",
           "name": "Descobre canais de outros usuários, mais recentes primeiro",
           "request": {
             "name": "Descobre canais de outros usuários, mais recentes primeiro",
@@ -1779,7 +1779,7 @@
           },
           "response": [
             {
-              "id": "ba8c4ba6-4002-4df3-bae3-807c490c5a8d",
+              "id": "c119f294-6422-4337-b192-0c1aae7fb2a1",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -1813,7 +1813,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -1831,7 +1831,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"discoverChannels\": [\n      {\n        \"id\": \"974bab55-7be0-0cb2-12b2-129aa8f207bd\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"followersCount\": 8289,\n        \"following\": true,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"231ef558-087c-6f82-ffc7-8a1e8f8e83a9\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"followersCount\": 1208,\n        \"following\": true,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_3\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_4\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 4171,\n    \"totalElements\": 4434,\n    \"totalPages\": 7170,\n    \"number\": 7686\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"discoverChannels\": [\n      {\n        \"id\": \"4912e2e2-0488-136f-3d05-ec9e656a0fa9\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"followersCount\": 5403,\n        \"following\": false,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"1321b94b-e671-7e70-dac8-e7c566a64d0c\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"followersCount\": 665,\n        \"following\": true,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 5514,\n    \"totalElements\": 7485,\n    \"totalPages\": 8698,\n    \"number\": 3084\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1855,7 +1855,7 @@
           }
         },
         {
-          "id": "79e90278-9bdc-4cc5-b4a1-9aeceb8d27f7",
+          "id": "2f83f541-0da7-4102-9670-b09a7aae33b1",
           "name": "Atualiza um canal do usuário autenticado",
           "request": {
             "name": "Atualiza um canal do usuário autenticado",
@@ -1933,7 +1933,7 @@
           },
           "response": [
             {
-              "id": "d6649223-2d88-4cc6-b7fa-065ad5a72225",
+              "id": "451b6550-4044-4592-86b5-2b9228a6f8a3",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -1951,7 +1951,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "id",
                       "description": "(Required) "
                     }
@@ -2021,7 +2021,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"0c5e3680-280a-57ea-b5ad-b5d3ae3e22c2\",\n  \"ownerId\": \"f3a368da-01bc-41c4-82fb-f963cf2957fb\",\n  \"name\": \"string\",\n  \"slug\": \"string\",\n  \"description\": \"string\",\n  \"profileImageUrl\": \"string\",\n  \"bannerImageUrl\": \"string\",\n  \"createdAt\": \"1966-05-29T11:54:16.350Z\",\n  \"updatedAt\": \"1947-12-15T07:30:22.767Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"48462d85-c869-9a4d-1e7c-493983782ee9\",\n  \"ownerId\": \"482a6c80-a2f2-5da0-2ec7-8b847f62426c\",\n  \"name\": \"string\",\n  \"slug\": \"string\",\n  \"description\": \"string\",\n  \"profileImageUrl\": \"string\",\n  \"bannerImageUrl\": \"string\",\n  \"createdAt\": \"1955-09-15T09:17:56.866Z\",\n  \"updatedAt\": \"1976-04-06T09:13:02.865Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_3\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2047,7 +2047,7 @@
       "name": "12 Publicações",
       "item": [
         {
-          "id": "cd10290f-485b-43bf-91f3-cb7012346c91",
+          "id": "6ec76413-0326-4b4e-ac2a-ee8d055562c9",
           "name": "Publica uma imagem com texto em nome do canal selecionado",
           "request": {
             "name": "Publica uma imagem com texto em nome do canal selecionado",
@@ -2103,7 +2103,7 @@
           },
           "response": [
             {
-              "id": "789a0de5-b82d-41a5-824f-2558a3f89c6b",
+              "id": "3b5e7c04-c13a-46d0-aa60-f8f2ef7591d9",
               "name": "Created",
               "originalRequest": {
                 "url": {
@@ -2123,7 +2123,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -2162,7 +2162,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"6e98b5bd-8c98-76e4-d128-caddbc91b6e4\",\n  \"author\": {\n    \"id\": \"e2b57de5-a789-ceb7-a886-cb777f4a1b2d\",\n    \"name\": \"string\",\n    \"slug\": \"string\",\n    \"profileImageUrl\": \"string\"\n  },\n  \"content\": \"string\",\n  \"imageUrl\": \"string\",\n  \"createdAt\": \"2010-01-20T23:23:56.802Z\",\n  \"likeCount\": 1647,\n  \"commentCount\": 4054,\n  \"likedByCurrentChannel\": true,\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"d3083739-3197-0a55-86ab-255bd75fe618\",\n  \"author\": {\n    \"id\": \"c0e94a44-d2a8-dfb7-6c15-f85e6023ab3f\",\n    \"name\": \"string\",\n    \"slug\": \"string\",\n    \"profileImageUrl\": \"string\"\n  },\n  \"content\": \"string\",\n  \"imageUrl\": \"string\",\n  \"createdAt\": \"2016-06-17T04:59:34.924Z\",\n  \"likeCount\": 6966,\n  \"commentCount\": 4470,\n  \"likedByCurrentChannel\": false,\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2185,7 +2185,7 @@
           }
         },
         {
-          "id": "d1343b65-3b71-49a6-b4c0-f570df39e86d",
+          "id": "4f6f80c0-9464-4f41-a521-d8410ea97374",
           "name": "Lista publicações, mais recentes primeiro; authorId filtra por canal",
           "request": {
             "name": "Lista publicações, mais recentes primeiro; authorId filtra por canal",
@@ -2235,7 +2235,7 @@
           },
           "response": [
             {
-              "id": "fa35b923-0d87-4e96-8224-3e96fcd088dc",
+              "id": "ce1c7320-2ca4-4d5c-af14-5f9d257d9dc0",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -2250,7 +2250,7 @@
                   "query": [
                     {
                       "key": "authorId",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                     },
                     {
                       "key": "page",
@@ -2268,7 +2268,7 @@
                     "disabled": false,
                     "description": "Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -2286,7 +2286,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"publications\": [\n      {\n        \"id\": \"3e6d1a48-d6c8-d5e4-64ce-e5eb8484ac69\",\n        \"author\": {\n          \"id\": \"cfe28e11-8cae-36c4-ebb4-d840b57d4f67\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"content\": \"string\",\n        \"imageUrl\": \"string\",\n        \"createdAt\": \"1980-07-21T20:12:16.723Z\",\n        \"likeCount\": 4021,\n        \"commentCount\": 7935,\n        \"likedByCurrentChannel\": false,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_3\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"a70a82f5-0e2f-b446-2b26-896404530da8\",\n        \"author\": {\n          \"id\": \"8b8a6dfe-a94e-c7e3-1092-87eccbeb8462\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"content\": \"string\",\n        \"imageUrl\": \"string\",\n        \"createdAt\": \"1967-11-03T17:43:40.049Z\",\n        \"likeCount\": 4464,\n        \"commentCount\": 8958,\n        \"likedByCurrentChannel\": true,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_3\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 4194,\n    \"totalElements\": 3819,\n    \"totalPages\": 6202,\n    \"number\": 7230\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"publications\": [\n      {\n        \"id\": \"f77c1f6b-3080-b564-eec0-c57ba5ae4686\",\n        \"author\": {\n          \"id\": \"0f95f9a2-c571-61a7-6df0-15467b1c12cf\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"content\": \"string\",\n        \"imageUrl\": \"string\",\n        \"createdAt\": \"1975-11-15T10:14:27.706Z\",\n        \"likeCount\": 5669,\n        \"commentCount\": 1230,\n        \"likedByCurrentChannel\": true,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"c2965665-de2c-22c4-c826-661b25c0788a\",\n        \"author\": {\n          \"id\": \"2c1f5e2d-af7f-eef4-6de3-068f69a13f8b\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"content\": \"string\",\n        \"imageUrl\": \"string\",\n        \"createdAt\": \"1964-05-06T02:21:31.758Z\",\n        \"likeCount\": 5047,\n        \"commentCount\": 8010,\n        \"likedByCurrentChannel\": false,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 1693,\n    \"totalElements\": 1128,\n    \"totalPages\": 7495,\n    \"number\": 6781\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2310,7 +2310,7 @@
           }
         },
         {
-          "id": "a1dbcf2e-c1cb-45c9-afee-190c04ea0738",
+          "id": "252c2b71-eb28-4dfc-b882-01b526fdfae8",
           "name": "Busca uma publicação",
           "request": {
             "name": "Busca uma publicação",
@@ -2353,7 +2353,7 @@
           },
           "response": [
             {
-              "id": "e5a17105-bb9f-40d5-9b32-0e30831d0e28",
+              "id": "87a34a27-16f7-4714-9f66-8fef0064b0cb",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -2371,7 +2371,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "publicationId",
                       "description": "(Required) "
                     }
@@ -2382,7 +2382,7 @@
                     "disabled": false,
                     "description": "Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -2400,7 +2400,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"6e98b5bd-8c98-76e4-d128-caddbc91b6e4\",\n  \"author\": {\n    \"id\": \"e2b57de5-a789-ceb7-a886-cb777f4a1b2d\",\n    \"name\": \"string\",\n    \"slug\": \"string\",\n    \"profileImageUrl\": \"string\"\n  },\n  \"content\": \"string\",\n  \"imageUrl\": \"string\",\n  \"createdAt\": \"2010-01-20T23:23:56.802Z\",\n  \"likeCount\": 1647,\n  \"commentCount\": 4054,\n  \"likedByCurrentChannel\": true,\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"d3083739-3197-0a55-86ab-255bd75fe618\",\n  \"author\": {\n    \"id\": \"c0e94a44-d2a8-dfb7-6c15-f85e6023ab3f\",\n    \"name\": \"string\",\n    \"slug\": \"string\",\n    \"profileImageUrl\": \"string\"\n  },\n  \"content\": \"string\",\n  \"imageUrl\": \"string\",\n  \"createdAt\": \"2016-06-17T04:59:34.924Z\",\n  \"likeCount\": 6966,\n  \"commentCount\": 4470,\n  \"likedByCurrentChannel\": false,\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2426,7 +2426,7 @@
       "name": "13 Comentários",
       "item": [
         {
-          "id": "81e3c66d-fed6-4c87-ab08-b747a38a7603",
+          "id": "f4c56759-cf80-430e-bf9d-fcf414dd4fa3",
           "name": "Comenta uma publicação",
           "request": {
             "name": "Comenta uma publicação",
@@ -2483,7 +2483,7 @@
           },
           "response": [
             {
-              "id": "5c1be8b9-f537-43f4-8bc3-dc19ad4168c9",
+              "id": "2b5719f3-f098-4ff2-b5ee-2dee1416aba6",
               "name": "Created",
               "originalRequest": {
                 "url": {
@@ -2502,7 +2502,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "publicationId",
                       "description": "(Required) "
                     }
@@ -2513,7 +2513,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -2539,7 +2539,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"c29a7b1d-3a02-da88-2081-0490b6f31995\",\n  \"publicationId\": \"9ebcc24a-1243-43d8-0869-a35c73b801e2\",\n  \"parentCommentId\": \"b4a085de-3ad4-dfeb-f26b-6bef3f3ec6e9\",\n  \"content\": \"string\",\n  \"author\": {\n    \"id\": \"484b9788-abbd-db9e-9629-c85b1c6688f3\",\n    \"name\": \"string\",\n    \"slug\": \"string\",\n    \"profileImageUrl\": \"string\"\n  },\n  \"likeCount\": 3023,\n  \"likedByCurrentChannel\": true,\n  \"replyCount\": 2393,\n  \"createdAt\": \"2013-02-08T18:57:01.352Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"35bd92b9-c189-10ec-6d51-b6547d5894a7\",\n  \"publicationId\": \"c2118da3-6614-176c-6ef7-f0f81219546d\",\n  \"parentCommentId\": \"1b50f632-b7ae-0045-0a09-9a7257a14055\",\n  \"content\": \"string\",\n  \"author\": {\n    \"id\": \"5e30e04e-ec3b-8f67-97bd-6661a1f61fce\",\n    \"name\": \"string\",\n    \"slug\": \"string\",\n    \"profileImageUrl\": \"string\"\n  },\n  \"likeCount\": 6361,\n  \"likedByCurrentChannel\": true,\n  \"replyCount\": 2157,\n  \"createdAt\": \"1987-12-12T17:46:02.939Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2562,7 +2562,7 @@
           }
         },
         {
-          "id": "295fd6aa-87dc-4def-bc0e-0664a8ab412b",
+          "id": "24e72051-8214-444b-9d33-7a833e6d61f9",
           "name": "Responde um comentário",
           "request": {
             "name": "Responde um comentário",
@@ -2619,7 +2619,7 @@
           },
           "response": [
             {
-              "id": "98aeb4ce-ee85-4524-aae0-59e432515eee",
+              "id": "c9256441-fde6-4182-8887-c581e7bdc030",
               "name": "Created",
               "originalRequest": {
                 "url": {
@@ -2638,7 +2638,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "commentId",
                       "description": "(Required) "
                     }
@@ -2649,7 +2649,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -2675,7 +2675,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"c29a7b1d-3a02-da88-2081-0490b6f31995\",\n  \"publicationId\": \"9ebcc24a-1243-43d8-0869-a35c73b801e2\",\n  \"parentCommentId\": \"b4a085de-3ad4-dfeb-f26b-6bef3f3ec6e9\",\n  \"content\": \"string\",\n  \"author\": {\n    \"id\": \"484b9788-abbd-db9e-9629-c85b1c6688f3\",\n    \"name\": \"string\",\n    \"slug\": \"string\",\n    \"profileImageUrl\": \"string\"\n  },\n  \"likeCount\": 3023,\n  \"likedByCurrentChannel\": true,\n  \"replyCount\": 2393,\n  \"createdAt\": \"2013-02-08T18:57:01.352Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"35bd92b9-c189-10ec-6d51-b6547d5894a7\",\n  \"publicationId\": \"c2118da3-6614-176c-6ef7-f0f81219546d\",\n  \"parentCommentId\": \"1b50f632-b7ae-0045-0a09-9a7257a14055\",\n  \"content\": \"string\",\n  \"author\": {\n    \"id\": \"5e30e04e-ec3b-8f67-97bd-6661a1f61fce\",\n    \"name\": \"string\",\n    \"slug\": \"string\",\n    \"profileImageUrl\": \"string\"\n  },\n  \"likeCount\": 6361,\n  \"likedByCurrentChannel\": true,\n  \"replyCount\": 2157,\n  \"createdAt\": \"1987-12-12T17:46:02.939Z\",\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2696,7 +2696,7 @@
           }
         },
         {
-          "id": "4ebb4038-396c-4b51-9132-c81023adc0c2",
+          "id": "da5680cd-d687-4ca3-8466-9ebb95fc310d",
           "name": "Lista os comentários diretos de uma publicação, mais recentes primeiro",
           "request": {
             "name": "Lista os comentários diretos de uma publicação, mais recentes primeiro",
@@ -2751,7 +2751,7 @@
           },
           "response": [
             {
-              "id": "4a61f719-b2dd-4f66-927b-456619605e59",
+              "id": "b51d2f8b-f86e-4d69-83b6-35d2209bba7c",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -2779,7 +2779,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "publicationId",
                       "description": "(Required) "
                     }
@@ -2790,7 +2790,7 @@
                     "disabled": false,
                     "description": "Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -2808,7 +2808,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"comments\": [\n      {\n        \"id\": \"fac17c19-6dfc-e1cc-0f56-3796629f5496\",\n        \"publicationId\": \"3c77b786-333a-6e06-a398-a70b7ca7c784\",\n        \"parentCommentId\": \"a54168e1-1954-aee1-7676-9ab9305e2751\",\n        \"content\": \"string\",\n        \"author\": {\n          \"id\": \"e2914d0e-434c-b52e-fff6-813a233e8518\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"likeCount\": 9461,\n        \"likedByCurrentChannel\": true,\n        \"replyCount\": 9991,\n        \"createdAt\": \"1995-05-06T03:34:50.106Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"1c4c05f5-04a1-db39-519b-7eeee224219c\",\n        \"publicationId\": \"f19e3a22-e2f6-e59f-ee98-dc3122b74340\",\n        \"parentCommentId\": \"f6df37d9-9e3f-159d-9c81-4f9f8ff765c7\",\n        \"content\": \"string\",\n        \"author\": {\n          \"id\": \"54af8235-dcf1-145a-92e3-18ee53ca5438\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"likeCount\": 5237,\n        \"likedByCurrentChannel\": false,\n        \"replyCount\": 6630,\n        \"createdAt\": \"2010-11-07T18:08:56.947Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 59,\n    \"totalElements\": 4759,\n    \"totalPages\": 5850,\n    \"number\": 2609\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"comments\": [\n      {\n        \"id\": \"042c8606-a557-163c-82a8-fd8d2c184b40\",\n        \"publicationId\": \"e0fb2322-8418-e093-e60f-0d413e2941f2\",\n        \"parentCommentId\": \"8b3c0ca1-8ee0-8483-9648-036f4a3f74b1\",\n        \"content\": \"string\",\n        \"author\": {\n          \"id\": \"9d15cb10-104e-07bb-f2f5-69a74870fe05\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"likeCount\": 9355,\n        \"likedByCurrentChannel\": false,\n        \"replyCount\": 1455,\n        \"createdAt\": \"2008-10-19T06:57:39.613Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"c52664d5-9154-33a1-beee-0d3c9fa0fea0\",\n        \"publicationId\": \"cecbfaee-b4cc-6129-ad97-223b03f11c5e\",\n        \"parentCommentId\": \"fdccdd3a-130a-27f8-dd0e-cb6396167b15\",\n        \"content\": \"string\",\n        \"author\": {\n          \"id\": \"4806ce76-f020-e6e9-001e-e4599a3d0ec0\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"likeCount\": 6319,\n        \"likedByCurrentChannel\": false,\n        \"replyCount\": 7686,\n        \"createdAt\": \"1978-09-12T11:43:56.937Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 6374,\n    \"totalElements\": 1072,\n    \"totalPages\": 8923,\n    \"number\": 1156\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2829,7 +2829,7 @@
           }
         },
         {
-          "id": "aed357eb-25f7-40d9-940e-cdce0c89537c",
+          "id": "ecd268f4-d04e-4ccf-91a1-d4d1eb2238fd",
           "name": "Lista as respostas diretas de um comentário, mais antigas primeiro",
           "request": {
             "name": "Lista as respostas diretas de um comentário, mais antigas primeiro",
@@ -2884,7 +2884,7 @@
           },
           "response": [
             {
-              "id": "72d59b5f-5b91-4907-a3dd-b07289913abe",
+              "id": "20951da6-1eda-4299-854e-3e6778f45995",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -2912,7 +2912,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "commentId",
                       "description": "(Required) "
                     }
@@ -2923,7 +2923,7 @@
                     "disabled": false,
                     "description": "Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -2941,7 +2941,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"comments\": [\n      {\n        \"id\": \"fac17c19-6dfc-e1cc-0f56-3796629f5496\",\n        \"publicationId\": \"3c77b786-333a-6e06-a398-a70b7ca7c784\",\n        \"parentCommentId\": \"a54168e1-1954-aee1-7676-9ab9305e2751\",\n        \"content\": \"string\",\n        \"author\": {\n          \"id\": \"e2914d0e-434c-b52e-fff6-813a233e8518\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"likeCount\": 9461,\n        \"likedByCurrentChannel\": true,\n        \"replyCount\": 9991,\n        \"createdAt\": \"1995-05-06T03:34:50.106Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"1c4c05f5-04a1-db39-519b-7eeee224219c\",\n        \"publicationId\": \"f19e3a22-e2f6-e59f-ee98-dc3122b74340\",\n        \"parentCommentId\": \"f6df37d9-9e3f-159d-9c81-4f9f8ff765c7\",\n        \"content\": \"string\",\n        \"author\": {\n          \"id\": \"54af8235-dcf1-145a-92e3-18ee53ca5438\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"likeCount\": 5237,\n        \"likedByCurrentChannel\": false,\n        \"replyCount\": 6630,\n        \"createdAt\": \"2010-11-07T18:08:56.947Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 59,\n    \"totalElements\": 4759,\n    \"totalPages\": 5850,\n    \"number\": 2609\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"comments\": [\n      {\n        \"id\": \"042c8606-a557-163c-82a8-fd8d2c184b40\",\n        \"publicationId\": \"e0fb2322-8418-e093-e60f-0d413e2941f2\",\n        \"parentCommentId\": \"8b3c0ca1-8ee0-8483-9648-036f4a3f74b1\",\n        \"content\": \"string\",\n        \"author\": {\n          \"id\": \"9d15cb10-104e-07bb-f2f5-69a74870fe05\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"likeCount\": 9355,\n        \"likedByCurrentChannel\": false,\n        \"replyCount\": 1455,\n        \"createdAt\": \"2008-10-19T06:57:39.613Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"c52664d5-9154-33a1-beee-0d3c9fa0fea0\",\n        \"publicationId\": \"cecbfaee-b4cc-6129-ad97-223b03f11c5e\",\n        \"parentCommentId\": \"fdccdd3a-130a-27f8-dd0e-cb6396167b15\",\n        \"content\": \"string\",\n        \"author\": {\n          \"id\": \"4806ce76-f020-e6e9-001e-e4599a3d0ec0\",\n          \"name\": \"string\",\n          \"slug\": \"string\",\n          \"profileImageUrl\": \"string\"\n        },\n        \"likeCount\": 6319,\n        \"likedByCurrentChannel\": false,\n        \"replyCount\": 7686,\n        \"createdAt\": \"1978-09-12T11:43:56.937Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 6374,\n    \"totalElements\": 1072,\n    \"totalPages\": 8923,\n    \"number\": 1156\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2967,7 +2967,7 @@
       "name": "14 Curtidas",
       "item": [
         {
-          "id": "9947117c-b141-4d33-bca8-3b5661ed4004",
+          "id": "a95cacd8-86f3-4735-9473-bf5af53a3d05",
           "name": "Curte uma publicação (idempotente)",
           "request": {
             "name": "Curte uma publicação (idempotente)",
@@ -3011,7 +3011,7 @@
           },
           "response": [
             {
-              "id": "caa2bcf6-ab44-455e-b379-7327ceaf538b",
+              "id": "cd17310d-e066-4891-ae66-72a31a723ad8",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3030,7 +3030,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "publicationId",
                       "description": "(Required) "
                     }
@@ -3041,7 +3041,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -3059,7 +3059,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"likeCount\": 8542,\n  \"likedByCurrentChannel\": true\n}",
+              "body": "{\n  \"likeCount\": 4196,\n  \"likedByCurrentChannel\": false\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3080,7 +3080,7 @@
           }
         },
         {
-          "id": "7f24f51b-7ff3-4698-a512-f903ee03e687",
+          "id": "4c08a496-0dc9-4db6-a00f-82c3946f3e5a",
           "name": "Curte um comentário (idempotente)",
           "request": {
             "name": "Curte um comentário (idempotente)",
@@ -3124,7 +3124,7 @@
           },
           "response": [
             {
-              "id": "75dcfc04-1279-4186-9690-2868c6f7a813",
+              "id": "0a6258f2-ebef-4192-9da2-0d4f0004769b",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3143,7 +3143,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "commentId",
                       "description": "(Required) "
                     }
@@ -3154,7 +3154,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -3172,7 +3172,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"likeCount\": 8542,\n  \"likedByCurrentChannel\": true\n}",
+              "body": "{\n  \"likeCount\": 4196,\n  \"likedByCurrentChannel\": false\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3193,7 +3193,7 @@
           }
         },
         {
-          "id": "f776289f-112f-4115-ba1f-07c3c344802c",
+          "id": "09ff6365-99bf-41a5-90c3-bc378702c8dd",
           "name": "Lista quem curtiu uma publicação, mais recentes primeiro",
           "request": {
             "name": "Lista quem curtiu uma publicação, mais recentes primeiro",
@@ -3242,7 +3242,7 @@
           },
           "response": [
             {
-              "id": "f343ca40-e383-471c-882f-1d03b53a7278",
+              "id": "3e610a80-67bb-4cd9-a8ee-6301eaa16925",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3270,7 +3270,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "publicationId",
                       "description": "(Required) "
                     }
@@ -3293,7 +3293,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"likes\": [\n      {\n        \"channelId\": \"9faa29df-c3eb-35b0-2584-32c1ccb423e1\",\n        \"slug\": \"string\",\n        \"createdAt\": \"2013-06-07T21:16:33.169Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"channelId\": \"add2e035-e290-bedf-abb8-3459293c34d7\",\n        \"slug\": \"string\",\n        \"createdAt\": \"1954-09-15T22:08:15.949Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 4076,\n    \"totalElements\": 7408,\n    \"totalPages\": 1203,\n    \"number\": 3978\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"likes\": [\n      {\n        \"channelId\": \"4870a143-41ec-0354-5cc3-6a90e2a94d67\",\n        \"slug\": \"string\",\n        \"createdAt\": \"1959-06-21T22:18:18.370Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"channelId\": \"d78d80e2-58a0-fe85-256a-6e5c2dc60bb0\",\n        \"slug\": \"string\",\n        \"createdAt\": \"1987-04-10T01:54:17.314Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 7163,\n    \"totalElements\": 6666,\n    \"totalPages\": 5569,\n    \"number\": 2815\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3314,7 +3314,7 @@
           }
         },
         {
-          "id": "3521d3fe-4add-42ab-a064-4bdfc7216fc4",
+          "id": "9f8fccdf-b4bb-44c1-bc9e-e29b545802e4",
           "name": "Lista quem curtiu um comentário, mais recentes primeiro",
           "request": {
             "name": "Lista quem curtiu um comentário, mais recentes primeiro",
@@ -3363,7 +3363,7 @@
           },
           "response": [
             {
-              "id": "18646f21-39d4-4e21-a2c0-123ad0c79ab5",
+              "id": "6cc58332-f67f-4b75-ab37-d4fbea63984c",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3391,7 +3391,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "commentId",
                       "description": "(Required) "
                     }
@@ -3414,7 +3414,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"likes\": [\n      {\n        \"channelId\": \"9faa29df-c3eb-35b0-2584-32c1ccb423e1\",\n        \"slug\": \"string\",\n        \"createdAt\": \"2013-06-07T21:16:33.169Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"channelId\": \"add2e035-e290-bedf-abb8-3459293c34d7\",\n        \"slug\": \"string\",\n        \"createdAt\": \"1954-09-15T22:08:15.949Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 4076,\n    \"totalElements\": 7408,\n    \"totalPages\": 1203,\n    \"number\": 3978\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"likes\": [\n      {\n        \"channelId\": \"4870a143-41ec-0354-5cc3-6a90e2a94d67\",\n        \"slug\": \"string\",\n        \"createdAt\": \"1959-06-21T22:18:18.370Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"channelId\": \"d78d80e2-58a0-fe85-256a-6e5c2dc60bb0\",\n        \"slug\": \"string\",\n        \"createdAt\": \"1987-04-10T01:54:17.314Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 7163,\n    \"totalElements\": 6666,\n    \"totalPages\": 5569,\n    \"number\": 2815\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3435,7 +3435,7 @@
           }
         },
         {
-          "id": "513782c1-9bd1-45e9-88ff-31fb76552158",
+          "id": "b53f8de2-95e6-4cc2-93bd-3bafa409161e",
           "name": "Contagem de likes de uma publicação e se o canal selecionado curtiu",
           "request": {
             "name": "Contagem de likes de uma publicação e se o canal selecionado curtiu",
@@ -3480,7 +3480,7 @@
           },
           "response": [
             {
-              "id": "c940234e-e836-4231-8030-5c62edec0187",
+              "id": "0d1671f1-9555-4a3f-b000-e1d215df9495",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3500,7 +3500,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "publicationId",
                       "description": "(Required) "
                     }
@@ -3511,7 +3511,7 @@
                     "disabled": false,
                     "description": "Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -3529,7 +3529,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"likeCount\": 8542,\n  \"likedByCurrentChannel\": true\n}",
+              "body": "{\n  \"likeCount\": 4196,\n  \"likedByCurrentChannel\": false\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3550,7 +3550,7 @@
           }
         },
         {
-          "id": "0d18b02f-7592-49a2-952e-99bb2f0f60df",
+          "id": "454c61fa-c597-4082-880c-fca17f129baf",
           "name": "Contagem de likes de um comentário e se o canal selecionado curtiu",
           "request": {
             "name": "Contagem de likes de um comentário e se o canal selecionado curtiu",
@@ -3595,7 +3595,7 @@
           },
           "response": [
             {
-              "id": "5940f6a0-c702-4148-aef5-a34064d4a205",
+              "id": "cd1e76b1-5ab6-4e5d-b32d-29dcdab06495",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3615,7 +3615,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "commentId",
                       "description": "(Required) "
                     }
@@ -3626,7 +3626,7 @@
                     "disabled": false,
                     "description": "Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   },
                   {
                     "key": "Accept",
@@ -3644,7 +3644,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"likeCount\": 8542,\n  \"likedByCurrentChannel\": true\n}",
+              "body": "{\n  \"likeCount\": 4196,\n  \"likedByCurrentChannel\": false\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3670,7 +3670,7 @@
       "name": "15 Seguir canais",
       "item": [
         {
-          "id": "37e6c13f-3e18-4cb6-971f-be9cf6e65564",
+          "id": "edaa81ec-c309-4a7d-b049-ad3bbfe02ecb",
           "name": "Segue outro canal usando um canal do usuário autenticado",
           "request": {
             "name": "Segue outro canal usando um canal do usuário autenticado",
@@ -3716,7 +3716,7 @@
           },
           "response": [
             {
-              "id": "323037c3-30ea-4c59-a1f6-81a8b821a482",
+              "id": "5f806968-e769-45bc-80c9-4662da7e08dd",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3736,14 +3736,14 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "channelId",
                       "description": "(Required) "
                     },
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "targetChannelId",
                       "description": "(Required) "
                     }
@@ -3766,7 +3766,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"396a1bb9-8182-3331-8bed-0d49a52431f3\",\n  \"followerChannelId\": \"6c1fab1a-3ebf-a6ab-956b-bcd25e914616\",\n  \"followingChannelId\": \"3b757ea6-7e48-52d4-085f-f5ceb99d5165\",\n  \"favorite\": false,\n  \"interactionCount\": 3744,\n  \"lastInteractionAt\": \"2021-12-21T21:20:10.668Z\",\n  \"relevanceScore\": 2340.3671705122797,\n  \"createdAt\": \"1956-12-01T19:47:07.872Z\"\n}",
+              "body": "{\n  \"id\": \"32973d47-2c45-85e0-d930-7b7cbc08dc1a\",\n  \"followerChannelId\": \"f860fdc5-db1b-cb43-af68-19c742985d0f\",\n  \"followingChannelId\": \"92437130-6c29-ee9e-a236-ea81d467e937\",\n  \"favorite\": false,\n  \"interactionCount\": 3820,\n  \"lastInteractionAt\": \"1949-07-25T14:37:46.282Z\",\n  \"relevanceScore\": 9915.98586482618,\n  \"createdAt\": \"1969-06-18T05:34:15.342Z\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3787,7 +3787,7 @@
           }
         },
         {
-          "id": "e67461e3-0346-4b6e-a54f-63bde7593abf",
+          "id": "d27d296f-b6af-4792-b6a0-2863448bb168",
           "name": "Lista canais seguidos, mais recentes primeiro",
           "request": {
             "name": "Lista canais seguidos, mais recentes primeiro",
@@ -3836,7 +3836,7 @@
           },
           "response": [
             {
-              "id": "ece0c144-1b66-4051-ac0d-359ea5842ea3",
+              "id": "0904a635-9e07-4e87-8e61-9edbc438c66c",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3864,7 +3864,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "channelId",
                       "description": "(Required) "
                     }
@@ -3887,7 +3887,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"followChannels\": [\n      {\n        \"id\": \"62f60aee-b9db-bfca-ab98-9e6e5537c2d6\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"13ddbe7b-991b-fc2e-3f73-9e89ecd48fd9\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 711,\n    \"totalElements\": 1541,\n    \"totalPages\": 1553,\n    \"number\": 8804\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"followChannels\": [\n      {\n        \"id\": \"e882ff6b-7869-5c88-00d6-c771be7deab8\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"68aa485d-4957-c832-e226-9775a70c1392\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 9012,\n    \"totalElements\": 7193,\n    \"totalPages\": 5138,\n    \"number\": 9238\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3908,7 +3908,7 @@
           }
         },
         {
-          "id": "996b3c68-c400-45c1-b571-7c7d1104104a",
+          "id": "a6337fc8-a413-4a0d-87e5-0b68121fb5b0",
           "name": "Informa se o canal selecionado segue outro canal",
           "request": {
             "name": "Informa se o canal selecionado segue outro canal",
@@ -3955,7 +3955,7 @@
           },
           "response": [
             {
-              "id": "2842d941-ceb7-4bd9-8477-c8b6886f7257",
+              "id": "5314c721-b4f4-42f0-9e93-2f21d181d2d8",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -3976,14 +3976,14 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "channelId",
                       "description": "(Required) "
                     },
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "targetChannelId",
                       "description": "(Required) "
                     }
@@ -4027,7 +4027,7 @@
           }
         },
         {
-          "id": "80c9ecac-5d0e-4530-a1a3-4df83b311721",
+          "id": "174f8900-e48c-4fd8-a822-941a2ac674e7",
           "name": "Conta canais seguidos",
           "request": {
             "name": "Conta canais seguidos",
@@ -4066,7 +4066,7 @@
           },
           "response": [
             {
-              "id": "778c173a-9d6e-45d8-872b-d51ac42d110b",
+              "id": "383a243c-f239-4e90-b50d-cc54c4759c5d",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -4086,7 +4086,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "channelId",
                       "description": "(Required) "
                     }
@@ -4109,7 +4109,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"count\": 9734\n}",
+              "body": "{\n  \"count\": 242\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4130,7 +4130,7 @@
           }
         },
         {
-          "id": "0d312e71-30f5-4bfd-8218-06f6689d070d",
+          "id": "352846f9-df13-4501-8384-4467c57c6c5b",
           "name": "Lista seguidores, mais recentes primeiro",
           "request": {
             "name": "Lista seguidores, mais recentes primeiro",
@@ -4179,7 +4179,7 @@
           },
           "response": [
             {
-              "id": "95193359-5d23-49b7-bb6c-374b8a26c655",
+              "id": "1df448c3-aa39-4076-8e5f-77a1fce66454",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -4207,7 +4207,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "channelId",
                       "description": "(Required) "
                     }
@@ -4230,7 +4230,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"followChannels\": [\n      {\n        \"id\": \"62f60aee-b9db-bfca-ab98-9e6e5537c2d6\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"13ddbe7b-991b-fc2e-3f73-9e89ecd48fd9\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 711,\n    \"totalElements\": 1541,\n    \"totalPages\": 1553,\n    \"number\": 8804\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"followChannels\": [\n      {\n        \"id\": \"e882ff6b-7869-5c88-00d6-c771be7deab8\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"68aa485d-4957-c832-e226-9775a70c1392\",\n        \"name\": \"string\",\n        \"slug\": \"string\",\n        \"description\": \"string\",\n        \"profileImageUrl\": \"string\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 9012,\n    \"totalElements\": 7193,\n    \"totalPages\": 5138,\n    \"number\": 9238\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4251,7 +4251,7 @@
           }
         },
         {
-          "id": "b03b6a54-b6af-42fe-89ae-5166f5df5e57",
+          "id": "a3b2de8a-4cda-4a7f-ba53-13e9d92ec2a6",
           "name": "Conta seguidores",
           "request": {
             "name": "Conta seguidores",
@@ -4290,7 +4290,7 @@
           },
           "response": [
             {
-              "id": "fc3a555b-c892-4f6d-9f49-3bb461697c97",
+              "id": "61723a9a-0c4b-4a62-b8a8-e661664a343f",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -4310,7 +4310,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "channelId",
                       "description": "(Required) "
                     }
@@ -4333,7 +4333,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"count\": 9734\n}",
+              "body": "{\n  \"count\": 242\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4354,7 +4354,7 @@
           }
         },
         {
-          "id": "181078f0-290c-434d-a22a-6b6522234b98",
+          "id": "9405b560-1874-43c3-a3ca-880a430aea66",
           "name": "Marca ou desmarca como favorito um canal seguido",
           "request": {
             "name": "Marca ou desmarca como favorito um canal seguido",
@@ -4414,7 +4414,7 @@
           },
           "response": [
             {
-              "id": "b05e3013-af2b-4b16-a7db-25574d844545",
+              "id": "8f197fdf-c1c5-4a25-a553-cf46918e15c0",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -4435,14 +4435,14 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "channelId",
                       "description": "(Required) "
                     },
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "targetChannelId",
                       "description": "(Required) "
                     }
@@ -4457,7 +4457,7 @@
                 "method": "PATCH",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"favorite\": false\n}",
+                  "raw": "{\n  \"favorite\": true\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4473,7 +4473,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"396a1bb9-8182-3331-8bed-0d49a52431f3\",\n  \"followerChannelId\": \"6c1fab1a-3ebf-a6ab-956b-bcd25e914616\",\n  \"followingChannelId\": \"3b757ea6-7e48-52d4-085f-f5ceb99d5165\",\n  \"favorite\": false,\n  \"interactionCount\": 3744,\n  \"lastInteractionAt\": \"2021-12-21T21:20:10.668Z\",\n  \"relevanceScore\": 2340.3671705122797,\n  \"createdAt\": \"1956-12-01T19:47:07.872Z\"\n}",
+              "body": "{\n  \"id\": \"32973d47-2c45-85e0-d930-7b7cbc08dc1a\",\n  \"followerChannelId\": \"f860fdc5-db1b-cb43-af68-19c742985d0f\",\n  \"followingChannelId\": \"92437130-6c29-ee9e-a236-ea81d467e937\",\n  \"favorite\": false,\n  \"interactionCount\": 3820,\n  \"lastInteractionAt\": \"1949-07-25T14:37:46.282Z\",\n  \"relevanceScore\": 9915.98586482618,\n  \"createdAt\": \"1969-06-18T05:34:15.342Z\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4499,7 +4499,7 @@
       "name": "16 Amizades",
       "item": [
         {
-          "id": "654d8757-1f10-45e8-8d8d-e0bde72e2ed7",
+          "id": "f2bb6130-3589-4eb6-8158-f88d871b2a1a",
           "name": "Envia uma solicitação de amizade como usuário autenticado",
           "request": {
             "name": "Envia uma solicitação de amizade como usuário autenticado",
@@ -4537,7 +4537,7 @@
           },
           "response": [
             {
-              "id": "b5ed8c84-9a09-4295-b972-7c16ab4b2135",
+              "id": "4e4747e5-e25b-4df5-ad83-9c2ad2d23185",
               "name": "Created",
               "originalRequest": {
                 "url": {
@@ -4556,7 +4556,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "userId",
                       "description": "(Required) "
                     }
@@ -4579,7 +4579,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"7a1e522c-01a4-4c93-8f68-6298eec3d4e8\",\n  \"sender\": {\n    \"id\": \"dc4ba4e2-175e-dee9-cd30-3291f3680815\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"receiver\": {\n    \"id\": \"d82bae8e-07e2-8729-1c9c-b56382d68963\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"status\": \"PENDING\",\n  \"createdAt\": \"1989-10-13T06:48:09.093Z\",\n  \"respondedAt\": \"1984-10-22T17:39:18.214Z\"\n}",
+              "body": "{\n  \"id\": \"d19bf9b9-4a7e-5f21-851e-d69821dc995f\",\n  \"sender\": {\n    \"id\": \"797b725c-1715-4daa-bd1f-faec0e70ac1f\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"receiver\": {\n    \"id\": \"4be01b81-1cf1-0f95-2c28-f67f693983b1\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"status\": \"ACCEPTED\",\n  \"createdAt\": \"1953-10-24T10:49:23.275Z\",\n  \"respondedAt\": \"1999-12-29T06:18:26.890Z\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4602,7 +4602,7 @@
           }
         },
         {
-          "id": "3a621481-21fc-44c1-a7f2-4d1162d63b6a",
+          "id": "c94cad6d-d1db-40bc-a398-5766acb11580",
           "name": "Rejeita uma solicitação recebida",
           "request": {
             "name": "Rejeita uma solicitação recebida",
@@ -4641,7 +4641,7 @@
           },
           "response": [
             {
-              "id": "e0544bc7-8545-453f-a614-0a0eaf5e0176",
+              "id": "defdc15f-569a-4a98-83f8-76bed96ed0a0",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -4661,7 +4661,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "requestId",
                       "description": "(Required) "
                     }
@@ -4684,7 +4684,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"7a1e522c-01a4-4c93-8f68-6298eec3d4e8\",\n  \"sender\": {\n    \"id\": \"dc4ba4e2-175e-dee9-cd30-3291f3680815\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"receiver\": {\n    \"id\": \"d82bae8e-07e2-8729-1c9c-b56382d68963\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"status\": \"PENDING\",\n  \"createdAt\": \"1989-10-13T06:48:09.093Z\",\n  \"respondedAt\": \"1984-10-22T17:39:18.214Z\"\n}",
+              "body": "{\n  \"id\": \"d19bf9b9-4a7e-5f21-851e-d69821dc995f\",\n  \"sender\": {\n    \"id\": \"797b725c-1715-4daa-bd1f-faec0e70ac1f\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"receiver\": {\n    \"id\": \"4be01b81-1cf1-0f95-2c28-f67f693983b1\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"status\": \"ACCEPTED\",\n  \"createdAt\": \"1953-10-24T10:49:23.275Z\",\n  \"respondedAt\": \"1999-12-29T06:18:26.890Z\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4705,7 +4705,7 @@
           }
         },
         {
-          "id": "4c6ab71b-4631-4a64-b15f-2ffd0b0c473f",
+          "id": "794d5f11-03d1-44b0-84ac-1483b858a3d1",
           "name": "Aceita uma solicitação recebida e cria a amizade",
           "request": {
             "name": "Aceita uma solicitação recebida e cria a amizade",
@@ -4744,7 +4744,7 @@
           },
           "response": [
             {
-              "id": "10ef6dbb-ee66-4cc5-8cd6-ebe9acfc0204",
+              "id": "e0213794-7516-4167-941a-6e267645f6b3",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -4764,7 +4764,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "requestId",
                       "description": "(Required) "
                     }
@@ -4787,7 +4787,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"7a1e522c-01a4-4c93-8f68-6298eec3d4e8\",\n  \"sender\": {\n    \"id\": \"dc4ba4e2-175e-dee9-cd30-3291f3680815\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"receiver\": {\n    \"id\": \"d82bae8e-07e2-8729-1c9c-b56382d68963\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"status\": \"PENDING\",\n  \"createdAt\": \"1989-10-13T06:48:09.093Z\",\n  \"respondedAt\": \"1984-10-22T17:39:18.214Z\"\n}",
+              "body": "{\n  \"id\": \"d19bf9b9-4a7e-5f21-851e-d69821dc995f\",\n  \"sender\": {\n    \"id\": \"797b725c-1715-4daa-bd1f-faec0e70ac1f\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"receiver\": {\n    \"id\": \"4be01b81-1cf1-0f95-2c28-f67f693983b1\",\n    \"username\": \"string\",\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"avatarUrl\": \"string\"\n  },\n  \"status\": \"ACCEPTED\",\n  \"createdAt\": \"1953-10-24T10:49:23.275Z\",\n  \"respondedAt\": \"1999-12-29T06:18:26.890Z\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4808,7 +4808,7 @@
           }
         },
         {
-          "id": "4f5843b1-ca7e-44b3-a115-fc64b353e200",
+          "id": "60e43ea1-a51d-404a-a498-3705e3300e4d",
           "name": "Lista os amigos do usuário autenticado, mais recentes primeiro",
           "request": {
             "name": "Lista os amigos do usuário autenticado, mais recentes primeiro",
@@ -4852,7 +4852,7 @@
           },
           "response": [
             {
-              "id": "53a3a131-61d0-4f02-b77c-5a4c323dbf60",
+              "id": "9a9e306b-a679-428e-a935-a6c39b40cde9",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -4897,7 +4897,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"friends\": [\n      {\n        \"id\": \"8b1c761d-ea50-09a6-b3ec-60b901c50f0e\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"friendsSince\": \"1980-05-27T16:48:40.337Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"86b14a81-dc61-df6c-07c4-1276190f5290\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"friendsSince\": \"1951-10-09T21:02:46.777Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 2950,\n    \"totalElements\": 6947,\n    \"totalPages\": 767,\n    \"number\": 8787\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"friends\": [\n      {\n        \"id\": \"3c665114-4c66-fe2e-f2cd-65c271dffef2\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"friendsSince\": \"1981-02-16T04:31:13.173Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"7568d790-a630-aa94-3e39-c35c5a3b335a\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"friendsSince\": \"1948-02-22T08:48:27.334Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 3776,\n    \"totalElements\": 9034,\n    \"totalPages\": 3471,\n    \"number\": 3802\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4918,7 +4918,7 @@
           }
         },
         {
-          "id": "0fbe7e2c-1348-450b-838b-67a6d700c6c3",
+          "id": "4513aafb-7339-4aa0-917b-9d48160d6904",
           "name": "Lista solicitações pendentes enviadas",
           "request": {
             "name": "Lista solicitações pendentes enviadas",
@@ -4959,7 +4959,7 @@
           },
           "response": [
             {
-              "id": "0fd0e765-36d3-47e9-a766-ed0ec2371f27",
+              "id": "6528803a-a087-4f14-9e12-2349a49450b6",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5002,7 +5002,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"friendRequests\": [\n      {\n        \"id\": \"62b71d85-3078-fb67-5245-7cee41672817\",\n        \"sender\": {\n          \"id\": \"bff97e46-e555-63e3-1621-77be996a516c\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"receiver\": {\n          \"id\": \"e4db9ab6-b57a-8baa-ef37-bb463be36aa0\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"status\": \"CANCELED\",\n        \"createdAt\": \"1999-05-23T11:59:13.602Z\",\n        \"respondedAt\": \"1956-07-10T14:48:18.925Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"f6a92cb4-2579-8cd6-d810-e4e9ad1b5b1b\",\n        \"sender\": {\n          \"id\": \"5cb0a629-5800-67f6-3340-881bf04940ca\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"receiver\": {\n          \"id\": \"d855e8aa-afd0-80b1-67c3-158d2a20c169\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"status\": \"PENDING\",\n        \"createdAt\": \"1983-11-26T19:24:37.412Z\",\n        \"respondedAt\": \"1986-07-17T02:12:37.473Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 7813,\n    \"totalElements\": 4012,\n    \"totalPages\": 815,\n    \"number\": 3639\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"friendRequests\": [\n      {\n        \"id\": \"a9ded483-299b-720f-ea1a-1f0c20af8b27\",\n        \"sender\": {\n          \"id\": \"524bd8d6-7cad-3436-a526-d660d8bfcd1f\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"receiver\": {\n          \"id\": \"47ae2293-9a38-ca98-c6ec-e9ecadb9d1e3\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"status\": \"REJECTED\",\n        \"createdAt\": \"2017-05-21T01:35:04.763Z\",\n        \"respondedAt\": \"1961-01-23T08:30:35.934Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"05940cd1-ace4-1eb4-8d48-18751c47a8e9\",\n        \"sender\": {\n          \"id\": \"b04f7c25-090d-c663-415d-c653d449aa24\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"receiver\": {\n          \"id\": \"cbdc9b36-3859-2eea-ba9b-98316b7d92d2\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"status\": \"ACCEPTED\",\n        \"createdAt\": \"1983-04-28T01:15:14.729Z\",\n        \"respondedAt\": \"1960-12-09T02:47:27.367Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 4801,\n    \"totalElements\": 5071,\n    \"totalPages\": 8123,\n    \"number\": 369\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5023,7 +5023,7 @@
           }
         },
         {
-          "id": "99996917-f413-473d-9670-7fe42cecc667",
+          "id": "8232d8ca-7139-414e-9c0c-4caa94f7ed39",
           "name": "Lista solicitações pendentes recebidas",
           "request": {
             "name": "Lista solicitações pendentes recebidas",
@@ -5064,7 +5064,7 @@
           },
           "response": [
             {
-              "id": "bca1656a-5dcf-4af6-a6d9-b8c2123b09e9",
+              "id": "30d3bd61-05ac-4ecd-a84a-4d7d69043966",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5107,7 +5107,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"friendRequests\": [\n      {\n        \"id\": \"62b71d85-3078-fb67-5245-7cee41672817\",\n        \"sender\": {\n          \"id\": \"bff97e46-e555-63e3-1621-77be996a516c\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"receiver\": {\n          \"id\": \"e4db9ab6-b57a-8baa-ef37-bb463be36aa0\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"status\": \"CANCELED\",\n        \"createdAt\": \"1999-05-23T11:59:13.602Z\",\n        \"respondedAt\": \"1956-07-10T14:48:18.925Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"f6a92cb4-2579-8cd6-d810-e4e9ad1b5b1b\",\n        \"sender\": {\n          \"id\": \"5cb0a629-5800-67f6-3340-881bf04940ca\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"receiver\": {\n          \"id\": \"d855e8aa-afd0-80b1-67c3-158d2a20c169\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"status\": \"PENDING\",\n        \"createdAt\": \"1983-11-26T19:24:37.412Z\",\n        \"respondedAt\": \"1986-07-17T02:12:37.473Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 7813,\n    \"totalElements\": 4012,\n    \"totalPages\": 815,\n    \"number\": 3639\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"friendRequests\": [\n      {\n        \"id\": \"a9ded483-299b-720f-ea1a-1f0c20af8b27\",\n        \"sender\": {\n          \"id\": \"524bd8d6-7cad-3436-a526-d660d8bfcd1f\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"receiver\": {\n          \"id\": \"47ae2293-9a38-ca98-c6ec-e9ecadb9d1e3\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"status\": \"REJECTED\",\n        \"createdAt\": \"2017-05-21T01:35:04.763Z\",\n        \"respondedAt\": \"1961-01-23T08:30:35.934Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"05940cd1-ace4-1eb4-8d48-18751c47a8e9\",\n        \"sender\": {\n          \"id\": \"b04f7c25-090d-c663-415d-c653d449aa24\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"receiver\": {\n          \"id\": \"cbdc9b36-3859-2eea-ba9b-98316b7d92d2\",\n          \"username\": \"string\",\n          \"firstName\": \"string\",\n          \"lastName\": \"string\",\n          \"avatarUrl\": \"string\"\n        },\n        \"status\": \"ACCEPTED\",\n        \"createdAt\": \"1983-04-28T01:15:14.729Z\",\n        \"respondedAt\": \"1960-12-09T02:47:27.367Z\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 4801,\n    \"totalElements\": 5071,\n    \"totalPages\": 8123,\n    \"number\": 369\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5131,7 +5131,7 @@
           }
         },
         {
-          "id": "9004275d-55f1-46aa-9772-8b6ef2f33e03",
+          "id": "6f9536c1-9e65-4f95-ba0e-9674dadb0985",
           "name": "Consulta o relacionamento e a solicitação pendente com uma pessoa",
           "request": {
             "name": "Consulta o relacionamento e a solicitação pendente com uma pessoa",
@@ -5169,7 +5169,7 @@
           },
           "response": [
             {
-              "id": "61db4a53-9955-486a-a940-246b641a78e0",
+              "id": "db310a8c-dc71-43a7-a2a4-034392228123",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5188,7 +5188,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "userId",
                       "description": "(Required) "
                     }
@@ -5211,7 +5211,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"status\": \"REQUEST_SENT\",\n  \"requestId\": \"a4bf2d60-9834-4b26-b767-1b53c907c5b4\"\n}",
+              "body": "{\n  \"status\": \"REQUEST_SENT\",\n  \"requestId\": \"0e27f819-e401-4607-4a60-6f2057ea07cb\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5232,7 +5232,7 @@
           }
         },
         {
-          "id": "e9a23014-a515-42b2-b045-294864bd94e9",
+          "id": "c56f0249-601a-44aa-a045-a315725484e9",
           "name": "Busca pessoas e informa o relacionamento com o usuário autenticado",
           "request": {
             "name": "Busca pessoas e informa o relacionamento com o usuário autenticado",
@@ -5277,7 +5277,7 @@
           },
           "response": [
             {
-              "id": "63b4e607-fd6f-4205-982e-e08ebfd9a660",
+              "id": "d4598e15-64f0-41e6-9bb0-a5709c7e82c1",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5323,7 +5323,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"people\": [\n      {\n        \"id\": \"638d01b6-23a7-1c96-75a2-6b8a04bc5259\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"relationshipStatus\": \"REQUEST_SENT\",\n        \"mutualFriendsCount\": 9653,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"eca0d366-e485-dcbf-4ae3-6f2c2c4ccd6b\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"relationshipStatus\": \"NONE\",\n        \"mutualFriendsCount\": 8275,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 5290,\n    \"totalElements\": 3289,\n    \"totalPages\": 7839,\n    \"number\": 6645\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"people\": [\n      {\n        \"id\": \"ea162b53-ff5a-8988-0e4e-f40dd1f39f00\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"relationshipStatus\": \"REQUEST_RECEIVED\",\n        \"mutualFriendsCount\": 7308,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"f4e55a39-8b78-e7ee-cb72-ae3fa9cdc9be\",\n        \"username\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"avatarUrl\": \"string\",\n        \"relationshipStatus\": \"REQUEST_RECEIVED\",\n        \"mutualFriendsCount\": 7187,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  },\n  \"page\": {\n    \"size\": 9679,\n    \"totalElements\": 3924,\n    \"totalPages\": 2519,\n    \"number\": 9668\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5352,7 +5352,7 @@
       "name": "17 Conversas",
       "item": [
         {
-          "id": "6ad3a251-bed6-4e47-be6d-9f50a44e9642",
+          "id": "c99fb5f3-bac3-4feb-89fb-7287d6037f88",
           "name": "Abre (ou reaproveita) a conversa direta com outro usuário",
           "request": {
             "name": "Abre (ou reaproveita) a conversa direta com outro usuário",
@@ -5390,7 +5390,7 @@
           },
           "response": [
             {
-              "id": "01ad0c98-1f84-41a5-8be9-1d35a32cef81",
+              "id": "1af205be-55f9-4b3d-9ba5-75ce10926032",
               "name": "Created",
               "originalRequest": {
                 "url": {
@@ -5409,7 +5409,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "userId",
                       "description": "(Required) "
                     }
@@ -5432,7 +5432,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"0ecd7012-3d7a-02b4-faa8-e90f59a9e039\",\n  \"type\": \"DIRECT\",\n  \"participants\": [\n    {\n      \"userId\": \"e08f8891-591b-2b0f-1261-11df2f23c31c\",\n      \"username\": \"string\"\n    },\n    {\n      \"userId\": \"4b05b28f-0196-f8b1-5475-7367b7aa1a12\",\n      \"username\": \"string\"\n    }\n  ],\n  \"createdAt\": \"1999-07-21T05:53:04.733Z\",\n  \"updatedAt\": \"1964-08-27T05:37:26.354Z\",\n  \"lastMessage\": {\n    \"id\": \"5ff13f57-0710-c2fe-06eb-ff08be0d0d95\",\n    \"conversationId\": \"55acaa95-cb1e-0e85-4cbb-4a2327059cfd\",\n    \"senderId\": \"cd486d42-d85c-b596-f5c7-4def2cd3f45a\",\n    \"senderUsername\": \"string\",\n    \"content\": \"string\",\n    \"createdAt\": \"1989-08-05T12:43:24.183Z\",\n    \"clientMessageId\": \"7fa777bc-a2dd-b43e-710e-8b8cdafffaee\"\n  },\n  \"canMessage\": true,\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_2\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_3\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
+              "body": "{\n  \"id\": \"c0b7a8ec-2f16-056e-bbe5-fafe678b3eea\",\n  \"type\": \"DIRECT\",\n  \"participants\": [\n    {\n      \"userId\": \"7d953951-a6f0-daac-a3c5-1e450880d338\",\n      \"username\": \"string\"\n    },\n    {\n      \"userId\": \"1b21b7ab-7495-f179-f525-10cf4ea679dc\",\n      \"username\": \"string\"\n    }\n  ],\n  \"createdAt\": \"2018-08-27T11:53:28.209Z\",\n  \"updatedAt\": \"1964-01-20T16:52:48.580Z\",\n  \"lastMessage\": {\n    \"id\": \"6d87e880-04c6-717f-a9d1-185fb6c26ac8\",\n    \"conversationId\": \"daa9aa7f-ee33-eca5-bfa4-f1d4d835a263\",\n    \"senderId\": \"b54d66fe-5d37-d424-3cca-1df793ea64bf\",\n    \"senderUsername\": \"string\",\n    \"content\": \"string\",\n    \"createdAt\": \"1953-10-21T07:19:38.401Z\",\n    \"clientMessageId\": \"d5ccd585-0597-8c47-8fbb-f527ab0c9631\"\n  },\n  \"canMessage\": false,\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5455,7 +5455,7 @@
           }
         },
         {
-          "id": "1594bbbc-0b56-45b8-9529-b8a620bc293c",
+          "id": "61d63995-31b5-436c-8576-c37963a2e0e1",
           "name": "Lista as conversas do usuário autenticado, as mais ativas primeiro",
           "request": {
             "name": "Lista as conversas do usuário autenticado, as mais ativas primeiro",
@@ -5483,7 +5483,7 @@
           },
           "response": [
             {
-              "id": "d621bb91-a2b8-448e-9302-6f2a8ac3d404",
+              "id": "e338af16-f428-4f36-ad69-20d2ec9b3667",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5515,7 +5515,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"conversations\": [\n      {\n        \"id\": \"8fb66978-e7da-9f69-1cf0-55be52de6e22\",\n        \"type\": \"GROUP\",\n        \"participants\": [\n          {\n            \"userId\": \"7e736eb7-9354-ffa9-fc83-22eeb37dd514\",\n            \"username\": \"string\"\n          },\n          {\n            \"userId\": \"c5a42241-a05c-ccfb-f98c-501a37317c6d\",\n            \"username\": \"string\"\n          }\n        ],\n        \"createdAt\": \"1964-11-09T00:59:41.627Z\",\n        \"updatedAt\": \"2011-08-29T10:51:34.532Z\",\n        \"lastMessage\": {\n          \"id\": \"4469cf88-66e4-3276-7353-b226bb384487\",\n          \"conversationId\": \"a060221c-c77f-9fbd-ac0e-d3fbf9eab50b\",\n          \"senderId\": \"1a25ae38-636b-6894-d03d-2e4247f65637\",\n          \"senderUsername\": \"string\",\n          \"content\": \"string\",\n          \"createdAt\": \"2002-03-12T03:48:48.077Z\",\n          \"clientMessageId\": \"9bc44884-e39e-9a8f-a0e6-1a5d42469053\"\n        },\n        \"canMessage\": true,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"7bbf9e13-7b70-d668-1a57-83a3fd6c10ca\",\n        \"type\": \"GROUP\",\n        \"participants\": [\n          {\n            \"userId\": \"7cf84cbf-9643-15ed-1633-0d4937713262\",\n            \"username\": \"string\"\n          },\n          {\n            \"userId\": \"2be9edf7-7346-b2b5-c3f1-2343e1dd3014\",\n            \"username\": \"string\"\n          }\n        ],\n        \"createdAt\": \"2018-02-25T23:57:41.769Z\",\n        \"updatedAt\": \"1997-11-29T20:59:44.742Z\",\n        \"lastMessage\": {\n          \"id\": \"fa5106fd-cbf1-a541-a0a1-61a76cea61dd\",\n          \"conversationId\": \"1d2f4e92-be26-e8de-8c9d-0955d119ed5a\",\n          \"senderId\": \"d443c01a-e8ec-393f-db1f-678c17e8728f\",\n          \"senderUsername\": \"string\",\n          \"content\": \"string\",\n          \"createdAt\": \"2022-04-23T12:25:01.628Z\",\n          \"clientMessageId\": \"20cbeb00-276a-a4d1-9cc9-98470b3fbaa9\"\n        },\n        \"canMessage\": true,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_3\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"conversations\": [\n      {\n        \"id\": \"2b1be443-d1a4-77c9-9e90-2f0d173f4fbf\",\n        \"type\": \"GROUP\",\n        \"participants\": [\n          {\n            \"userId\": \"1a6d1ca8-6912-572e-8ef6-27a12e914e7a\",\n            \"username\": \"string\"\n          },\n          {\n            \"userId\": \"d3fc8890-4a49-5adf-12d4-168d24c188fa\",\n            \"username\": \"string\"\n          }\n        ],\n        \"createdAt\": \"1987-06-17T00:11:41.076Z\",\n        \"updatedAt\": \"2017-02-26T15:18:24.296Z\",\n        \"lastMessage\": {\n          \"id\": \"1f84dd4b-b29c-f544-31ee-7babd27582d3\",\n          \"conversationId\": \"6cfcc746-c8b6-6efe-52a0-656a8d405bce\",\n          \"senderId\": \"6abdcecf-903e-5df3-ec22-1bfd83d73550\",\n          \"senderUsername\": \"string\",\n          \"content\": \"string\",\n          \"createdAt\": \"2006-11-11T02:15:21.542Z\",\n          \"clientMessageId\": \"0e3c3bef-a0cc-9f62-f470-21cf4bf7a2b4\"\n        },\n        \"canMessage\": false,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"d15bf313-b3c1-ee15-1cd5-14cfe4c89864\",\n        \"type\": \"GROUP\",\n        \"participants\": [\n          {\n            \"userId\": \"170fbad2-4546-dc47-0223-e89c4ecb6051\",\n            \"username\": \"string\"\n          },\n          {\n            \"userId\": \"e6333504-03eb-c890-5e1b-7a8c6062d4a4\",\n            \"username\": \"string\"\n          }\n        ],\n        \"createdAt\": \"1979-10-14T20:50:47.374Z\",\n        \"updatedAt\": \"1986-06-21T07:44:27.161Z\",\n        \"lastMessage\": {\n          \"id\": \"68d41aa8-0940-ce3c-a2d5-80fd4aa06db2\",\n          \"conversationId\": \"4889eab6-6b88-cfa0-9ee7-da8fde6160ba\",\n          \"senderId\": \"cb2308db-9d7e-2f13-3c4f-f0d24dfe37c7\",\n          \"senderUsername\": \"string\",\n          \"content\": \"string\",\n          \"createdAt\": \"1974-11-29T01:49:23.315Z\",\n          \"clientMessageId\": \"2e994acf-ac2e-75c9-f842-80e824c73946\"\n        },\n        \"canMessage\": false,\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5539,7 +5539,7 @@
           }
         },
         {
-          "id": "a687c55e-ab88-43ca-a8df-b1603d3c19fe",
+          "id": "d8300ac7-a502-4bc1-846b-55f5b85799cb",
           "name": "Histórico de mensagens de uma conversa, mais recentes primeiro",
           "request": {
             "name": "Histórico de mensagens de uma conversa, mais recentes primeiro",
@@ -5588,7 +5588,7 @@
           },
           "response": [
             {
-              "id": "df46ce80-e8dc-4c80-a381-97b74d281c7e",
+              "id": "279e6579-30cd-4a12-967d-bcb1ca3f09fc",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5616,7 +5616,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "conversationId",
                       "description": "(Required) "
                     }
@@ -5639,7 +5639,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"_embedded\": {\n    \"messages\": [\n      {\n        \"id\": \"6d4b5477-4822-7a6b-3f68-e4a054a86403\",\n        \"conversationId\": \"e166a6a9-d1b6-4dd7-e6ad-dc76f1cda9c2\",\n        \"senderId\": \"a1c2b724-8d15-484d-f65f-2592fbf404f7\",\n        \"senderUsername\": \"string\",\n        \"content\": \"string\",\n        \"createdAt\": \"1974-08-01T22:10:05.052Z\",\n        \"clientMessageId\": \"95bd2968-f27b-a4a1-ae46-1c06d895d2f5\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      },\n      {\n        \"id\": \"751b0c2e-da68-0142-5aa1-ae5941da13d9\",\n        \"conversationId\": \"f86f1d7a-a9f1-3071-75b7-650fbb74442c\",\n        \"senderId\": \"64273980-5b9d-de9c-0d3b-9fbe9cba2484\",\n        \"senderUsername\": \"string\",\n        \"content\": \"string\",\n        \"createdAt\": \"1999-03-16T12:56:50.067Z\",\n        \"clientMessageId\": \"632156e9-8952-75ba-2780-57dc30bacf5c\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          },\n          \"key_1\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          },\n          \"key_2\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": false\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 3692,\n    \"totalElements\": 7215,\n    \"totalPages\": 5781,\n    \"number\": 920\n  }\n}",
+              "body": "{\n  \"_embedded\": {\n    \"messages\": [\n      {\n        \"id\": \"53e44998-df25-a5ec-8e84-9b1a4a905da4\",\n        \"conversationId\": \"b90db9e6-ffdc-6ffd-6b5c-9d78789b570e\",\n        \"senderId\": \"f3c1e6b3-9df2-ea08-42c8-9e66580e11f2\",\n        \"senderUsername\": \"string\",\n        \"content\": \"string\",\n        \"createdAt\": \"1988-04-20T01:49:35.307Z\",\n        \"clientMessageId\": \"6ce41639-6e2c-8226-1b51-a5c2a842b743\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": true\n          }\n        }\n      },\n      {\n        \"id\": \"56461087-546f-b8a8-4414-b03ceae8b8b8\",\n        \"conversationId\": \"9746f572-3faa-4255-3d66-5800004ab207\",\n        \"senderId\": \"0d631e48-ec34-03c7-882e-05665c48a1d1\",\n        \"senderUsername\": \"string\",\n        \"content\": \"string\",\n        \"createdAt\": \"2021-02-06T12:52:11.399Z\",\n        \"clientMessageId\": \"a08e8a0e-27c8-0f0b-78c1-29bfba8bf0ba\",\n        \"_links\": {\n          \"key_0\": {\n            \"href\": \"string\",\n            \"hreflang\": \"string\",\n            \"title\": \"string\",\n            \"type\": \"string\",\n            \"deprecation\": \"string\",\n            \"profile\": \"string\",\n            \"name\": \"string\",\n            \"templated\": false\n          }\n        }\n      }\n    ]\n  },\n  \"_links\": {\n    \"key_0\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    },\n    \"key_1\": {\n      \"href\": \"string\",\n      \"hreflang\": \"string\",\n      \"title\": \"string\",\n      \"type\": \"string\",\n      \"deprecation\": \"string\",\n      \"profile\": \"string\",\n      \"name\": \"string\",\n      \"templated\": true\n    }\n  },\n  \"page\": {\n    \"size\": 9380,\n    \"totalElements\": 6364,\n    \"totalPages\": 6468,\n    \"number\": 6038\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5665,7 +5665,7 @@
       "name": "18 Presença",
       "item": [
         {
-          "id": "615b8c8d-2ba0-40eb-8ade-b456596befbc",
+          "id": "482f2398-578f-4a38-952c-a8f3af6f72eb",
           "name": "Presença atual de até 100 usuários",
           "request": {
             "name": "Presença atual de até 100 usuários",
@@ -5693,7 +5693,7 @@
           },
           "response": [
             {
-              "id": "33c8594e-0ce0-403b-957e-2dd515c2ae58",
+              "id": "d33932e0-1c9f-4338-b003-08c841b3e756",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5725,7 +5725,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "[\n  {\n    \"userId\": \"0cb18c22-d889-84b7-1aaa-6591825c4717\",\n    \"status\": \"OFFLINE\",\n    \"lastSeenAt\": \"2011-11-15T14:18:56.815Z\"\n  },\n  {\n    \"userId\": \"acd28136-dd23-9687-b9dc-33d85774140b\",\n    \"status\": \"ONLINE\",\n    \"lastSeenAt\": \"2010-08-28T14:34:20.605Z\"\n  }\n]",
+              "body": "[\n  {\n    \"userId\": \"7968e0ff-44fa-6ba3-7969-a3c8e4ecf158\",\n    \"status\": \"ONLINE\",\n    \"lastSeenAt\": \"2013-02-02T02:45:18.850Z\"\n  },\n  {\n    \"userId\": \"c3f385e4-11f9-14e7-95a2-baeb07e0123e\",\n    \"status\": \"OFFLINE\",\n    \"lastSeenAt\": \"2008-08-30T05:43:59.313Z\"\n  }\n]",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5751,7 +5751,7 @@
       "name": "19 Tempo real",
       "item": [
         {
-          "id": "51f8bf30-50a7-4889-b7e5-5a5a0be9186c",
+          "id": "4a4a28cf-1a67-4ed2-9219-772e160af786",
           "name": "Emite um ticket de uso único para o CONNECT do WebSocket",
           "request": {
             "name": "Emite um ticket de uso único para o CONNECT do WebSocket",
@@ -5780,7 +5780,7 @@
           },
           "response": [
             {
-              "id": "d58c8aca-ac64-418a-ae79-78e1c882f1d9",
+              "id": "99a9fd3e-20e3-4ec4-af54-434a3438c599",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5813,7 +5813,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"ticket\": \"string\",\n  \"expiresAt\": \"1964-08-22T23:00:05.732Z\"\n}",
+              "body": "{\n  \"ticket\": \"string\",\n  \"expiresAt\": \"1963-05-24T22:45:13.369Z\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5841,7 +5841,7 @@
       "name": "90 Apagar (remove dados em produção)",
       "item": [
         {
-          "id": "4581f107-3aed-4937-a11a-a6b4ca9a57d9",
+          "id": "b3a3e490-fe3c-49db-bc4f-963c0155467b",
           "name": "[channels] Deixa de seguir outro canal",
           "request": {
             "name": "Deixa de seguir outro canal",
@@ -5882,7 +5882,7 @@
           },
           "response": [
             {
-              "id": "1402d71d-d7e4-4337-a885-5f6c08eb33b0",
+              "id": "f07ec996-e84b-45c7-b306-e13ad4d70e73",
               "name": "OK",
               "originalRequest": {
                 "url": {
@@ -5902,14 +5902,14 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "channelId",
                       "description": "(Required) "
                     },
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "targetChannelId",
                       "description": "(Required) "
                     }
@@ -5947,7 +5947,7 @@
           }
         },
         {
-          "id": "ea121280-f7fd-4c40-a25a-0e8277d09c36",
+          "id": "07afbf24-53a9-40c2-8536-c9f3bdf61085",
           "name": "[publications] Apaga um comentário do canal selecionado, em qualquer nível",
           "request": {
             "name": "Apaga um comentário do canal selecionado, em qualquer nível",
@@ -5995,7 +5995,7 @@
           },
           "response": [
             {
-              "id": "b2562f28-d3cb-404b-a3c5-62c32a488a3e",
+              "id": "e7defd68-2e7b-4d39-81b8-902b323bf904",
               "name": "No Content",
               "originalRequest": {
                 "url": {
@@ -6015,14 +6015,14 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "publicationId",
                       "description": "(Required) "
                     },
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "commentId",
                       "description": "(Required) "
                     }
@@ -6033,7 +6033,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   }
                 ],
                 "method": "DELETE",
@@ -6068,7 +6068,7 @@
           }
         },
         {
-          "id": "3c68cf0b-13d5-4626-80ec-0a9ac8d964bd",
+          "id": "9ccf8c83-ca1b-4dce-97e7-660539d3b319",
           "name": "[friends] Remove somente a amizade com o usuário informado",
           "request": {
             "name": "Remove somente a amizade com o usuário informado",
@@ -6100,7 +6100,7 @@
           },
           "response": [
             {
-              "id": "77ed1adc-a2cd-46ad-bd35-452cc5568dc2",
+              "id": "7d899b0f-a34d-4aad-b2a3-5bd96447dce2",
               "name": "No Content",
               "originalRequest": {
                 "url": {
@@ -6118,7 +6118,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "userId",
                       "description": "(Required) "
                     }
@@ -6156,7 +6156,7 @@
           }
         },
         {
-          "id": "3a6e265a-4673-4462-8225-07d285e20c65",
+          "id": "169fe6fd-eb1b-49da-9c09-795976a8fc96",
           "name": "[friends] Cancela uma solicitação pendente enviada",
           "request": {
             "name": "Cancela uma solicitação pendente enviada",
@@ -6189,7 +6189,7 @@
           },
           "response": [
             {
-              "id": "a6b23689-86ab-4bb5-a3d6-c1062d9f62de",
+              "id": "693f549f-b441-4968-8236-760cf34bbdbe",
               "name": "No Content",
               "originalRequest": {
                 "url": {
@@ -6208,7 +6208,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "requestId",
                       "description": "(Required) "
                     }
@@ -6246,7 +6246,7 @@
           }
         },
         {
-          "id": "562087b9-0a51-4194-b041-b27d18e2cb4e",
+          "id": "3ba5ba3f-7180-40ee-a0cf-74f7ebec7ff7",
           "name": "[publications] Descurte uma publicação (idempotente)",
           "request": {
             "name": "Descurte uma publicação (idempotente)",
@@ -6287,7 +6287,7 @@
           },
           "response": [
             {
-              "id": "c6a72753-4644-4a97-8a35-5c041ddfa554",
+              "id": "a28f43e7-e228-4979-9163-541e8d4de5c3",
               "name": "No Content",
               "originalRequest": {
                 "url": {
@@ -6307,7 +6307,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "publicationId",
                       "description": "(Required) "
                     }
@@ -6318,7 +6318,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   }
                 ],
                 "method": "DELETE",
@@ -6353,7 +6353,7 @@
           }
         },
         {
-          "id": "9e54a8b5-6db6-4bca-bc07-51c50d41d76e",
+          "id": "106d3891-c99e-470e-bfa8-033e8f4d152f",
           "name": "[comments] Descurte um comentário (idempotente)",
           "request": {
             "name": "Descurte um comentário (idempotente)",
@@ -6394,7 +6394,7 @@
           },
           "response": [
             {
-              "id": "f547aaf9-59e1-4401-a372-9594440dd8da",
+              "id": "55a6844f-28c2-4fa5-a5e4-0ba42c40badd",
               "name": "No Content",
               "originalRequest": {
                 "url": {
@@ -6414,7 +6414,7 @@
                     {
                       "disabled": false,
                       "type": "any",
-                      "value": "e192df20-1800-94f9-22ed-8587c5d1eb64",
+                      "value": "0e3cda42-3e60-2409-74b4-88934af5afb5",
                       "key": "commentId",
                       "description": "(Required) "
                     }
@@ -6425,7 +6425,7 @@
                     "disabled": false,
                     "description": "(Required) Canal do usuário autenticado que assina a ação. Nas leituras é opcional e só define `likedByCurrentChannel`.",
                     "key": "X-Channel-Id",
-                    "value": "e192df20-1800-94f9-22ed-8587c5d1eb64"
+                    "value": "0e3cda42-3e60-2409-74b4-88934af5afb5"
                   }
                 ],
                 "method": "DELETE",

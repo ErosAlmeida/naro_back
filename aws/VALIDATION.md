@@ -43,3 +43,16 @@ Quatro problemas apareceram só na AWS e foram corrigidos em código:
 O realm ganhou o client público `naro-postman` (PKCE S256, apenas callbacks fixos do Postman). A coleção e o environment ficam em `docs/postman/`, gerados a partir do `/v3/api-docs` de produção.
 
 Pendente: executar `smoke_application.py` na EC2 via SSM para o teste real de upload/download no S3.
+
+## HTTPS com domínio próprio (26/09/2026)
+
+`naro.api.br` (registro.br) delega para a zona pública do Route 53 `naro.api.br`, criada fora do stack para sobreviver a um `cdk destroy`. O certificado ACM de `api.naro.api.br` foi validado por DNS. O ALB usa HTTPS, e o HTTP responde 301.
+
+| Verificação | Resultado |
+|---|---|
+| Deploy | `cdk deploy` com `publicHostname`/`certificateArn` em `cdk.context.json`; EC2 substituída pelo rolling update; CodeDeploy reinstalou a última revisão sozinho |
+| Backend | `https://api.naro.api.br/actuator/health` → `UP`; `/api/users/me` sem token → 401 |
+| Keycloak | issuer `https://api.naro.api.br/auth/realms/social`; admin e realm `master` → 403 |
+| Clients | `naro-web` aceita `https://naro.api.br/api/auth/callback`; `naro-postman` aceita o callback do Postman |
+| WebSocket | handshake `wss://api.naro.api.br/ws` com Origin `https://naro.api.br` → 101 |
+| Certificado | Amazon RSA 2048 M04, renovação automática pelo ACM |
