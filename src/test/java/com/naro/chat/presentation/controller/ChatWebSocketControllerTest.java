@@ -1,6 +1,7 @@
 package com.naro.chat.presentation.controller;
 
 import com.naro.chat.application.dto.ChatErrorResponse;
+import com.naro.chat.application.dto.ChatDeliveredRequest;
 import com.naro.chat.application.dto.ChatFocusRequest;
 import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.SendChatMessageRequest;
@@ -61,6 +62,21 @@ class ChatWebSocketControllerTest {
         controller.focus(request, "session-7", principal);
 
         verify(chatService).updateFocus(request, user, "session-7");
+    }
+
+
+    @Test
+    void deliveryUsesTheConnectionIdentity() {
+        UUID userId = UUID.randomUUID();
+        RealtimePrincipal principal = new RealtimePrincipal(userId, "kc-maria");
+        User user = new User("kc-maria", "maria", null, null, null);
+        ReflectionTestUtils.setField(user, "id", userId);
+        when(currentUserService.resolveRealtime(principal)).thenReturn(user);
+        ChatDeliveredRequest request = new ChatDeliveredRequest(UUID.randomUUID(), UUID.randomUUID());
+
+        controller.delivered(request, principal);
+
+        verify(chatService).markDelivered(request, user);
     }
 
 

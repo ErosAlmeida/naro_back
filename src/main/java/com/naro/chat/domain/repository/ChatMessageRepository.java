@@ -9,8 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ChatMessageRepository
@@ -68,6 +70,69 @@ public interface ChatMessageRepository
 
             @Param("conversationIds")
             Collection<UUID> conversationIds
+    );
+
+
+    /* Criação da mensagem mais nova de outra pessoa na conversa; null se não há. */
+    @Query("""
+            SELECT MAX(m.createdAt)
+            FROM ChatMessage m
+            WHERE m.conversation.id = :conversationId
+              AND m.sender.id <> :userId
+            """)
+    Instant findLatestCreatedAtFromOthers(
+            @Param("conversationId")
+            UUID conversationId,
+
+            @Param("userId")
+            UUID userId
+    );
+
+
+    /*
+     * Criação de uma mensagem de outra pessoa nesta conversa. Vazio para id
+     * desconhecido, de outra conversa ou enviado pelo próprio usuário.
+     */
+    @Query("""
+            SELECT m.createdAt
+            FROM ChatMessage m
+            WHERE m.id = :messageId
+              AND m.conversation.id = :conversationId
+              AND m.sender.id <> :userId
+            """)
+    Optional<Instant> findCreatedAtFromOthers(
+            @Param("messageId")
+            UUID messageId,
+
+            @Param("conversationId")
+            UUID conversationId,
+
+            @Param("userId")
+            UUID userId
+    );
+
+
+    /*
+     * Conversas do usuário com mensagens de outras pessoas ainda não
+     * entregues a ele (depois de last_delivered_at, ou sem marcador), com a
+     * criação da mais nova. Usa idx_chat_messages_conversation_created.
+     */
+    @Query(value = """
+            SELECT m.conversation_id AS "conversationId", MAX(m.created_at) AS "latestAt"
+            FROM chat_messages m
+            JOIN conversation_participants p
+              ON p.conversation_id = m.conversation_id
+             AND p.user_id = :userId
+            LEFT JOIN conversation_reads r
+                   ON r.conversation_id = m.conversation_id
+                  AND r.user_id = :userId
+            WHERE m.sender_id <> :userId
+              AND (r.last_delivered_at IS NULL OR m.created_at > r.last_delivered_at)
+            GROUP BY m.conversation_id
+            """, nativeQuery = true)
+    List<PendingDelivery> findPendingDeliveries(
+            @Param("userId")
+            UUID userId
     );
 
 

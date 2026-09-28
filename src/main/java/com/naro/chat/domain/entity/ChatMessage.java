@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Getter
@@ -125,8 +126,13 @@ public class ChatMessage {
     }
 
 
+    /*
+     * Na precisão do Postgres (microssegundos): o instante que vai no evento
+     * em tempo real é o mesmo que fica no banco e que os marcadores de
+     * entrega/leitura comparam.
+     */
     @PrePersist
     private void prePersist() {
-        this.createdAt = Instant.now();
+        this.createdAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
     }
 }

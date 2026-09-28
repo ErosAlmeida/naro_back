@@ -34,17 +34,31 @@ public record ConversationResponse(
          * autenticado. Preenchido na lista (GET /api/v1/chats); 0 nas demais
          * respostas.
          */
-        long unreadCount
+        long unreadCount,
+
+        /*
+         * Tiques das mensagens do usuário autenticado: até onde os outros
+         * participantes receberam e leram. Nunca null (MessageReceipts.NONE).
+         */
+        MessageReceipts receipts
 
 ) {
+    public ConversationResponse {
+        receipts = receipts == null ? MessageReceipts.NONE : receipts;
+    }
+
     public ConversationResponse(UUID id, ConversationType type,
                                 Set<ChatParticipantResponse> participants,
                                 Instant createdAt, Instant updatedAt,
                                 ChatMessageResponse lastMessage) {
-        this(id, type, participants, createdAt, updatedAt, lastMessage, false, 0);
+        this(id, type, participants, createdAt, updatedAt, lastMessage, false, 0, MessageReceipts.NONE);
     }
 
     public ConversationResponse withUnreadCount(long unreadCount) {
-        return new ConversationResponse(id, type, participants, createdAt, updatedAt, lastMessage, canMessage, unreadCount);
+        return new ConversationResponse(id, type, participants, createdAt, updatedAt, lastMessage, canMessage, unreadCount, receipts);
+    }
+
+    public ConversationResponse withReceipts(MessageReceipts receipts) {
+        return new ConversationResponse(id, type, participants, createdAt, updatedAt, lastMessage, canMessage, unreadCount, receipts);
     }
 }

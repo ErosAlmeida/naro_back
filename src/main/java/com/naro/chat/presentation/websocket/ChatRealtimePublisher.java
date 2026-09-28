@@ -4,6 +4,7 @@ import com.naro.chat.application.dto.ChatNotificationResponse;
 import com.naro.chat.application.event.ChatMessageCreatedEvent;
 import com.naro.chat.application.event.ChatTypingEvent;
 import com.naro.chat.application.event.ConversationReadEvent;
+import com.naro.chat.application.event.MessageReceiptsEvent;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -93,6 +94,31 @@ public class ChatRealtimePublisher {
                 ChatNotificationResponse.read(
                         event.conversationId(),
                         event.readAt()
+                )
+        );
+    }
+
+
+    /*
+     * Para quem enviou: as mensagens dele chegaram ou foram lidas, e os
+     * tiques mudam em todas as abas/aparelhos. Só metadados, como o resto
+     * desta fila.
+     */
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT,
+            fallbackExecution = true
+    )
+    public void publishReceipts(
+            MessageReceiptsEvent event
+    ) {
+
+        messagingTemplate.convertAndSendToUser(
+                event.recipientKeycloakId(),
+                "/queue/notifications",
+                ChatNotificationResponse.receipts(
+                        event.conversationId(),
+                        event.receipts(),
+                        event.at()
                 )
         );
     }

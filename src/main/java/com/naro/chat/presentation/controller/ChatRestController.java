@@ -1,7 +1,9 @@
 package com.naro.chat.presentation.controller;
 
+import com.naro.chat.application.dto.ChatDeliveredRequest;
 import com.naro.chat.application.dto.ChatMessageResponse;
 import com.naro.chat.application.dto.ConversationResponse;
+import com.naro.chat.application.dto.MarkDeliveredRequest;
 import com.naro.chat.application.dto.UnreadChatsResponse;
 
 import com.naro.chat.application.service.ChatService;
@@ -111,6 +113,38 @@ public class ChatRestController {
     ) {
 
         return chatService.getUnreadSummary(currentUser);
+    }
+
+
+    /*
+     * Sempre 204, como o foco: conversa alheia ou inexistente e mensagem
+     * que não é de outra pessoa nesta conversa são ignoradas.
+     */
+    @PostMapping("/{conversationId}/delivered")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Confirma que as mensagens da conversa (até messageId, se informado) chegaram a um aparelho do usuário")
+    public void markDelivered(
+
+            @PathVariable
+            UUID conversationId,
+
+            @RequestBody(
+                    required = false
+            )
+            MarkDeliveredRequest body,
+
+            @CurrentUser
+            User currentUser
+
+    ) {
+
+        chatService.markDelivered(
+                new ChatDeliveredRequest(
+                        conversationId,
+                        body == null ? null : body.messageId()
+                ),
+                currentUser
+        );
     }
 
 

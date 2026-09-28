@@ -1,5 +1,6 @@
 package com.naro.chat.presentation.controller;
 
+import com.naro.chat.application.dto.ChatDeliveredRequest;
 import com.naro.chat.application.dto.ConversationResponse;
 import com.naro.chat.application.dto.UnreadChatsResponse;
 import com.naro.chat.application.service.ChatService;
@@ -18,6 +19,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -168,6 +170,30 @@ class ChatRestControllerTest {
                 .andExpect(jsonPath("$.messages").value(5));
 
         mockMvc.perform(get("/api/v1/chats/unread"))
+                .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    void deliveryIsConfirmedForTheAuthenticatedUserWithOrWithoutAMessageId() throws Exception {
+
+        UUID conversationId = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+
+        mockMvc.perform(post("/api/v1/chats/{id}/delivered", conversationId)
+                        .with(jwt())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"messageId\":\"" + messageId + "\",\"userId\":\"" + UUID.randomUUID() + "\"}"))
+                .andExpect(status().isNoContent());
+
+        verify(chatService).markDelivered(new ChatDeliveredRequest(conversationId, messageId), currentUser);
+
+        mockMvc.perform(post("/api/v1/chats/{id}/delivered", conversationId).with(jwt()))
+                .andExpect(status().isNoContent());
+
+        verify(chatService).markDelivered(new ChatDeliveredRequest(conversationId, null), currentUser);
+
+        mockMvc.perform(post("/api/v1/chats/{id}/delivered", conversationId))
                 .andExpect(status().isUnauthorized());
     }
 

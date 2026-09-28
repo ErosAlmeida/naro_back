@@ -78,3 +78,42 @@ o cliente envia `/app/chat/focus`, que também impede push dessa conversa enquan
 está aberta. Avisos sem conteúdo chegam em `/user/queue/notifications`, e o Naro fechado
 recebe Web Push. O fluxo completo, a configuração VAPID e os testes por plataforma estão
 em `docs/notifications.md`.
+
+## Tiques de entrega e leitura
+
+```
+✓        salva no servidor
+✓✓       chegou a um aparelho de quem recebe
+✓✓ azul  quem recebe abriu a conversa
+```
+
+Cada participante tem dois marcadores por conversa em `conversation_reads`:
+`last_delivered_at` e `last_read_at` (V15). Uma mensagem de outra pessoa está
+entregue/lida quando foi criada até o marcador correspondente; ler implica
+entregar, e os marcadores nunca voltam no tempo.
+
+| Marcador | Quem move |
+|---|---|
+| Entregue | `/app/chat/delivered {conversationId, messageId}` a cada aviso de mensagem nova no Naro aberto; `/app/chat/delivered {}` a cada conexão (tudo o que já existe); `POST /api/v1/chats/{id}/delivered` pelo service worker quando o push chega com o Naro fechado |
+| Lida | `/app/chat/focus` (a conversa na tela), como antes |
+
+O marcador de entrega vai até a mensagem confirmada (ou a mais nova da conversa),
+nunca até "agora": uma mensagem ainda em trânsito não fica entregue por engano.
+Confirmações repetidas (várias abas, WebSocket e push da mesma mensagem) não
+mudam nada nem geram aviso.
+
+Quando um marcador avança, os outros participantes recebem em
+`/user/queue/notifications`:
+
+```json
+{ "type": "RECEIPTS", "conversationId": "…", "receipts": { "deliveredAt": "…", "readAt": "…" } }
+```
+
+`GET /api/v1/chats` traz o mesmo `receipts` em cada conversa, do ponto de vista de
+quem pergunta. Num grupo vale o participante mais atrasado (✓✓ só quando chegou a
+todos) e `null` enquanto algum deles não tem o marcador. O cliente decide o tique
+comparando o `createdAt` de cada mensagem com os dois instantes.
+
+Os tiques são só metadados (ids e instantes que o servidor já tem): funcionam
+igual com o E2EE, sem o servidor ver nada do conteúdo. Confirmação de conversa
+alheia, inexistente ou de mensagem do próprio usuário é ignorada sem erro, como o foco.

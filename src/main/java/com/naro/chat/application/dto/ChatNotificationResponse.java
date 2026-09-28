@@ -12,6 +12,8 @@ import java.util.UUID;
  *                       remetente, cujas outras abas/aparelhos reordenam a lista)
  *   CONVERSATION_READ   o próprio usuário leu a conversa, nesta ou em outra
  *                       aba/aparelho: o contador dela volta a zero
+ *   RECEIPTS            as mensagens do usuário chegaram ou foram lidas pelos
+ *                       outros participantes: os tiques (✓✓ / ✓✓ azul) mudam
  */
 public record ChatNotificationResponse(
 
@@ -28,14 +30,18 @@ public record ChatNotificationResponse(
         /* Só em CHAT_MESSAGE. */
         String senderUsername,
 
-        /* Criação da mensagem, ou momento da leitura. */
-        Instant createdAt
+        /* Criação da mensagem, momento da leitura ou do recibo. */
+        Instant createdAt,
+
+        /* Só em RECEIPTS. */
+        MessageReceipts receipts
 
 ) {
 
     public enum Type {
         CHAT_MESSAGE,
-        CONVERSATION_READ
+        CONVERSATION_READ,
+        RECEIPTS
     }
 
     public static ChatNotificationResponse message(ChatMessageResponse message) {
@@ -45,11 +51,16 @@ public record ChatNotificationResponse(
                 message.id(),
                 message.senderId(),
                 message.senderUsername(),
-                message.createdAt()
+                message.createdAt(),
+                null
         );
     }
 
     public static ChatNotificationResponse read(UUID conversationId, Instant readAt) {
-        return new ChatNotificationResponse(Type.CONVERSATION_READ, conversationId, null, null, null, readAt);
+        return new ChatNotificationResponse(Type.CONVERSATION_READ, conversationId, null, null, null, readAt, null);
+    }
+
+    public static ChatNotificationResponse receipts(UUID conversationId, MessageReceipts receipts, Instant at) {
+        return new ChatNotificationResponse(Type.RECEIPTS, conversationId, null, null, null, at, receipts);
     }
 }

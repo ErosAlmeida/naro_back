@@ -1,19 +1,24 @@
 package com.naro.chat.application.service;
 
+import com.naro.chat.application.dto.ChatDeliveredRequest;
 import com.naro.chat.application.dto.ChatFocusRequest;
 import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.ConversationResponse;
+import com.naro.chat.application.dto.MessageReceipts;
 import com.naro.chat.application.dto.SendChatMessageRequest;
 import com.naro.chat.application.event.ChatMessageCreatedEvent;
 import com.naro.chat.application.event.ChatTypingEvent;
 import com.naro.chat.application.event.ConversationReadEvent;
+import com.naro.chat.application.event.MessageReceiptsEvent;
 import com.naro.chat.application.mapper.ChatMapperImpl;
 import com.naro.chat.domain.entity.ChatMessage;
 import com.naro.chat.domain.entity.Conversation;
 import com.naro.chat.domain.enums.ConversationType;
 import com.naro.chat.domain.repository.ChatMessageRepository;
+import com.naro.chat.domain.repository.ConversationReceipts;
 import com.naro.chat.domain.repository.ConversationRepository;
 import com.naro.chat.domain.repository.ConversationUnreadCount;
+import com.naro.chat.domain.repository.PendingDelivery;
 import com.naro.encryption.config.E2eeProperties;
 import com.naro.exception.BadRequestException;
 import com.naro.exception.ForbiddenException;
@@ -477,6 +482,168 @@ class ChatServiceImplTest {
         List<ConversationResponse> conversations = chatService.getConversations(currentUser);
 
         assertThat(conversations).extracting(ConversationResponse::unreadCount).containsExactly(4L, 0L);
+    }
+
+    @Test
+    void readingANewMessageTurnsTheSendersTicksBlue() {
+        Conversation conversation = conversation(currentUser, otherUser);
+        Instant incoming = Instant.parse("2026-09-27T12:00:00Z");
+        Instant readAt = Instant.parse("2026-09-27T12:00:05Z");
+        when(conversationRepository.findByIdWithParticipants(conversation.getId())).thenReturn(Optional.of(conversation));
+        when(chatMessageRepository.findLatestCreatedAtFromOthers(conversation.getId(), currentUser.getId())).thenReturn(incoming);
+        when(conversationRepository.isReadSince(conversation.getId(), currentUser.getId(), incoming)).thenReturn(false);
+        when(conversationRepository.findReceipts(List.of(conversation.getId()), otherUser.getId()))
+                .thenReturn(List.of(receipts(conversation.getId(), readAt, readAt)));
+
+        chatService.updateFocus(new ChatFocusRequest(conversation.getId()), currentUser, "session-1");
+
+        ArgumentCaptor<Object> events = ArgumentCaptor.forClass(Object.class);
+        verify(eventPublisher, times(2)).publishEvent(events.capture());
+        assertThat(events.getAllValues().get(0)).isInstanceOf(ConversationReadEvent.class);
+        MessageReceiptsEvent receipts = (MessageReceiptsEvent) events.getAllValues().get(1);
+        assertThat(receipts.recipientKeycloakId()).isEqualTo(otherUser.getKeycloakId());
+        assertThat(receipts.conversationId()).isEqualTo(conversation.getId());
+        assertThat(receipts.receipts()).isEqualTo(new MessageReceipts(readAt, readAt));
+    }
+
+    @Test
+    void comingBackToAnAlreadyReadConversationSendsNoReceipt() {
+        Conversation conversation = conversation(currentUser, otherUser);
+        Instant incoming = Instant.parse("2026-09-27T12:00:00Z");
+        when(conversationRepository.findByIdWithParticipants(conversation.getId())).thenReturn(Optional.of(conversation));
+        when(chatMessageRepository.findLatestCreatedAtFromOthers(conversation.getId(), currentUser.getId())).thenReturn(incoming);
+        when(conversationRepository.isReadSince(conversation.getId(), currentUser.getId(), incoming)).thenReturn(true);
+
+        chatService.updateFocus(new ChatFocusRequest(conversation.getId()), currentUser, "session-1");
+
+        verify(eventPublisher).publishEvent(any(ConversationReadEvent.class));
+        verify(eventPublisher, never()).publishEvent(any(MessageReceiptsEvent.class));
+    }
+
+    @Test
+    void deliveryOfAMessageMovesTheMarkerToItAndTellsTheSender() {
+        Conversation conversation = conversation(currentUser, otherUser);
+        UUID messageId = UUID.randomUUID();
+        Instant createdAt = Instant.parse("2026-09-27T12:00:00Z");
+        when(conversationRepository.findByIdWithParticipants(conversation.getId())).thenReturn(Optional.of(conversation));
+        when(chatMessageRepository.findCreatedAtFromOthers(messageId, conversation.getId(), currentUser.getId()))
+                .thenReturn(Optional.of(createdAt));
+        when(conversationRepository.markDelivered(conversation.getId(), currentUser.getId(), createdAt)).thenReturn(1);
+        when(conversationRepository.findReceipts(List.of(conversation.getId()), otherUser.getId()))
+                .thenReturn(List.of(receipts(conversation.getId(), createdAt, null)));
+
+        chatService.markDelivered(new ChatDeliveredRequest(conversation.getId(), messageId), currentUser);
+
+        ArgumentCaptor<MessageReceiptsEvent> event = ArgumentCaptor.forClass(MessageReceiptsEvent.class);
+        verify(eventPublisher).publishEvent(event.capture());
+        assertThat(event.getValue().recipientKeycloakId()).isEqualTo(otherUser.getKeycloakId());
+        assertThat(event.getValue().receipts()).isEqualTo(new MessageReceipts(createdAt, null));
+    }
+
+    @Test
+    void aDeliveryThatChangesNothingStaysQuiet() {
+        Conversation conversation = conversation(currentUser, otherUser);
+        Instant latest = Instant.parse("2026-09-27T12:00:00Z");
+        when(conversationRepository.findByIdWithParticipants(conversation.getId())).thenReturn(Optional.of(conversation));
+        when(chatMessageRepository.findLatestCreatedAtFromOthers(conversation.getId(), currentUser.getId())).thenReturn(latest);
+        when(conversationRepository.markDelivered(conversation.getId(), currentUser.getId(), latest)).thenReturn(0);
+
+        chatService.markDelivered(new ChatDeliveredRequest(conversation.getId(), null), currentUser);
+
+        verifyNoInteractions(eventPublisher);
+    }
+
+    @Test
+    void deliveryIsIgnoredForStrangersUnknownConversationsAndOwnMessages() {
+        Conversation foreign = conversation(otherUser, user("eve"));
+        Conversation own = conversation(currentUser, otherUser);
+        UUID ownMessage = UUID.randomUUID();
+        UUID unknown = UUID.randomUUID();
+        when(conversationRepository.findByIdWithParticipants(unknown)).thenReturn(Optional.empty());
+        when(conversationRepository.findByIdWithParticipants(foreign.getId())).thenReturn(Optional.of(foreign));
+        when(conversationRepository.findByIdWithParticipants(own.getId())).thenReturn(Optional.of(own));
+        when(chatMessageRepository.findCreatedAtFromOthers(ownMessage, own.getId(), currentUser.getId())).thenReturn(Optional.empty());
+
+        chatService.markDelivered(new ChatDeliveredRequest(foreign.getId(), null), currentUser);
+        chatService.markDelivered(new ChatDeliveredRequest(unknown, null), currentUser);
+        chatService.markDelivered(new ChatDeliveredRequest(own.getId(), ownMessage), currentUser);
+
+        verify(conversationRepository, never()).markDelivered(any(), any(), any());
+        verifyNoInteractions(eventPublisher);
+    }
+
+    @Test
+    void openingTheAppConfirmsEveryConversationUpToItsNewestMessage() {
+        Conversation first = conversation(currentUser, otherUser);
+        User ana = user("ana");
+        Conversation second = conversation(currentUser, ana);
+        Instant firstLatest = Instant.parse("2026-09-27T12:00:00Z");
+        Instant secondLatest = Instant.parse("2026-09-27T13:00:00Z");
+        when(chatMessageRepository.findPendingDeliveries(currentUser.getId()))
+                .thenReturn(List.of(pending(first.getId(), firstLatest), pending(second.getId(), secondLatest)));
+        when(conversationRepository.findAllByIdWithParticipants(List.of(first.getId(), second.getId())))
+                .thenReturn(List.of(first, second));
+        when(conversationRepository.markDelivered(first.getId(), currentUser.getId(), firstLatest)).thenReturn(1);
+        when(conversationRepository.markDelivered(second.getId(), currentUser.getId(), secondLatest)).thenReturn(1);
+
+        chatService.markDelivered(new ChatDeliveredRequest(null, null), currentUser);
+
+        ArgumentCaptor<MessageReceiptsEvent> events = ArgumentCaptor.forClass(MessageReceiptsEvent.class);
+        verify(eventPublisher, times(2)).publishEvent(events.capture());
+        assertThat(events.getAllValues()).extracting(MessageReceiptsEvent::recipientKeycloakId)
+                .containsExactly(otherUser.getKeycloakId(), ana.getKeycloakId());
+        // Nada pendente: nem busca conversas.
+        when(chatMessageRepository.findPendingDeliveries(currentUser.getId())).thenReturn(List.of());
+        chatService.markDelivered(new ChatDeliveredRequest(null, null), currentUser);
+        verify(conversationRepository).findAllByIdWithParticipants(any());
+    }
+
+    @Test
+    void conversationListCarriesTheTicksOfEachConversation() {
+        Conversation delivered = conversation(currentUser, otherUser);
+        Conversation untouched = conversation(currentUser, user("ana"));
+        Instant at = Instant.parse("2026-09-27T12:00:00Z");
+        when(conversationRepository.findAllByParticipantId(currentUser.getId())).thenReturn(List.of(delivered, untouched));
+        when(conversationRepository.findReceipts(List.of(delivered.getId(), untouched.getId()), currentUser.getId()))
+                .thenReturn(List.of(receipts(delivered.getId(), at, null)));
+
+        List<ConversationResponse> conversations = chatService.getConversations(currentUser);
+
+        assertThat(conversations).extracting(ConversationResponse::receipts)
+                .containsExactly(new MessageReceipts(at, null), MessageReceipts.NONE);
+    }
+
+    private static ConversationReceipts receipts(UUID conversationId, Instant deliveredAt, Instant readAt) {
+        return new ConversationReceipts() {
+            @Override
+            public UUID getConversationId() {
+                return conversationId;
+            }
+
+            @Override
+            public Instant getDeliveredAt() {
+                return deliveredAt;
+            }
+
+            @Override
+            public Instant getReadAt() {
+                return readAt;
+            }
+        };
+    }
+
+    private static PendingDelivery pending(UUID conversationId, Instant latestAt) {
+        return new PendingDelivery() {
+            @Override
+            public UUID getConversationId() {
+                return conversationId;
+            }
+
+            @Override
+            public Instant getLatestAt() {
+                return latestAt;
+            }
+        };
     }
 
     private static ConversationUnreadCount unread(UUID conversationId, long count) {

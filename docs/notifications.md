@@ -90,7 +90,10 @@ byte a byte, e contra uma decifragem "do lado do navegador".
      navegador se cadastrar de novo;
    - rede, `413`, `429`, `5xx` → nada muda; a próxima mensagem tenta de novo.
 5. `public/sw.js` recebe o `push`, valida o payload, mostra a notificação
-   (uma por conversa, `tag = chat:<id>`) e atualiza o badge do ícone.
+   (uma por conversa, `tag = chat:<id>`), atualiza o badge do ícone e confirma
+   a entrega (`POST /api/chats/<id>/delivered` no BFF): quem enviou passa a ver
+   ✓✓ mesmo com o Naro fechado deste lado. Sem sessão ou sem rede, a
+   confirmação sai quando o Naro abrir. Veja "Tiques" em `docs/chat.md`.
 6. Clique: fecha a notificação, foca uma janela do Naro já aberta e pede à
    página para abrir `/chat/<id>` sem recarregar (não perde o desbloqueio do
    E2EE). Sem janela aberta, abre uma nova direto na conversa.
@@ -280,7 +283,14 @@ cookies de sessão ou no login.
 4. Feche o app ou bloqueie a tela; peça para um amigo mandar mensagem.
 5. A notificação mostra nome e prévia (ou só o nome, em conversa E2EE), com o
    ícone "N" monocromático na barra de status. Tocar abre a conversa.
-6. Se não chegar: Configurações do Android → Apps → Chrome → Notificações
+6. **Aviso no topo da tela (pop-up/heads-up):** o Chrome cria o canal de
+   notificações de cada site com importância *padrão*: toca, vibra e aparece na
+   barra, mas não salta no topo. Só no desktop o Chrome usa importância alta
+   (`ChromeChannelDefinitions.isHighPrioritySiteNotificationsEnabled`), e o
+   site não tem como mudar isso. A pessoa liga uma vez: toque e segure uma
+   notificação do Naro → Configurações → ative "Pop-up na tela" (ou "Mostrar
+   na tela"). O Naro mostra essa dica no Android ao ativar e em Configurações.
+7. Se não chegar: Configurações do Android → Apps → Chrome → Notificações
    (e economia de bateria do fabricante, que às vezes atrasa o push).
 
 ## 9. Testar no iPhone/iPad (PWA)
@@ -365,12 +375,15 @@ A Apple só entrega Web Push para o **app instalado** (iOS/iPadOS 16.4+):
 | `POST` | `/api/v1/push/subscriptions` | Corpo = `PushSubscription.toJSON()` + `deviceName` opcional. `201` novo, `200` já existente |
 | `DELETE` | `/api/v1/push/subscriptions/{id}` | `204`; `404` para id inexistente ou de outra conta |
 | `GET` | `/api/v1/chats/unread` | `{ conversations, messages }` não lidas |
-| `GET` | `/api/v1/chats` | Cada conversa ganhou `unreadCount` (campo novo; clientes antigos ignoram) |
+| `GET` | `/api/v1/chats` | Cada conversa ganhou `unreadCount` e `receipts` (campos novos; clientes antigos ignoram) |
+| `POST` | `/api/v1/chats/{id}/delivered` | Corpo opcional `{ messageId }`. Sempre `204` (confirmação de entrega pelo service worker) |
 | STOMP `SEND` | `/app/chat/focus` | `{ conversationId }` ou `{ conversationId: null }` |
-| STOMP `SUBSCRIBE` | `/user/queue/notifications` | `CHAT_MESSAGE` (metadados) e `CONVERSATION_READ` |
+| STOMP `SEND` | `/app/chat/delivered` | `{ conversationId, messageId }` ou `{}` (tudo) |
+| STOMP `SUBSCRIBE` | `/user/queue/notifications` | `CHAT_MESSAGE` (metadados), `CONVERSATION_READ` e `RECEIPTS` |
 
 BFF (Next): `GET /api/push/config`, `POST`/`DELETE /api/push/subscriptions`
-(este aparelho), `GET /api/chats/unread`.
+(este aparelho), `GET /api/chats/unread`, `POST /api/chats/{id}/delivered`
+(service worker; confere a `Origin`).
 
 ## Banco
 
@@ -379,8 +392,10 @@ BFF (Next): `GET /api/push/config`, `POST`/`DELETE /api/push/subscriptions`
 - `V14__create_conversation_reads.sql`: `conversation_reads` (FK composta para
   `conversation_participants`: só participante tem marcador) e o backfill
   `last_read_at = now()` para todas as participações existentes.
+- `V15__add_conversation_delivery.sql`: `last_delivered_at` (backfill = leitura)
+  e `last_read_at` passa a aceitar `NULL` (entregue, ainda não lida).
 
-Só tabelas novas; nenhuma migration antiga foi alterada. O Hibernate continua
+V13 e V14 só criam tabelas; V15 acrescenta uma coluna. Nenhuma migration antiga foi alterada. O Hibernate continua
 em `ddl-auto: validate`.
 
 ## 12. Arquivos criados ou alterados

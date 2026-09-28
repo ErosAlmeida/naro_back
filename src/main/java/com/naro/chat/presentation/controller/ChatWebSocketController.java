@@ -1,5 +1,6 @@
 package com.naro.chat.presentation.controller;
 
+import com.naro.chat.application.dto.ChatDeliveredRequest;
 import com.naro.chat.application.dto.ChatErrorResponse;
 import com.naro.chat.application.dto.ChatFocusRequest;
 import com.naro.chat.application.dto.ChatTypingRequest;
@@ -117,6 +118,28 @@ public class ChatWebSocketController {
                 request,
                 currentUserService.resolveRealtime(principal),
                 sessionId
+        );
+    }
+
+
+    /*
+     * As mensagens chegaram a esta aba: {} (ou corpo vazio) ao conectar, para
+     * tudo o que existe; {conversationId, messageId} a cada aviso de mensagem nova.
+     */
+    @MessageMapping("/chat/delivered")
+    public void delivered(
+
+            @Payload(required = false)
+            ChatDeliveredRequest request,
+
+            @AuthenticationPrincipal
+            RealtimePrincipal principal
+
+    ) {
+
+        chatService.markDelivered(
+                request == null ? new ChatDeliveredRequest(null, null) : request,
+                currentUserService.resolveRealtime(principal)
         );
     }
 

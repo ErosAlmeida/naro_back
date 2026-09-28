@@ -1,5 +1,6 @@
 package com.naro.chat.application.service;
 
+import com.naro.chat.application.dto.ChatDeliveredRequest;
 import com.naro.chat.application.dto.ChatFocusRequest;
 import com.naro.chat.application.dto.ChatMessageResponse;
 import com.naro.chat.application.dto.ChatTypingRequest;
@@ -59,6 +60,17 @@ public interface ChatService {
             ChatFocusRequest request,
             User user,
             String sessionId
+    );
+
+
+    /**
+     * As mensagens chegaram a um aparelho do usuário (✓✓ para quem enviou).
+     * Como o foco, nunca lança por conversa inexistente ou alheia, nem por
+     * mensagem de outra conversa ou do próprio usuário: só ignora.
+     */
+    void markDelivered(
+            ChatDeliveredRequest request,
+            User user
     );
 
 

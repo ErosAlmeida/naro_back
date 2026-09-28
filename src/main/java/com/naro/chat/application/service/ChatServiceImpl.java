@@ -1,16 +1,19 @@
 package com.naro.chat.application.service;
 
+import com.naro.chat.application.dto.ChatDeliveredRequest;
 import com.naro.chat.application.dto.ChatFocusRequest;
 import com.naro.chat.application.dto.ChatMessageResponse;
 import com.naro.chat.application.dto.ChatTypingRequest;
 import com.naro.chat.application.dto.ChatTypingResponse;
 import com.naro.chat.application.dto.ConversationResponse;
+import com.naro.chat.application.dto.MessageReceipts;
 import com.naro.chat.application.dto.SendChatMessageRequest;
 import com.naro.chat.application.dto.UnreadChatsResponse;
 
 import com.naro.chat.application.event.ChatMessageCreatedEvent;
 import com.naro.chat.application.event.ChatTypingEvent;
 import com.naro.chat.application.event.ConversationReadEvent;
+import com.naro.chat.application.event.MessageReceiptsEvent;
 import com.naro.chat.application.mapper.ChatMapper;
 
 import com.naro.chat.domain.entity.ChatMessage;
@@ -19,8 +22,10 @@ import com.naro.chat.domain.entity.Conversation;
 import com.naro.chat.domain.enums.ConversationType;
 
 import com.naro.chat.domain.repository.ChatMessageRepository;
+import com.naro.chat.domain.repository.ConversationReceipts;
 import com.naro.chat.domain.repository.ConversationRepository;
 import com.naro.chat.domain.repository.ConversationUnreadCount;
+import com.naro.chat.domain.repository.PendingDelivery;
 import com.naro.chat.domain.repository.UnreadSummary;
 
 import com.naro.exception.BadRequestException;
@@ -131,7 +136,7 @@ public class ChatServiceImpl
                 .map(
                         conversation -> {
                             requireValidParticipants(conversation, currentUser);
-                            return toConversationResponse(conversation, true);
+                            return toConversationResponse(conversation, currentUser, true);
                         }
                 )
                 .orElseGet(() -> {
@@ -204,6 +209,15 @@ public class ChatServiceImpl
                                 .toList()
                 );
 
+        Map<UUID, MessageReceipts> receipts =
+                findReceipts(
+                        currentUser.getId(),
+                        conversations
+                                .stream()
+                                .map(Conversation::getId)
+                                .toList()
+                );
+
         return conversations
                 .stream()
                 .map(conversation ->
@@ -213,6 +227,8 @@ public class ChatServiceImpl
                                 canMessage(conversation, currentUser, friendIds)
                         ).withUnreadCount(
                                 unreadCounts.getOrDefault(conversation.getId(), 0L)
+                        ).withReceipts(
+                                receipts.get(conversation.getId())
                         )
                 )
                 .toList();
@@ -393,23 +409,28 @@ public class ChatServiceImpl
             String sessionId
     ) {
 
-        UUID conversationId = request.conversationId();
-
-        boolean member =
-                conversationId != null
-                        && conversationRepository
-                        .findByIdWithParticipants(conversationId)
-                        .filter(conversation -> isParticipant(conversation, user))
-                        .isPresent();
+        Conversation conversation =
+                findForMember(request.conversationId(), user);
 
 
-        if (!member) {
+        if (conversation == null) {
             focusRegistry.clear(user.getId(), sessionId);
             return;
         }
 
 
+        UUID conversationId = conversation.getId();
+
         focusRegistry.focus(user.getId(), sessionId, conversationId);
+
+        // Havia mensagem de outra pessoa ainda não lida? Só então os tiques
+        // de quem enviou mudam (trocar de aba não gera recibo à toa).
+        Instant latestIncoming =
+                chatMessageRepository.findLatestCreatedAtFromOthers(conversationId, user.getId());
+
+        boolean newlyRead =
+                latestIncoming != null
+                        && !conversationRepository.isReadSince(conversationId, user.getId(), latestIncoming);
 
         Instant readAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
 
@@ -423,6 +444,118 @@ public class ChatServiceImpl
                         readAt
                 )
         );
+
+
+        if (newlyRead) {
+            publishReceipts(conversation, user);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public void markDelivered(
+            ChatDeliveredRequest request,
+            User user
+    ) {
+
+        if (request.conversationId() == null) {
+            markAllDelivered(user);
+            return;
+        }
+
+
+        Conversation conversation =
+                findForMember(request.conversationId(), user);
+
+        if (conversation == null) {
+            return;
+        }
+
+
+        Instant deliveredAt =
+                request.messageId() == null
+                        ? chatMessageRepository.findLatestCreatedAtFromOthers(conversation.getId(), user.getId())
+                        : chatMessageRepository
+                        .findCreatedAtFromOthers(request.messageId(), conversation.getId(), user.getId())
+                        .orElse(null);
+
+
+        if (deliveredAt != null
+                && conversationRepository.markDelivered(conversation.getId(), user.getId(), deliveredAt) > 0) {
+
+            publishReceipts(conversation, user);
+        }
+    }
+
+
+    /*
+     * O Naro abriu (ou reconectou) num aparelho: tudo o que já existe chegou
+     * nele. O marcador vai até a mensagem mais nova de cada conversa, nunca
+     * até "agora", para não confirmar uma mensagem ainda em trânsito.
+     */
+    private void markAllDelivered(
+            User user
+    ) {
+
+        List<PendingDelivery> pending =
+                chatMessageRepository.findPendingDeliveries(user.getId());
+
+        if (pending.isEmpty()) {
+            return;
+        }
+
+
+        Map<UUID, Conversation> conversations =
+                conversationRepository
+                        .findAllByIdWithParticipants(
+                                pending.stream().map(PendingDelivery::getConversationId).toList()
+                        )
+                        .stream()
+                        .collect(Collectors.toMap(Conversation::getId, Function.identity()));
+
+
+        for (PendingDelivery delivery : pending) {
+
+            Conversation conversation = conversations.get(delivery.getConversationId());
+
+            if (conversation != null
+                    && conversationRepository.markDelivered(conversation.getId(), user.getId(), delivery.getLatestAt()) > 0) {
+
+                publishReceipts(conversation, user);
+            }
+        }
+    }
+
+
+    /*
+     * Os outros participantes veem os tiques das próprias mensagens mudarem,
+     * em todas as sessões deles. Num grupo cada um tem a própria visão (o
+     * marcador de quem está mais atrás, sem contar ele mesmo).
+     */
+    private void publishReceipts(
+            Conversation conversation,
+            User marker
+    ) {
+
+        Instant now = Instant.now();
+
+        for (User participant : conversation.getParticipants()) {
+
+            if (participant.getId().equals(marker.getId())) {
+                continue;
+            }
+
+            eventPublisher.publishEvent(
+                    new MessageReceiptsEvent(
+                            conversation.getId(),
+                            participant.getKeycloakId(),
+                            findReceipts(participant.getId(), List.of(conversation.getId()))
+                                    .getOrDefault(conversation.getId(), MessageReceipts.NONE),
+                            now
+                    )
+            );
+        }
     }
 
 
@@ -446,6 +579,7 @@ public class ChatServiceImpl
 
     private ConversationResponse toConversationResponse(
             Conversation conversation,
+            User currentUser,
             boolean canMessage
     ) {
 
@@ -455,6 +589,11 @@ public class ChatServiceImpl
                         List.of(conversation.getId())
                 ).get(conversation.getId()),
                 canMessage
+        ).withReceipts(
+                findReceipts(
+                        currentUser.getId(),
+                        List.of(conversation.getId())
+                ).get(conversation.getId())
         );
     }
 
@@ -507,6 +646,53 @@ public class ChatServiceImpl
                                 ConversationUnreadCount::getUnread
                         )
                 );
+    }
+
+
+    /*
+     * Tiques por conversa em uma query; conversa sem outros participantes
+     * fica fora do mapa.
+     */
+    private Map<UUID, MessageReceipts> findReceipts(
+            UUID userId,
+            List<UUID> conversationIds
+    ) {
+
+        if (conversationIds.isEmpty()) {
+            return Map.of();
+        }
+
+
+        return conversationRepository
+                .findReceipts(conversationIds, userId)
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                ConversationReceipts::getConversationId,
+                                receipts -> new MessageReceipts(
+                                        receipts.getDeliveredAt(),
+                                        receipts.getReadAt()
+                                )
+                        )
+                );
+    }
+
+
+    /* A conversa, se existe e o usuário participa dela; senão null. */
+    private Conversation findForMember(
+            UUID conversationId,
+            User user
+    ) {
+
+        if (conversationId == null) {
+            return null;
+        }
+
+
+        return conversationRepository
+                .findByIdWithParticipants(conversationId)
+                .filter(conversation -> isParticipant(conversation, user))
+                .orElse(null);
     }
 
 

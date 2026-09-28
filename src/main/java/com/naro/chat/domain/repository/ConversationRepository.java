@@ -112,17 +112,31 @@ public interface ConversationRepository
     );
 
 
+    @EntityGraph(attributePaths = "participants")
+    @Query("""
+            SELECT DISTINCT c
+            FROM Conversation c
+            WHERE c.id IN :conversationIds
+            """)
+    List<Conversation> findAllByIdWithParticipants(
+            @Param("conversationIds")
+            Collection<UUID> conversationIds
+    );
+
+
     /*
-     * Marca a conversa como lida até readAt. Nunca volta no tempo
-     * (duas abas concorrentes ficam com a leitura mais recente).
-     * A FK para conversation_participants recusa quem não participa.
+     * Marca a conversa como lida até readAt, e portanto também entregue.
+     * Nunca volta no tempo (duas abas concorrentes ficam com a leitura mais
+     * recente; GREATEST ignora NULL). A FK para conversation_participants
+     * recusa quem não participa.
      */
     @Modifying
     @Query(value = """
-            INSERT INTO conversation_reads (conversation_id, user_id, last_read_at)
-            VALUES (:conversationId, :userId, :readAt)
+            INSERT INTO conversation_reads (conversation_id, user_id, last_read_at, last_delivered_at)
+            VALUES (:conversationId, :userId, :readAt, :readAt)
             ON CONFLICT (conversation_id, user_id) DO UPDATE
-                SET last_read_at = GREATEST(conversation_reads.last_read_at, EXCLUDED.last_read_at)
+                SET last_read_at = GREATEST(conversation_reads.last_read_at, EXCLUDED.last_read_at),
+                    last_delivered_at = GREATEST(conversation_reads.last_delivered_at, EXCLUDED.last_delivered_at)
             """, nativeQuery = true)
     int markRead(
             @Param("conversationId")
@@ -133,6 +147,59 @@ public interface ConversationRepository
 
             @Param("readAt")
             Instant readAt
+    );
+
+
+    /*
+     * Marca a conversa como entregue ao usuário até deliveredAt, sem mexer
+     * na leitura. Retorna 0 quando o marcador já estava nesse ponto ou
+     * adiante (nada mudou para quem enviou), 1 quando avançou.
+     */
+    @Modifying
+    @Query(value = """
+            INSERT INTO conversation_reads (conversation_id, user_id, last_delivered_at)
+            VALUES (:conversationId, :userId, :deliveredAt)
+            ON CONFLICT (conversation_id, user_id) DO UPDATE
+                SET last_delivered_at = EXCLUDED.last_delivered_at
+                WHERE conversation_reads.last_delivered_at IS NULL
+                   OR conversation_reads.last_delivered_at < EXCLUDED.last_delivered_at
+            """, nativeQuery = true)
+    int markDelivered(
+            @Param("conversationId")
+            UUID conversationId,
+
+            @Param("userId")
+            UUID userId,
+
+            @Param("deliveredAt")
+            Instant deliveredAt
+    );
+
+
+    /*
+     * Tiques de cada conversa do ponto de vista de userId: até onde TODOS os
+     * outros participantes receberam e leram. Participante sem marcador (ou
+     * com marcador NULL) deixa o valor NULL. Uma linha por conversa com
+     * outros participantes.
+     */
+    @Query(value = """
+            SELECT p.conversation_id AS "conversationId",
+                   CASE WHEN COUNT(r.last_delivered_at) = COUNT(*) THEN MIN(r.last_delivered_at) END AS "deliveredAt",
+                   CASE WHEN COUNT(r.last_read_at) = COUNT(*) THEN MIN(r.last_read_at) END AS "readAt"
+            FROM conversation_participants p
+            LEFT JOIN conversation_reads r
+                   ON r.conversation_id = p.conversation_id
+                  AND r.user_id = p.user_id
+            WHERE p.conversation_id IN (:conversationIds)
+              AND p.user_id <> :userId
+            GROUP BY p.conversation_id
+            """, nativeQuery = true)
+    List<ConversationReceipts> findReceipts(
+            @Param("conversationIds")
+            Collection<UUID> conversationIds,
+
+            @Param("userId")
+            UUID userId
     );
 
 
